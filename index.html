@@ -1,0 +1,618 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Holden City Grand RPG – Simulation</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div id="app">
+      <header class="topbar">
+        <h1>Holden City Grand RPG</h1>
+        <div class="profile">
+          <div id="playerName" class="pill"></div>
+          <div id="playerRole" class="pill"></div>
+          <div id="playerMoney" class="pill"></div>
+        </div>
+      </header>
+
+      <main class="grid">
+        <section class="card">
+          <h2>Register</h2>
+          <div class="stack">
+            <input id="inputName" type="text" placeholder="Enter your name" />
+            <div class="row">
+              <input id="inputAge" type="number" min="0" placeholder="Age" />
+              <select id="selectGender">
+                <option value="">Gender</option>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+              </select>
+            </div>
+            <button id="btnRegister">Register / Switch Player</button>
+            <div class="row">
+              <button id="btnSeedDemo">Seed Demo Players</button>
+              <select id="selectQuickPlayer"></select>
+              <button id="btnQuickSwitch">Quick Switch</button>
+            </div>
+          </div>
+          <p class="muted">Registration stores your profile locally for this simulation.</p>
+        </section>
+
+        <section class="card">
+          <h2>Join A Role</h2>
+          <div class="tabs">
+            <button class="tab active" data-tab="gov">Government</button>
+            <button class="tab" data-tab="sec">Security</button>
+            <button class="tab" data-tab="gang">Gangs</button>
+            <button class="tab" data-tab="family">Families</button>
+          </div>
+          <div class="tabpanes">
+            <div id="tab-gov" class="tabpane active">
+              <div class="stack">
+                <div class="row">
+                  <div>
+                    <h3>President</h3>
+                    <p class="muted"><span id="presidentStatus"></span></p>
+                  </div>
+                  <button id="btnBecomePresident">Claim Presidency</button>
+                </div>
+                <hr />
+                <div class="row">
+                  <div>
+                    <h3>Governors</h3>
+                    <p class="muted"><span id="governorStatus"></span></p>
+                  </div>
+                  <button id="btnBecomeGovernor">Join as Governor</button>
+                </div>
+                <div class="row">
+                  <div>
+                    <h3>Parliament</h3>
+                    <p class="muted"><span id="parliamentStatus"></span></p>
+                  </div>
+                  <button id="btnJoinParliament">Join Parliament</button>
+                </div>
+                <div class="stack">
+                  <h3>Elections</h3>
+                  <div class="row">
+                    <button id="btnOpenElections">Open Elections</button>
+                    <button id="btnCloseElections">Close & Resolve</button>
+                  </div>
+                  <div class="row">
+                    <input id="inputCandidateOffice" list="officeList" placeholder="Office (president/governor/parliament)" />
+                    <datalist id="officeList">
+                      <option value="president"></option>
+                      <option value="governor"></option>
+                      <option value="parliament"></option>
+                    </datalist>
+                    <button id="btnRegisterCandidate">Register As Candidate</button>
+                  </div>
+                  <div class="row">
+                    <input id="inputVoteOffice" list="officeList" placeholder="Vote for office" />
+                    <input id="inputVoteFor" type="text" placeholder="Candidate name" />
+                    <button id="btnCastVote">Cast Vote</button>
+                  </div>
+                  <pre class="scroll" id="electionLog"></pre>
+                </div>
+              </div>
+            </div>
+            <div id="tab-sec" class="tabpane">
+              <div class="stack">
+                <div class="row">
+                  <div>
+                    <h3>Police</h3>
+                    <p class="muted"><span id="policeStatus"></span></p>
+                  </div>
+                  <button id="btnJoinPolice">Join Police</button>
+                </div>
+                <div class="row">
+                  <div>
+                    <h3>Army</h3>
+                    <p class="muted"><span id="armyStatus"></span></p>
+                  </div>
+                  <button id="btnJoinArmy">Join Army</button>
+                </div>
+                <div class="row">
+                  <div>
+                    <h3>Navy</h3>
+                    <p class="muted"><span id="navyStatus"></span></p>
+                  </div>
+                  <button id="btnJoinNavy">Join Navy</button>
+                </div>
+                <div class="row">
+                  <div>
+                    <h3>Air Force</h3>
+                    <p class="muted"><span id="airStatus"></span></p>
+                  </div>
+                  <button id="btnJoinAir">Join Air Force</button>
+                </div>
+                <div class="row">
+                  <div>
+                    <h3>Medical Staff</h3>
+                    <p class="muted"><span id="medicalStatus"></span></p>
+                  </div>
+                  <button id="btnJoinMedical">Join Hospital</button>
+                  <button id="btnJoinMilMedical">Join Military Hospital</button>
+                </div>
+              </div>
+            </div>
+            <div id="tab-gang" class="tabpane">
+              <div class="stack">
+                <div class="row">
+                  <input id="inputGangName" type="text" placeholder="New gang name" />
+                  <button id="btnCreateGang">Create Gang</button>
+                </div>
+                <div class="row">
+                  <select id="selectGang"></select>
+                  <button id="btnJoinGang">Join Selected Gang</button>
+                </div>
+                <p class="muted"><span id="gangStatus"></span></p>
+              </div>
+            </div>
+            <div id="tab-family" class="tabpane">
+              <div class="stack">
+                <div class="row">
+                  <input id="inputFamilyName" type="text" placeholder="New family name" />
+                  <button id="btnCreateFamily">Create Family</button>
+                </div>
+                <div class="row">
+                  <select id="selectFamily"></select>
+                  <button id="btnJoinFamily">Join Selected Family</button>
+                </div>
+                <p class="muted"><span id="familyStatus"></span></p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="card">
+          <h2>City Actions</h2>
+          <div class="stack">
+            <div class="row">
+              <button id="btnWork">Work (earn cash)</button>
+              <button id="btnCreateRiot">Create Riot (gang only)</button>
+              <button id="btnDispatchForces">Dispatch Forces (president)</button>
+            </div>
+            <div class="row">
+              <button id="btnKidnap">Kidnap Civilian (gang)</button>
+              <button id="btnRescue">Rescue Kidnapped (police/military/family)</button>
+            </div>
+            <pre class="scroll" id="actionLog"></pre>
+          </div>
+        </section>
+
+        <section class="card">
+          <h2>States & Command</h2>
+          <div class="stack">
+            <div class="row">
+              <label for="selectState" class="muted">Your State</label>
+              <select id="selectState"></select>
+              <button id="btnSetState">Set State</button>
+            </div>
+            <div class="grid two">
+              <div>
+                <h3>Federal Chiefs</h3>
+                <p class="muted" id="chiefsStatus"></p>
+                <div class="row">
+                  <input id="inputChiefBranch" list="branchList" placeholder="Branch (army/navy/air)" />
+                  <input id="inputChiefName" placeholder="Appoint name" />
+                  <button id="btnAppointChief">Appoint Chief (President)</button>
+                </div>
+              </div>
+              <div>
+                <h3>State Majors</h3>
+                <p class="muted" id="majorsStatus"></p>
+                <div class="row">
+                  <input id="inputMajorBranch" list="branchList" placeholder="Branch (army/navy/air)" />
+                  <input id="inputMajorName" placeholder="Appoint name" />
+                  <button id="btnAppointMajor">Appoint Major (Governor)</button>
+                </div>
+              </div>
+            </div>
+            <datalist id="branchList">
+              <option value="army"></option>
+              <option value="navy"></option>
+              <option value="air"></option>
+            </datalist>
+            <div class="row">
+              <input id="inputRiotId" placeholder="Active Riot ID" />
+              <input id="inputDispatchBranch" list="branchList" placeholder="Branch" />
+              <button id="btnDispatchPresident">Dispatch (President)</button>
+              <button id="btnDispatchGovernor">Dispatch (Governor)</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="card">
+          <h2>Riots, Funding & Banking</h2>
+          <div class="stack">
+            <div class="row">
+              <label class="muted">Create Riot</label>
+              <select id="selectRiotState"></select>
+              <input id="inputRiotSeverity" type="number" min="1" max="5" placeholder="Severity 1-5" />
+              <select id="selectRiotFunding">
+                <option value="gang">Fund: Gang</option>
+                <option value="gov">Fund: Government</option>
+                <option value="party">Fund: Party</option>
+              </select>
+              <button id="btnCreateRiotAdv">Create Riot (Advanced)</button>
+            </div>
+            <div class="row">
+              <button id="btnJoinBank">Join Bank Staff</button>
+              <input id="inputDeposit" type="number" placeholder="Deposit amount" />
+              <button id="btnDeposit">Deposit</button>
+              <input id="inputWithdraw" type="number" placeholder="Withdraw amount" />
+              <button id="btnWithdraw">Withdraw</button>
+            </div>
+            <div class="row">
+              <select id="selectBankState"></select>
+              <button id="btnRobBank">Rob Bank (Gang)</button>
+            </div>
+            <p class="muted">Government Treasury: <span id="govTreasury"></span></p>
+            <p class="muted">Banks: <span id="banksStatus"></span></p>
+            <p class="muted">Gang Treasury: <span id="gangTreasury"></span></p>
+          </div>
+        </section>
+
+        <section class="card">
+          <h2>Shops & Items</h2>
+          <div class="stack">
+            <div class="row">
+              <input id="inputLicenseName" placeholder="Player to license" />
+              <select id="selectLicenseType">
+                <option value="gun">Gun Store</option>
+                <option value="food">Food Store</option>
+              </select>
+              <button id="btnGrantLicense">Grant License (President/Governor)</button>
+            </div>
+            <div class="row">
+              <label class="muted">Create Gun Store</label>
+              <select id="selectGunState"></select>
+              <input id="inputGunMarkup" type="number" step="0.1" value="1.2" placeholder="Price x" />
+              <button id="btnCreateGunStore">Create</button>
+            </div>
+            <div class="row">
+              <label class="muted">Buy Weapon</label>
+              <select id="selectGunStore"></select>
+              <select id="selectWeaponLevel">
+                <option value="1">Level 1</option>
+                <option value="2">Level 2</option>
+                <option value="3">Level 3</option>
+              </select>
+              <button id="btnBuyWeapon">Buy</button>
+            </div>
+            <div class="row">
+              <label class="muted">Create Food Store</label>
+              <select id="selectFoodState"></select>
+              <input id="inputFoodMarkup" type="number" step="0.1" value="1.0" placeholder="Price x" />
+              <button id="btnCreateFoodStore">Create</button>
+            </div>
+            <div class="row">
+              <label class="muted">Buy Food</label>
+              <select id="selectFoodStore"></select>
+              <button id="btnBuyFood">Buy</button>
+            </div>
+            <p class="muted" id="shopStatus"></p>
+            <p class="muted">Your Energy: <span id="statEnergy"></span> • Weapon: <span id="statWeapon"></span></p>
+          </div>
+        </section>
+
+        <section class="card">
+          <h2>Licenses & Applications</h2>
+          <div class="stack">
+            <div class="row">
+              <select id="selectApplyLicense">
+                <option value="gun">Gun Store License</option>
+                <option value="food">Food Store License</option>
+              </select>
+              <button id="btnApplyLicense">Apply for License</button>
+            </div>
+            <div class="row">
+              <input id="inputAppId" placeholder="Application ID" />
+              <button id="btnApproveApp">Approve (Gov)</button>
+              <button id="btnRejectApp">Reject (Gov)</button>
+            </div>
+            <pre class="scroll" id="appsLog"></pre>
+          </div>
+        </section>
+
+        <section class="card">
+          <h2>Marriage & Family</h2>
+          <div class="stack">
+            <div class="row">
+              <input id="inputSpouse" placeholder="Spouse name" />
+              <button id="btnMarryCourt">Marry (Court)</button>
+              <button id="btnMarryChurch">Marry (Church)</button>
+            </div>
+            <div class="row">
+              <button id="btnHaveSex">Have Sex</button>
+              <select id="selectBoostStage">
+                <option value="3">Boost Stage 3</option>
+                <option value="4">Boost Stage 4</option>
+                <option value="5">Boost Stage 5</option>
+              </select>
+              <button id="btnBoostFertility">Boost Fertility (Hospital)</button>
+              <button id="btnTryBaby">Try For Baby</button>
+            </div>
+            <p class="muted" id="familyInfo"></p>
+          </div>
+        </section>
+
+        <section class="card">
+          <h2>Chats</h2>
+          <div class="stack">
+            <div class="tabs">
+              <button class="tab" data-tab="chat-general">General</button>
+              <button class="tab" data-tab="chat-family">Family</button>
+              <button class="tab" data-tab="chat-gang">Gang</button>
+              <button class="tab" data-tab="chat-command">Command</button>
+            </div>
+            <div class="tabpanes">
+              <div id="tab-chat-general" class="tabpane">
+                <pre class="scroll" id="chatGeneral"></pre>
+                <div class="row">
+                  <input id="inputChatGeneral" placeholder="Message" />
+                  <button id="btnSendGeneral">Send</button>
+                </div>
+              </div>
+              <div id="tab-chat-family" class="tabpane">
+                <pre class="scroll" id="chatFamily"></pre>
+                <div class="row">
+                  <input id="inputChatFamily" placeholder="Family message" />
+                  <button id="btnSendFamily">Send</button>
+                </div>
+              </div>
+              <div id="tab-chat-gang" class="tabpane">
+                <pre class="scroll" id="chatGang"></pre>
+                <div class="row">
+                  <input id="inputChatGang" placeholder="Gang message" />
+                  <button id="btnSendGang">Send</button>
+                </div>
+              </div>
+              <div id="tab-chat-command" class="tabpane">
+                <pre class="scroll" id="chatCommand"></pre>
+                <div class="row">
+                  <input id="inputChatCommand" placeholder="Command message" />
+                  <button id="btnSendCommand">Send</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="card">
+          <h2>Gang Ranks</h2>
+          <div class="stack">
+            <div class="row">
+              <select id="selectGangMember"></select>
+              <select id="selectGangRank">
+                <option value="leader">Leader</option>
+                <option value="underboss">Underboss</option>
+                <option value="captain">Captain</option>
+                <option value="soldier">Soldier</option>
+                <option value="associate">Associate</option>
+              </select>
+              <button id="btnAssignRank">Assign Rank</button>
+            </div>
+            <p class="muted" id="gangRanksInfo"></p>
+          </div>
+        </section>
+
+        <section class="card">
+          <h2>Law & Order</h2>
+          <div class="stack">
+            <div class="row">
+              <input id="inputTarget" placeholder="Target name" />
+              <input id="inputFineAmt" type="number" placeholder="Fine amount" />
+              <button id="btnFine">Fine (Police)</button>
+            </div>
+            <div class="row">
+              <input id="inputSentenceMin" type="number" placeholder="Prison minutes (≥30)" />
+              <button id="btnArrest">Arrest (Police)</button>
+            </div>
+            <div class="row">
+              <input id="inputCharge" placeholder="Charge" />
+              <input id="inputEvidence" placeholder="Evidence" />
+              <button id="btnCreateCase">Create Case</button>
+              <input id="inputCaseId" placeholder="Case ID" />
+              <button id="btnAddCharge">Add Charge</button>
+              <button id="btnAddEvidence">Add Evidence</button>
+              <button id="btnCaseTrial">Schedule Case Trial</button>
+            </div>
+            <div class="row">
+              <input id="inputBailAmt" type="number" placeholder="Bail amount" />
+              <button id="btnSetBail">Set Bail (Police/Court)</button>
+              <button id="btnPayBail">Pay Bail (Prisoner)</button>
+            </div>
+            <div class="row">
+              <button id="btnScheduleTrial">Schedule Trial (Court)</button>
+            </div>
+            <pre class="scroll" id="justiceLog"></pre>
+          </div>
+        </section>
+
+        <section class="card">
+          <h2>Parties</h2>
+          <div class="stack">
+            <div class="row">
+              <input id="inputPartyName" placeholder="New party name" />
+              <button id="btnCreateParty">Create Party</button>
+            </div>
+            <div class="row">
+              <select id="selectParty"></select>
+              <button id="btnJoinParty">Join Party</button>
+            </div>
+            <div class="row">
+              <input id="inputPartyDeposit" type="number" placeholder="Deposit to party" />
+              <button id="btnDepositParty">Deposit</button>
+            </div>
+            <div class="row">
+              <input id="inputCampaignBudget" type="number" placeholder="Campaign budget" />
+              <button id="btnStartCampaign">Start Campaign</button>
+            </div>
+            <p class="muted" id="partyStatus"></p>
+          </div>
+        </section>
+
+        <section class="card">
+          <h2>Dealerships</h2>
+          <div class="stack">
+            <div class="row">
+              <select id="selectDealerRegion"></select>
+              <input id="inputDealerMarkup" type="number" step="0.1" value="1.2" />
+              <button id="btnCreateDealer">Create Dealer</button>
+            </div>
+            <div class="row">
+              <select id="selectDealer"></select>
+              <select id="selectDealerModel">
+                <option value="sedan">Sedan</option>
+                <option value="suv">SUV</option>
+                <option value="truck">Truck</option>
+              </select>
+              <input id="inputDealerQty" type="number" placeholder="Qty" />
+              <button id="btnWholesaleDealer">Wholesale to Dealer</button>
+            </div>
+            <div class="row">
+              <select id="selectDealerBuy"></select>
+              <select id="selectDealerBuyModel">
+                <option value="sedan">Sedan</option>
+                <option value="suv">SUV</option>
+                <option value="truck">Truck</option>
+              </select>
+              <button id="btnBuyFromDealer">Buy Car From Dealer</button>
+              <button id="btnRefuelCar">Refuel 10L</button>
+              <button id="btnDrive">Drive (fuel required)</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="card">
+          <h2>Wholesale & Black Market</h2>
+          <div class="stack">
+            <div class="row">
+              <label class="muted">Wholesale to Gun Store</label>
+              <select id="selectWholesaleGun"></select>
+              <input id="inputWholesaleGunQty" type="number" placeholder="Qty" />
+              <button id="btnWholesaleGun">Buy Wholesale</button>
+            </div>
+            <div class="row">
+              <label class="muted">Wholesale to Food Store</label>
+              <select id="selectWholesaleFood"></select>
+              <input id="inputWholesaleFoodQty" type="number" placeholder="Qty" />
+              <button id="btnWholesaleFood">Buy Wholesale</button>
+            </div>
+            <div class Layout="row">
+              <label class="muted">Black Market</label>
+              <select id="selectBMType">
+                <option value="weapon">Weapon BM</option>
+                <option value="food">Food BM</option>
+              </select>
+              <select id="selectBMState"></select>
+              <input id="inputBMMarkup" type="number" step="0.1" value="1.5" />
+              <button id="btnCreateBM">Create BM Shop</button>
+            </div>
+            <div class="row">
+              <select id="selectBMShop"></select>
+              <button id="btnBuyBMWeapon">Buy BM Weapon</button>
+              <button id="btnBuyBMFood">Buy BM Food</button>
+            </div>
+            <p class="muted" id="wholesaleStatus"></p>
+          </div>
+        </section>
+
+        <section class="card">
+          <h2>Auto Elections & Terms</h2>
+          <div class="stack">
+            <div class="row">
+              <input id="inputTermMin" type="number" placeholder="Term minutes" />
+              <input id="inputOpenDur" type="number" placeholder="Open duration minutes" />
+              <button id="btnEnableAutoEl">Enable Auto Elections</button>
+              <button id="btnDisableAutoEl">Disable</button>
+            </div>
+            <div class="row">
+              <input id="inputTimeScale" type="number" step="0.01" placeholder="Time scale (e.g. 0.05)" />
+              <input id="inputDurPrison" type="number" placeholder="Prison minutes" />
+              <input id="inputDurTrial" type="number" placeholder="Trial minutes" />
+              <input id="inputDurTravel" type="number" placeholder="Travel minutes" />
+              <input id="inputDurDelivery" type="number" placeholder="Car delivery minutes" />
+              <button id="btnApplyDurations">Apply Durations</button>
+            </div>
+            <p class="muted" id="autoElStatus"></p>
+          </div>
+        </section>
+
+        <section class="card">
+          <h2>Transport & Timers</h2>
+          <div class="stack">
+            <div class="row">
+              <label class="muted">Buy Car</label>
+              <select id="selectCarModel">
+                <option value="sedan">Sedan</option>
+                <option value="suv">SUV</option>
+                <option value="truck">Truck</option>
+              </select>
+              <button id="btnBuyCar">Purchase (30m delivery)</button>
+            </div>
+            <div class="row">
+              <label class="muted">Airport</label>
+              <select id="selectTravelDest"></select>
+              <input id="inputAirPrice" type="number" placeholder="Set price" />
+              <input id="inputAirSeats" type="number" placeholder="Set seats" />
+              <button id="btnSetAir">Set Route</button>
+              <button id="btnBuyTicket">Buy Ticket & Fly</button>
+              <button id="btnTravel">Fly (arrive in 30m)</button>
+            </div>
+            <pre class="scroll" id="timersLog"></pre>
+          </div>
+        </section>
+
+        <section class="card">
+          <h2>Properties, Map & Directory</h2>
+          <div class="stack">
+            <div class="row">
+              <select id="selectPropState"></select>
+              <input id="inputLandPrice" type="number" placeholder="Land price" />
+              <button id="btnCreateLand">List Land (Gov)</button>
+            </div>
+            <div class="row">
+              <input id="inputLandId" placeholder="Land/House ID" />
+              <button id="btnBuyLand">Buy Land</button>
+              <button id="btnBuildHouse">Build House</button>
+              <button id="btnSellProperty">Sell Property</button>
+            </div>
+            <pre class="scroll" id="mapStatus"></pre>
+            <div class="muted">
+              <p>Directory:</p>
+              <p>- Join roles, create gangs/families, set state.</p>
+              <p>- Get licenses, create shops, wholesale to stock, then sell.</p>
+              <p>- Parties can run campaigns to influence elections.</p>
+              <p>- Police create cases with charges and evidence; schedule trials.</p>
+              <p>- Buy or run dealerships; refuel and drive with cars; fly when seats available.</p>
+              <p>- Buy land, build houses, and trade properties.</p>
+              <p>- Timers scale with the time multiplier for demo presentations.</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="card">
+          <h2>Hospitals</h2>
+          <div class="grid two">
+            <div>
+              <h3>General Hospital</h3>
+              <ul id="listGeneral"></ul>
+            </div>
+            <div>
+              <h3>Military Hospital</h3>
+              <ul id="listMilitary"></ul>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+    <script src="./app.js" type="module"></script>
+  </body>
+  </html>

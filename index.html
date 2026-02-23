@@ -21,7 +21,23 @@
       </header>
 
       <main class="grid">
-        <section class="card">
+        <section class="card navtabs">
+          <div class="sectabs">
+            <button class="sectab active" data-section="overview">Overview</button>
+            <button class="sectab" data-section="city">City</button>
+            <button class="sectab" data-section="command">Command</button>
+            <button class="sectab" data-section="economy">Economy</button>
+            <button class="sectab" data-section="family">Family</button>
+            <button class="sectab" data-section="justice">Justice</button>
+            <button class="sectab" data-section="parties">Parties</button>
+            <button class="sectab" data-section="elections">Elections</button>
+            <button class="sectab" data-section="transport">Transport</button>
+            <button class="sectab" data-section="properties">Properties</button>
+            <button class="sectab" data-section="chats">Chats</button>
+          </div>
+          <p class="muted">Use the section tabs to focus on one area at a time.</p>
+        </section>
+        <section class="card" data-section="overview">
           <h2>Register</h2>
           <div class="stack">
             <input id="inputName" type="text" placeholder="Enter your name" />
@@ -43,7 +59,7 @@
           <p class="muted">Registration stores your profile locally for this simulation.</p>
         </section>
 
-        <section class="card">
+        <section class="card" data-section="overview">
           <h2>Join A Role</h2>
           <div class="tabs">
             <button class="tab active" data-tab="gov">Government</button>
@@ -169,7 +185,7 @@
           </div>
         </section>
 
-        <section class="card">
+        <section class="card" data-section="city">
           <h2>City Actions</h2>
           <div class="stack">
             <div class="row">
@@ -185,7 +201,7 @@
           </div>
         </section>
 
-        <section class="card">
+        <section class="card" data-section="command">
           <h2>States & Command</h2>
           <div class="stack">
             <div class="row">
@@ -227,7 +243,7 @@
           </div>
         </section>
 
-        <section class="card">
+        <section class="card" data-section="economy">
           <h2>Riots, Funding & Banking</h2>
           <div class="stack">
             <div class="row">
@@ -258,7 +274,7 @@
           </div>
         </section>
 
-        <section class="card">
+        <section class="card" data-section="economy">
           <h2>Shops & Items</h2>
           <div class="stack">
             <div class="row">
@@ -301,7 +317,7 @@
           </div>
         </section>
 
-        <section class="card">
+        <section class="card" data-section="economy">
           <h2>Licenses & Applications</h2>
           <div class="stack">
             <div class="row">
@@ -320,7 +336,7 @@
           </div>
         </section>
 
-        <section class="card">
+        <section class="card" data-section="family">
           <h2>Marriage & Family</h2>
           <div class="stack">
             <div class="row">
@@ -342,7 +358,7 @@
           </div>
         </section>
 
-        <section class="card">
+        <section class="card" data-section="chats">
           <h2>Chats</h2>
           <div class="stack">
             <div class="tabs">
@@ -384,7 +400,7 @@
           </div>
         </section>
 
-        <section class="card">
+        <section class="card" data-section="chats">
           <h2>Gang Ranks</h2>
           <div class="stack">
             <div class="row">
@@ -402,7 +418,7 @@
           </div>
         </section>
 
-        <section class="card">
+        <section class="card" data-section="justice">
           <h2>Law & Order</h2>
           <div class="stack">
             <div class="row">
@@ -435,7 +451,7 @@
           </div>
         </section>
 
-        <section class="card">
+        <section class="card" data-section="parties">
           <h2>Parties</h2>
           <div class="stack">
             <div class="row">
@@ -490,7 +506,7 @@
           </div>
         </section>
 
-        <section class="card">
+        <section class="card" data-section="economy">
           <h2>Wholesale & Black Market</h2>
           <div class="stack">
             <div class="row">
@@ -524,7 +540,7 @@
           </div>
         </section>
 
-        <section class="card">
+        <section class="card" data-section="elections">
           <h2>Auto Elections & Terms</h2>
           <div class="stack">
             <div class="row">
@@ -545,7 +561,7 @@
           </div>
         </section>
 
-        <section class="card">
+        <section class="card" data-section="transport">
           <h2>Transport & Timers</h2>
           <div class="stack">
             <div class="row">
@@ -570,7 +586,7 @@
           </div>
         </section>
 
-        <section class="card">
+        <section class="card" data-section="properties">
           <h2>Properties, Map & Directory</h2>
           <div class="stack">
             <div class="row">
@@ -598,7 +614,7 @@
           </div>
         </section>
 
-        <section class="card">
+        <section class="card" data-section="properties">
           <h2>Hospitals</h2>
           <div class="grid two">
             <div>

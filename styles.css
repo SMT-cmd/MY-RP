@@ -11,6 +11,8 @@ body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sa
 .grid.two{grid-template-columns:repeat(2,1fr)}
 .card{background:var(--card);border:1px solid #132235;border-radius:12px;padding:16px;box-shadow:0 6px 24px rgba(0,0,0,.25)}
 .card h2{margin-top:0}
+.hidden{display:none !important}
+.grid{max-width:1200px;margin:0 auto}
 .stack{display:flex;flex-direction:column;gap:10px}
 .row{display:flex;gap:8px;align-items:center}
 input,select,button{background:#0e1a28;color:var(--fg);border:1px solid #163453;border-radius:8px;padding:10px 12px}
@@ -29,4 +31,6 @@ pre.scroll{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "L
 ul{list-style:none;padding-left:0}
 li{padding:6px 8px;border:1px solid #163453;border-radius:8px;margin-bottom:6px}
 @media (min-width:960px){.grid .card{grid-column:span 6}}
-    z`1 z`
+.sectabs{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px}
+.sectab{background:#0e1a28;border:1px solid #163453;border-radius:999px;padding:8px 14px;cursor:pointer;transition:all .15s ease}
+.sectab.active{background:#12314d;color:var(--accent2);border-color:#1c486c}

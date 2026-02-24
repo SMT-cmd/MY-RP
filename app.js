@@ -318,5 +318,10 @@ function setStateBindings(){
 }
 const oldBind=bind;
 function bind(){oldBind(); $("#btnWork")&&$("#btnWork").addEventListener("click",()=>{work2()});}
-function initSectionTabs(){const buttons=$$(".sectab");const cards=$$(".card[data-section]");function setActive(sec){buttons.forEach(b=>b.classList.toggle("active",b.dataset.section===sec));cards.forEach(c=>{if(c.dataset.section===sec)c.classList.remove("hidden");else c.classList.add("hidden")})}buttons.forEach(b=>b.addEventListener("click",()=>setActive(b.dataset.section)));if(buttons.length){setActive(buttons[0].dataset.section)}}
-bind();setStateBindings();initSectionTabs();refreshAllPlus();refreshApps();refreshChats();refreshGangMembersSelector();refreshFamilyInfo();syncHeader();setInterval(()=>{const p=curr();if(p)salaryTick()},30000);setInterval(()=>{treatHospitals();tickTimers();tickAutoElections()},5000);window.addEventListener("load",()=>{refreshAllPlus();refreshApps();refreshChats();refreshGangMembersSelector();refreshFamilyInfo()})
+function initSectionTabs(){const buttons=$$(".sectab");const cards=$$(".card[data-section]");function setActive(sec){let first=true;buttons.forEach(b=>b.classList.toggle("active",b.dataset.section===sec));cards.forEach(c=>{if(c.dataset.section===sec){c.classList.remove("hidden");if(first){c.classList.remove("collapsed");first=false}else{c.classList.add("collapsed")}}else{c.classList.add("hidden")}});window.scrollTo({top:0,behavior:"smooth"})}buttons.forEach(b=>b.addEventListener("click",()=>setActive(b.dataset.section)));if(buttons.length){setActive(buttons[0].dataset.section)}}
+function initCardCollapses(){const heads=$$(".card h2");heads.forEach(h=>{const card=h.closest(".card");if(card&&card.classList.contains("navtabs"))return;h.addEventListener("click",()=>{const c=h.closest(".card");if(c)c.classList.toggle("collapsed")})})}
+function startApp(){try{bind();setStateBindings();initSectionTabs();initCardCollapses();refreshAllPlus();refreshApps();refreshChats();refreshGangMembersSelector();refreshFamilyInfo();syncHeader();}catch(e){console.error(e)}}
+document.addEventListener("DOMContentLoaded",startApp);
+setInterval(()=>{const p=curr();if(p)salaryTick()},30000);
+setInterval(()=>{treatHospitals();tickTimers();tickAutoElections()},5000);
+window.addEventListener("load",()=>{refreshAllPlus();refreshApps();refreshChats();refreshGangMembersSelector();refreshFamilyInfo()})

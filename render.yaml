@@ -1,0 +1,16 @@
+# Standalone visual preview, not the simulator service. No database or secrets.
+# Set the Blueprint's repository branch to demo/visual-preview-2026-10-08.
+services:
+  - type: web
+    name: my-rp-visual-preview
+    runtime: node
+    plan: free
+    region: frankfurt
+    branch: demo/visual-preview-2026-10-08
+    buildCommand: node demo/build.mjs
+    startCommand: node demo/server.mjs
+    healthCheckPath: /healthz
+    autoDeployTrigger: off
+    envVars:
+      - key: NODE_VERSION
+        value: 24.21.0

@@ -40,8 +40,8 @@ for(const b of layout.buildings){
  objects.push({depth:b.x+b.y+b.w+b.h,art});
 }
 for(const [x,y] of [[1,1],[5,1],[10,0.8],[17,1],[21,1],[.8,5],[20.5,5],[1,12],[7,13],[14,13],[21,12.5]])objects.push({depth:x+y,art:tree(x,y)});
-const bus=box(16.1,7.5,2.2,.85,21,'#edc554','#d9a43b','#b58c32')+poly([[16.2,8.35,19],[18,8.35,19],[18,8.35,11],[16.2,8.35,11]],'#315659')+at(16.4,8.35,0,'<circle r="6" fill="#394849"/>')+at(17.8,8.35,0,'<circle r="6" fill="#394849"/>');
-objects.push({depth:24.6,art:bus});
+const bus=box(20,7.2,1.7,.85,21,'#edc554','#d9a43b','#b58c32')+poly([[20.1,8.05,19],[21.5,8.05,19],[21.5,8.05,11],[20.1,8.05,11]],'#315659')+at(20.2,8.05,0,'<circle r="6" fill="#394849"/>')+at(21.4,8.05,0,'<circle r="6" fill="#394849"/>');
+objects.push({depth:29.75,art:bus});
 for(const [x,y,c] of [[4.5,8.6,'#d77f49'],[10.4,6.2,'#66888f'],[16.8,6.3,'#ded7c2'],[11.8,8.7,'#ac6a80'],[18.8,8.9,'#6a9781']])objects.push({depth:x+y,art:person(x,y,c)});
 objects.sort((a,b)=>a.depth-b.depth);
 const guide=person(7.6,6.6,'#c99649')+at(7.6,6.6,55,'<circle r="12" fill="#fff4ce" stroke="#b7863d"/><text text-anchor="middle" y="5" font-size="16" font-weight="700" fill="#62491f">!</text>');

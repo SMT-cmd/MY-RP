@@ -1,12 +1,16 @@
 # Change log
 
+## Connected infrastructure on 7 October 2026
+
+Published the simulator foundation and Bible to MY-RP main. Verified connected Supabase and Render access, and recorded the user's selected organization and workspace. Created MY-RP Development in Frankfurt after Supabase reported and confirmed $0/month, then verified ACTIVE_HEALTHY and an empty public schema. No production game migration or identity integration is claimed. Render already has a separate free slt-tradehub service; the shared hour budget rules out assuming two continuously running free services. No simulator Render service or external uptime monitor was created. Repository visibility remains public pending the explicitly authorized authentication retry required by automatic review.
+
 ## MY-RP migration on 7 October 2026
 
 Prepared the Bible-backed foundation for the user-selected MY-RP repository. Preserved the former Holden RPG on archive/holden-rpg-2026-10-07 and retained its Apache LICENSE. Added an unauthenticated GET /healthz liveness response that exposes no game data. Updated the hosting plan to assess external monitoring, the shared free-hour budget and recovery limits. No monitor or hosted deployment is configured.
 
 ## Hosting proposal on 7 October 2026
 
-Recorded the user's preference for free tiers and third-party scheduling. Added a sourced hosting plan covering Cloudflare Pages, Supabase, cron-job.org, authoritative zone candidates, email and abuse controls. Hosting integrations remain proposals. Separate GitHub website authentication stopped after declined phone approval; the prepared repository has not been published.
+Recorded the user's preference for free tiers and third-party scheduling. Added a sourced hosting plan covering Cloudflare Pages, Supabase, cron-job.org, authoritative zone candidates, email and abuse controls. Hosting integrations remain proposals. Separate GitHub website authentication stopped after declined phone approval; the repository was still unpublished at that earlier milestone; the subsequent MY-RP migration published it.
 
 ## Foundation 0.1.0 on 7 October 2026
 

@@ -25,7 +25,7 @@ Unconfirmed browser commands retain their identifiers in tab session storage; th
 
 ## Next implementation work
 
-The user prefers free service tiers and cron-job.org for external scheduling. Read docs/free-hosting-plan.md for the researched provider proposal, limits and migration requirements. D16 is not yet approved as a deployed architecture; no paid plans or provider accounts were created.
+The user prefers free service tiers and cron-job.org for external scheduling. Read docs/free-hosting-plan.md for the researched provider proposal, limits and migration requirements. D16 remains proposed until production integration and capacity verification. The user selected the connected MyRP Supabase organization and My Workspace Render workspace. A free MY-RP Development Supabase project was created at a confirmed $0/month cost and verified healthy; it has no public game tables yet. No paid plan, simulator Render deployment or scheduler was created. Read docs/infrastructure.md for exact resource identifiers and remaining setup.
 
 1. Resolve D16 infrastructure choices and create production PostgreSQL migrations, transaction adapters and identity integration.
 2. Complete Independent and Random Family starts with all states, atomic onboarding and protection rules.

@@ -6,7 +6,7 @@ Researched 7 October 2026. D16 remains a proposal pending implementation, provid
 
 Use Cloudflare Pages for the compiled browser game, Supabase for identity and durable PostgreSQL data, Supabase Edge Functions for short authenticated commands and scheduled-job endpoints, and cron-job.org to trigger background work. Evaluate Cloudflare Durable Objects for authoritative multiplayer zones. Render Free is an alternative for a Node zone-service technical spike, with sleep and restart handling built into the test.
 
-This is a development and private testing budget, not a promise that the complete nationwide simulation can run continuously at zero cost. All Bible systems remain in scope; infrastructure constraints do not change the prelaunch completion rule. No new provider account, deployed endpoint or scheduler has been created by this plan.
+This is a development and private testing budget, not a promise that the complete nationwide simulation can run continuously at zero cost. All Bible systems remain in scope; infrastructure constraints do not change the prelaunch completion rule. A free Supabase development project has now been created in the user's existing organization. No game endpoint or scheduler has been deployed.
 
 | Component | Service | Verified free allowance or constraint | Build decision |
 |---|---|---|---|
@@ -32,7 +32,11 @@ The user proposed cron-job.org or UptimeRobot pings to reduce idle sleeping. Bas
 
 GET /healthz is implemented as a small liveness response. Once a production-safe hosted preview exists, an external monitor can check that URL at a proposed 10-minute interval with failure alerts. No external monitor is configured yet. Health checks do not perform payroll or other business jobs, and a successful liveness check does not prove database readiness. Check the selected monitor's current free interval and account limits during setup. No GitHub Actions keepalive workflow is needed.
 
-Render and Supabase plugins were found and suggested. They are not connected until the user completes the individual connection flows. No Render, Supabase or monitoring credentials are recorded in the source.
+Render and Supabase connections were verified on 7 October 2026. The user selected the MyRP Supabase organization and My Workspace Render workspace. Supabase reported and confirmed a creation cost of $0/month; MY-RP Development was created in Frankfurt (eu-central-1) and verified ACTIVE_HEALTHY. It currently has no public-schema game tables: migrations, authentication configuration and application integration remain implementation work.
+
+Render's selected workspace already contains the separate slt-tradehub free web service. Do not change it as part of the simulator build. Both free web services would share the 750-hour workspace allowance: keeping two awake for a full month would exceed that allowance. The simulator therefore cannot assume continuous free Render operation alongside the existing service. No simulator Render service or external monitor has been created. No provider credentials are recorded in source.
+
+Project identifiers and setup evidence are recorded in docs/infrastructure.md. These identifiers are not credentials.
 
 ## Job contract
 

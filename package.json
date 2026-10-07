@@ -1,0 +1,11 @@
+{
+  "name": "nigerian-life-simulator",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=24.0.0" },
+  "scripts": {
+    "start": "node src/server.ts",
+    "test": "node --test test/*.test.ts"
+  }
+}

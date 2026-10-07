@@ -1,0 +1,25 @@
+Bundle,Public expansion,Main prerequisite,build_status,activation_status,schedule
+U01,Player households richer family events and shared homes,Consent property household accounts support,Specified,Closed,Unscheduled
+U02,Vocational schools apprenticeships mentoring,Curriculum exams licences employment,Specified,Closed,Unscheduled
+U03,Hiring interviews unions and associations,Contracts payroll organisations moderation,Specified,Closed,Unscheduled
+U04,Warehouses trucking and logistics companies,Inventory custody vehicles roads claims,Specified,Closed,Unscheduled
+U05,Agriculture food chains and regional markets,Production land water storage transit,Specified,Closed,Unscheduled
+U06,Manufacturing mining energy and port businesses,Recipes supply power safety trade,Specified,Closed,Unscheduled
+U07,Property development utilities and inspections,Ownership permits contracts service budgets,Specified,Closed,Unscheduled
+U08,Specialist healthcare hospitals and medical careers,Qualified staff supplies referrals emergency cover,Specified,Closed,Unscheduled
+U09,Insurance investigators and claim appeals,Reserves evidence contracts court fallback,Specified,Closed,Unscheduled
+U10,Expanded police private security and CCTV,Evidence warrants complaints licensed roles,Specified,Closed,Unscheduled
+U11,Player courts lawyers bail prisons rehabilitation,Due process case transitions confinement limits,Specified,Closed,Unscheduled
+U12,Local government policies petitions and protests,Civic eligibility budgets safety moderation,Specified,Closed,Unscheduled
+U13,State elections parties campaigns and debates,Secret ballot anti fraud tribunals fiscal controls,Specified,Closed,Unscheduled
+U14,National assembly federal offices and budget cycle,State civic services federal constitution elections,Specified,Closed,Unscheduled
+U15,Military academies missions and disaster assistance,Credentials civil oversight bounded mission rules,Specified,Closed,Unscheduled
+U16,Disaster agency emergency exercises and rebuilding,Exposure relief multi service dispatch insurance,Specified,Closed,Unscheduled
+U17,Clubs DJ console radio and nightlife careers,Audio catalogue rights venue capacity moderation,Specified,Closed,Unscheduled
+U18,Artists creator music concerts charts and competitions,Rights review bookings media audio cost controls,Specified,Closed,Unscheduled
+U19,Football clubs seasons sponsorships and awards,Verified fixtures teams ticketing scheduling,Specified,Closed,Unscheduled
+U20,Media companies polls and civic investigations,Publishing privacy evidence sampling moderation,Specified,Closed,Unscheduled
+U21,Corporate shares mergers acquisitions and insolvency,Cap tables governance settlement creditor rules,Specified,Closed,Unscheduled
+U22,Player banking credit and financial markets,Reserve policy disclosures matching settlement review,Specified,Closed,Unscheduled
+U23,Charities scholarships universities and foundations,Restricted funds awards education audit,Specified,Closed,Unscheduled
+U24,Landmarks historical archives and extended legacy,Verified contributions stewardship history,Specified,Closed,Unscheduled

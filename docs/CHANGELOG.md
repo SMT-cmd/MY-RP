@@ -1,5 +1,11 @@
 # Change log
 
+## Verified GitHub source publication and Supabase access on 8 October 2026
+
+Published all 193 tracked files through the connected GitHub app as code snapshot 4d1a4f5e15285f698f837219ea39f4e35a5e48a5 on build/main-game-2026-10-08. Binary blobs, file modes and the complete Git tree match local checkpoint 56c5fd3629c1b15f600134067ac0daf14d825006. Recursive API verification and a fresh Git fetch/diff passed. Remote main/demo remain unchanged; no Render deploy, force push, hosted mutation or paid resource occurred. The snapshot publishes source contents while retaining separate local commit history.
+
+Confirmed Supabase connector access, healthy project, six hosted migrations, fifteen enabled/forced-RLS tables, no browser-role schema usage and a clear security advisor. A newly opened dashboard tab returned to sign-in after earlier successful login; database/password, four blocked hosted migrations, Render settings and provider verification remain open. Added docs/github-publication.md with exact provenance and migration hashes. Application validation remains the existing 192-test/TypeScript checkpoint; this change only updates documentation. Full-game requirements remain incomplete.
+
 ## Authorised build source publication on 8 October 2026
 
 The owner requested all current build work pushed before renewed Supabase login. Source publication targets build/main-game-2026-10-08, preserving remote main and the independent demo. The connected KING SMT Render main service still automatically deploys main commits and has PR previews off; using an isolated build branch avoids triggering a launch. GitHub connector confirms repository push permission. The code checkpoint passed 192 tests and strict TypeScript; tracked-tree and unpublished-commit scans found no configured credential patterns. This source publication does not complete the game or hosted configuration. No hosted migration or Render deploy was requested in this checkpoint.

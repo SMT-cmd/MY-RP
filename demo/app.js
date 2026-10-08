@@ -78,6 +78,7 @@ function update(){
  $('interact-button').innerHTML=`${n==='exit'?'Step outside':state.interior&&n?'Use':n==='guide'?'Talk':n?'Enter':'Explore'} <kbd>E</kbd>`;
  const at=projection(state.interior?state.roomX:state.x,state.interior?state.roomY:state.y);
  $('player').setAttribute('transform',`translate(${at.x} ${at.y})`);$('player').setAttribute('data-facing',state.facing);
+ if(state.interior){const front=[...HOME.fixtures].sort((a,b)=>a.x+a.y+a.w+a.h-b.x-b.y-b.w-b.h).find(f=>f.x+f.y+(f.w+f.h)/2>state.roomX+state.roomY);$('home-layer').insertBefore($('player'),front?document.querySelector(`[data-furniture="${front.id}"]`):null);}else $('world-scene').appendChild($('player'));
  $('city-layer').toggleAttribute('hidden',!!state.interior);$('home-layer').toggleAttribute('hidden',!state.interior);
  $('home-exit').hidden=!state.interior;$('objects-button').hidden=!state.interior;
  document.querySelector('.scene-caption').textContent=state.interior?'Your home · walk, settle in, make it yours':'Connected streets · a neighbourhood beyond the first block';

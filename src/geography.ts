@@ -1,0 +1,6 @@
+// State/capital names checked against INEC's official state-office directory.
+// Districts and services below are authored representative game locations.
+export const REGIONS = [
+  ['Abia','Umuahia'],['Adamawa','Yola'],['Akwa Ibom','Uyo'],['Anambra','Awka'],['Bauchi','Bauchi'],['Bayelsa','Yenagoa'],['Benue','Makurdi'],['Borno','Maiduguri'],['Cross River','Calabar'],['Delta','Asaba'],['Ebonyi','Abakaliki'],['Edo','Benin City'],['Ekiti','Ado-Ekiti'],['Enugu','Enugu'],['FCT','Abuja'],['Gombe','Gombe'],['Imo','Owerri'],['Jigawa','Dutse'],['Kaduna','Kaduna'],['Kano','Kano'],['Katsina','Katsina'],['Kebbi','Birnin Kebbi'],['Kogi','Lokoja'],['Kwara','Ilorin'],['Lagos','Ikeja'],['Nasarawa','Lafia'],['Niger','Minna'],['Ogun','Abeokuta'],['Ondo','Akure'],['Osun','Osogbo'],['Oyo','Ibadan'],['Plateau','Jos'],['Rivers','Port Harcourt'],['Sokoto','Sokoto'],['Taraba','Jalingo'],['Yobe','Damaturu'],['Zamfara','Gusau']
+].map(([name,capital])=>({name,capital,id:name.toLowerCase().replaceAll(' ','-'),districts:['Centre','Market quarter','Residential quarter'],services:['Foundation school','NPC work desk','Starter shelter','Food market','Community clinic','Bus terminal','Citizen help desk']}));
+export const regionByName=(name:unknown)=>REGIONS.find(region=>region.name===name);

@@ -1,0 +1,1 @@
+{"csp":"default-src 'none'; script-src 'sha256-SwkT/r8jdiellNeDz/oQO9v7XJWQD+ARlY9HUsAuxrY='; style-src 'sha256-WvncbpY99F+vdLoRYBLaTU4zpLSSnrlN2/dsrXzJRBU='; img-src 'self' data:; base-uri 'none'; form-action 'none'; frame-ancestors 'none'"}

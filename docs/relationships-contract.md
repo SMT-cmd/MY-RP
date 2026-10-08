@@ -1,0 +1,31 @@
+# Mutual friendship and partnership
+
+Main-build component, 8 October 2026. R018/R019/R040/R052/R053/R056/R057/R065–R067 remain partial. This implements explicit private social connections; marriage ceremonies, dates/events, relationship progression, NPC social behavior, household cohabitation and full moderation remain open.
+
+## Permission and consent
+
+Relationship requests are off by default, including in older saves without the new privacy field. The recipient explicitly enables friendship/partnership requests in Your privacy. Requesting uses a public citizen reference, type and current terms with explicit consent. Closed inboxes and either-direction blocks return the same contact-unavailable response. A relationship can never widen location, presence, messaging, home, household, wardrobe, parking, property or financial authority.
+
+Friendship and partnership are separate requests. Acceptance is restricted to the particular recipient and exact version, sender citizen reference, type, expiry and terms. A pending request is not a friendship or partnership. Active relationships last until ended or blocked; the seven-day window applies only to accepting an invitation. This component records a game partnership, not marriage, exclusivity or a legal status. Either participant can end it without the other's approval. Pending recipients can decline; senders can withdraw. Ended records cannot be reopened by an old acceptance, retry or unblocking.
+
+Proposed D31 bounds are seven days to accept, twenty pending requests per participant (incoming and outgoing together), twenty outgoing invitations per rolling twenty-four hours, and one hundred active connections per participant. Duplicate open requests/connections are rejected for each unordered pair and type, including reciprocal requests. Withdrawal or decline does not refund the request-rate budget. Client-supplied capacity changes have no authority. These are local safeguards requiring abuse/load and owner review, not proven production capacity.
+
+## Blocking, privacy and recovery
+
+Either-direction blocking closes pending and active connections. Disabling relationship requests closes incoming pending requests; existing accepted connections remain available to end. It does not cancel the user's outgoing consent or existing home invitations by itself. Blocking separately applies the existing home-visit withdrawal/ejection rules. Removing a block restores no relationship or private-home authority.
+
+Reads settle expiry on a copy, presenting ended pending requests immediately without writing state. A successful new command settles automatic closures before/after its effects in the same transaction. Failed actions persist no cleanup; current reads still deny expired acceptance. Closure hashes bind committing receipts without exposing other people's social records to an unrelated action. Historical backups validate invitation/acceptance/closure evidence without applying the current wall clock. Block and privacy closures require the specific committing block or preference receipt; personal balances and other contracts are preserved.
+
+All original private terms, consent and ending receipts remain recoverable in durable state. Own views show all pending/active connections and up to the latest one hundred ended records. Other participants appear through public citizen names/references. Uninvolved citizens receive no connection records. HTTP responses, own recent receipts and recovery pages omit internal source/consent keys and closure hashes. No social graph is attached to public nearby peers. A private per-actor revision makes the live/fallback client refresh an expiring request even at an unchanged business cursor.
+
+## Interface and home connection
+
+The main accessible panel supports type/terms review, recipient acceptance, decline, withdrawal, ending and blocking. Accepted connections can receive a separate fifteen-minute home invitation when the sender is in their current home. That action reviews the existing home terms and follows its independent acceptance/entry process. A friend or partner cannot enter merely because the relationship was accepted. Expiry and remote endings update controls without requiring a click. Revoked/sign-out sessions clear the private relationship panel; uncertain commands retain account-bound identifiers for recovery. Low graphics/data saver keeps the same controls.
+
+## Persistence and evidence
+
+CLI-generated local migration 20261008165535_mutual_relationships.sql uses existing private world-scoped domain_records and immutable command mirrors. Deferred invoker constraints validate receipt-backed invitation, recipient consent and ending evidence, matching mirrors, duplicate pairs, capacities and rolling request rates. Before-update/delete guards preserve terms, accepted proof and terminal records. There is no new public table, privileged public function, paid resource or scheduler. It depends on the earlier local home-visit immutable-receipt/hash verifier. Staff, visit, furniture-use and relationship migrations remain local; the hosted manifest is unchanged.
+
+Domain tests cover opt-in, exact consent, reciprocal duplicates, independent friendship/partnership, unilateral leave, decline/withdraw roles, block/privacy, expiry, limits, no asset/home transfer, private receipt projection and tamper rejection. File tests force failed acceptance persistence, reopen and race ending/blocking without restoring consent. Embedded PostgreSQL tests force acceptance/block rollback, reopen/retry, reject forged acceptance/parties/deletion, isolate worlds and deny browser-role schema access. Two actual HTTP/WebSocket-to-JSDOM clients recover a lost acceptance once, review independent home consent and block both ties; another connected-recipient case observes expiry without any new event/action. These are local transport/DOM/embedded SQL checks, not hosted-provider, native device, moderation operations or whole-world acceptance.
+
+The Supabase dashboard CAPTCHA is deferred at the owner's request. Connected GitHub/Render/Supabase access was verified earlier; database connection credentials, SMTP/provider configuration and hosted driver verification remain pending. No main push, deployment or additional preview publication occurred.

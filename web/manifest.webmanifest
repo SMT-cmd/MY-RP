@@ -1,0 +1,16 @@
+{
+ "id":"/",
+ "name":"MY-RP · Nigerian Life",
+ "short_name":"MY-RP",
+ "description":"A Nigerian life simulation with saved server-authoritative progress.",
+ "lang":"en-NG",
+ "start_url":"/",
+ "scope":"/",
+ "display":"standalone",
+ "background_color":"#e8ebdd",
+ "theme_color":"#244f41",
+ "icons":[
+  {"src":"/app-icon-192.png","sizes":"192x192","type":"image/png","purpose":"any"},
+  {"src":"/app-icon-512.png","sizes":"512x512","type":"image/png","purpose":"any maskable"}
+ ]
+}

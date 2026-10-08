@@ -1,0 +1,34 @@
+# Main-game configuration only. Do not sync/create a second service or deploy
+# until the full build passes its release gates. Apply these settings to existing
+# service srv-db378467bikc73bta2e0 in Alonge's workspace.
+services:
+  - type: web
+    name: MY-RP
+    runtime: node
+    repo: https://github.com/SMT-cmd/MY-RP
+    branch: main
+    region: ohio
+    plan: free
+    autoDeployTrigger: off
+    buildCommand: npm ci --omit=dev
+    startCommand: npm run start:postgres
+    healthCheckPath: /readyz
+    previews:
+      generation: off
+    envVars:
+      - key: NODE_VERSION
+        value: 24.21.0
+      - key: WORLD_ID
+        value: my-rp-nigeria-1
+      - key: APP_ORIGIN
+        value: https://my-rp-8kiw.onrender.com
+      - key: GAME_RELEASE_STAGE
+        value: build
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_PUBLISHABLE_KEY
+        sync: false
+      - key: DATABASE_URL
+        sync: false
+# DATABASE_CA_CERT can be set separately if the copied session-pooler endpoint
+# requires Supabase's CA. TLS validation must remain enabled.

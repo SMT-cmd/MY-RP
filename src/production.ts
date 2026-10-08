@@ -1,0 +1,20 @@
+// Authored and tested locally. This entry point does not deploy a provider service.
+import { Pool } from 'pg';
+import { PostgresWorldStore,pooledDatabase } from './postgres.ts';
+import { supabaseAuthenticator } from './auth.ts';
+import { supabaseAccounts } from './account.ts';
+import { createApp } from './http.ts';
+import {supabaseMFA} from './mfa.ts';
+const required=(name:string)=>{const value=process.env[name];if(!value)throw new Error(`${name} is required`);return value;};
+const port=Number(process.env.PORT??3000);
+if(!Number.isInteger(port)||port<0||port>65535)throw new Error('Invalid PORT');
+const authenticate=supabaseAuthenticator(required('SUPABASE_URL'),required('SUPABASE_PUBLISHABLE_KEY'));
+const databaseUrl=required('DATABASE_URL'),url=new URL(databaseUrl);
+if(!['postgres:','postgresql:'].includes(url.protocol))throw new Error('Use a PostgreSQL connection URL.');
+if([...url.searchParams.keys()].some(k=>k.toLowerCase().startsWith('ssl')))throw new Error('Configure TLS through the validated server settings, not connection URL overrides.');
+const pool=new Pool({connectionString:databaseUrl,max:5,connectionTimeoutMillis:5000,idleTimeoutMillis:30000,ssl:{rejectUnauthorized:true,...(process.env.DATABASE_CA_CERT?{ca:process.env.DATABASE_CA_CERT}:{})}});
+const store=new PostgresWorldStore(pooledDatabase(pool),required('WORLD_ID'),{requireConnection:true});
+await store.createWorld();
+const server=createApp({multiplayer:true,store,authenticate:req=>authenticate(req.headers.authorization),accounts:supabaseAccounts(required('SUPABASE_URL'),required('SUPABASE_PUBLISHABLE_KEY')),mfa:supabaseMFA(required('SUPABASE_URL'),required('SUPABASE_PUBLISHABLE_KEY')),appOrigin:required('APP_ORIGIN'),config:{mode:'supabase',releaseStage:process.env.GAME_RELEASE_STAGE??'build'}});
+server.listen(port,'0.0.0.0',()=>console.log(`Authenticated game server listening on ${port}`));
+const stop=()=>server.close(()=>{void pool.end();});process.once('SIGTERM',stop);process.once('SIGINT',stop);

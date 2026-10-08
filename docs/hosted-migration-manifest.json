@@ -1,0 +1,125 @@
+{
+  "project": "ogkuirfuwxqwstyjijln",
+  "world": "my-rp-nigeria-1",
+  "hosted_migrations": [
+    {
+      "version": "20261008071052",
+      "name": "myrp_main_foundation_and_services",
+      "source_files": [
+        "20261007155156_foundation_transactions.sql",
+        "20261007161235_life_households.sql",
+        "20261007162858_verified_work.sql",
+        "20261007201608_world_and_education.sql",
+        "20261007205543_inventory_journals.sql",
+        "20261007213514_property_reserves.sql",
+        "20261007214209_vehicle_reserves.sql",
+        "20261007214910_clinical_reserves.sql",
+        "20261007215953_incidents_and_insurance.sql",
+        "20261007235557_corporate_governance.sql",
+        "20261008064355_furnishing_and_parking.sql"
+      ],
+      "bundle_sha256": "ffcc3b68e57dcd461cf7c0e477f3b4e65e7c4df7789227e54923f5c1330f6c65"
+    },
+    {
+      "version": "20261008071307",
+      "name": "hosted_role_and_policy_hardening",
+      "source_files": [
+        "20261008071133_hosted_role_and_policy_hardening.sql"
+      ]
+    },
+    {
+      "version": "20261008072021",
+      "name": "session_logout_revocation",
+      "source_files": [
+        "20261008071857_session_logout_revocation.sql"
+      ]
+    },
+    {
+      "version": "20261008100124",
+      "name": "interior_partitions",
+      "source_files": [
+        "20261008094554_interior_partitions.sql"
+      ]
+    },
+    {
+      "version": "20261008101646",
+      "name": "citizen_appearance",
+      "source_files": [
+        "20261008100757_citizen_appearance.sql"
+      ]
+    },
+    {
+      "version": "20261008110107",
+      "name": "authoritative_client_sessions",
+      "source_files": [
+        "20261008104122_authoritative_client_sessions.sql"
+      ]
+    }
+  ],
+  "source_files": [
+    {
+      "file": "20261007155156_foundation_transactions.sql",
+      "sha256": "dd538f9fadd43bbb85f1f102c3cede825d2cdd2ac163cdf034adf14be8ae00d5"
+    },
+    {
+      "file": "20261007161235_life_households.sql",
+      "sha256": "10e129194ffc7fbcf3cf44b7d9415d1371818153a8552369a88b076e37face59"
+    },
+    {
+      "file": "20261007162858_verified_work.sql",
+      "sha256": "b71516113cf2514379982015e5c28e9bd820e26f91d49b0deb94ba8b80c07800"
+    },
+    {
+      "file": "20261007201608_world_and_education.sql",
+      "sha256": "91886f617db56ea059c0f8e1b296f38a41cbfe8a54079d52fe6fb905364f61f4"
+    },
+    {
+      "file": "20261007205543_inventory_journals.sql",
+      "sha256": "c2e97b92595453607bf4f2414541cc2976f47656e6bcd202d884848b3ad24a24"
+    },
+    {
+      "file": "20261007213514_property_reserves.sql",
+      "sha256": "e5caa22c6dca2709919c8912a7cedc0f61fd8f98823044e400a0596c80ce15e7"
+    },
+    {
+      "file": "20261007214209_vehicle_reserves.sql",
+      "sha256": "e2e35f6628ad72b106c21b0a96f51e301da603f4b56e821b55ba02c177cded97"
+    },
+    {
+      "file": "20261007214910_clinical_reserves.sql",
+      "sha256": "7758307ad90e75c5cb4318f3ce0cedff1e6aeb619772cf282754858ec4e7a8e4"
+    },
+    {
+      "file": "20261007215953_incidents_and_insurance.sql",
+      "sha256": "9a508a6a7a5a95097a65f1592640f527fd97b0e3cf72d58f3cd083c196798382"
+    },
+    {
+      "file": "20261007235557_corporate_governance.sql",
+      "sha256": "2ab6879f49eec02fbf81840c3bccd4cccd98a94195893ca6ea4b82ecde045ba1"
+    },
+    {
+      "file": "20261008064355_furnishing_and_parking.sql",
+      "sha256": "0a4eb68b9538fc5c7882b75af20dabbd69e9b3c6d2f7a7e9283da4a581e74c98"
+    },
+    {
+      "file": "20261008071133_hosted_role_and_policy_hardening.sql",
+      "sha256": "d4aa403fa7b7d4741e7024d676b2dfd2a05b2ed5bb1ca549633691684e183ac9"
+    },
+    {
+      "file": "20261008071857_session_logout_revocation.sql",
+      "sha256": "ee51038108086a31acc58eba489a5bd61858d0e4dfc50c5dfc5c31e0ec33cc8c"
+    },
+    {
+      "file": "20261008094554_interior_partitions.sql",
+      "sha256": "a62d16ea4a4d94a56627b70c1ef965d8622e5a0f10c05bbaa1866eebd08f300a"
+    },
+    {
+      "file": "20261008100757_citizen_appearance.sql",
+      "sha256": "a5f8e9f58d5c0bee5c883e5da48b8affa9bb6ac4cb5822bada441704ed3da5c9"
+    },
+    {
+      "file": "20261008104122_authoritative_client_sessions.sql",
+      "sha256": "4313f400594cd503b734fd2a6d8e28a60791e67e51d0f90aa1c5c5895092b281"
+    }
+  ]
+}

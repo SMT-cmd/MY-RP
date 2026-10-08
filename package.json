@@ -3,9 +3,36 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "engines": { "node": ">=24.0.0" },
+  "engines": {
+    "node": ">=24.0.0"
+  },
   "scripts": {
     "start": "node src/server.ts",
-    "test": "node --test test/*.test.ts"
+    "test": "node --test --test-concurrency=1 test/*.test.ts",
+    "typecheck": "tsc --noEmit",
+    "start:postgres": "node src/production.ts",
+    "demo:build": "node demo/build.mjs",
+    "demo": "node demo/server.mjs"
+  },
+  "dependencies": {
+    "pg": "8.23.1",
+    "three": "0.186.1",
+    "ws": "8.22.0"
+  },
+  "devDependencies": {
+    "@electric-sql/pglite": "0.5.8",
+    "@types/jsdom": "30.0.0",
+    "@types/node": "24.19.1",
+    "@types/pg": "8.23.1",
+    "@types/three": "0.186.0",
+    "@types/ws": "8.18.2",
+    "jsdom": "30.1.2",
+    "supabase": "2.72.7",
+    "typescript": "5.9.3"
+  },
+  "overrides": {
+    "supabase": {
+      "tar": "7.5.22"
+    }
   }
 }

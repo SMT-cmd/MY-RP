@@ -5,7 +5,8 @@ const $ = id => document.getElementById(id);
 const escapeText = value => String(value).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const cash = minor => new Intl.NumberFormat('en-NG',{style:'currency',currency:'NGN',maximumFractionDigits:0}).format(minor / 100);
 const storageKey = 'my-rp-visual-preview-v1';
-const fresh = () => ({version:1,region:'Lagos',x:7,y:7,guide:false,home:false,bank:false,lesson:false,shift:false,foodPurchase:false,graphics:'medium',reducedMotion:false,largeText:false,interior:null,roomX:4,roomY:6,facing:'front',lamp:false});
+const fresh = () => ({version:1,region:'Lagos',x:7,y:7,guide:false,home:false,bank:false,lesson:false,shift:false,foodPurchase:false,graphics:'medium',reducedMotion:false,largeText:false,interior:null,roomX:4,roomY:6,facing:'front'});
+const furnishingCopy={bed:'A soft place to rest after a busy day.',pantry:'Your welcome meal is waiting in the kitchen.',sofa:'Take a moment in your living room.',desk:'Your book is open at the first-day guide.',sink:'A small sink beside your kitchen.',wardrobe:'Your starter outfit, ready for a new day.'};
 function blocked(x,y) {return [...LAYOUT.buildings,...STREETS.buildings].some(b => x>=b.x && x<b.x+b.w && y>=b.y && y<b.y+b.h);}
 function validTile(x,y) {return Number.isInteger(x)&&Number.isInteger(y)&&x>=STREETS.minX&&y>=STREETS.minY&&x<STREETS.maxX&&y<STREETS.maxY&&!blocked(x,y);}
 function readState(){
@@ -31,8 +32,8 @@ function cameraView(recenter=false){
  const svg=$('world-scene'),rect=svg.getBoundingClientRect(),aspect=rect.width&&rect.height?rect.width/rect.height:1250/800;
  camera.width=(rect.width&&rect.width<760?500:1000)/camera.zoom;camera.height=camera.width/aspect;
  if(camera.follow||recenter){const at=projection(state.interior?state.roomX:state.x,state.interior?state.roomY:state.y);camera.x=at.x-camera.width*.55;camera.y=at.y-camera.height*.58-30;}
- const bounds=state.interior?{left:200,right:1050,top:-80,bottom:590}:{left:-1100,right:2400,top:-570,bottom:1370};
- camera.x=Math.max(bounds.left,Math.min(bounds.right-camera.width,camera.x));camera.y=Math.max(bounds.top,Math.min(bounds.bottom-camera.height,camera.y));
+ const bounds=state.interior?{left:200,right:850,top:-80,bottom:590}:{left:-1100,right:2400,top:-570,bottom:1370};
+ camera.x=camera.width>=bounds.right-bounds.left?(bounds.left+bounds.right-camera.width)/2:Math.max(bounds.left,Math.min(bounds.right-camera.width,camera.x));camera.y=camera.height>=bounds.bottom-bounds.top?(bounds.top+bounds.bottom-camera.height)/2:Math.max(bounds.top,Math.min(bounds.bottom-camera.height,camera.y));
  svg.setAttribute('viewBox',`${camera.x} ${camera.y} ${camera.width} ${camera.height}`);$('follow-camera').setAttribute('aria-pressed',String(camera.follow));$('follow-camera').textContent=camera.follow?'Following you':'Find my character';$('zoom-label').textContent=Math.round(camera.zoom*100)+'%';
 }
 function exitHome(){stopWalk();state.interior=null;state.facing='front';camera.follow=true;update();say('You stepped outside at your home entrance.');}
@@ -48,7 +49,7 @@ function homeInteraction(id){
  const f=HOME.fixtures.find(f=>f.id===id);if(!f||!state.interior||distanceToFixture(state.roomX,state.roomY,f)>1)return;
  if(id==='bed')dialog('Your bed. Your own space.',`<p>Rest in your starter room. Your welcome meal stays available in the kitchen.</p><button class="primary-button full-width" data-action="rest">${state.home?'Rest again':'Rest and collect your welcome meal'}</button>`,'AT HOME');
  else if(id==='pantry')dialog('A little kitchen of your own.',`<p>A welcome plate of rice, beans and plantain is ready. It is one sample welcome meal; there is no repeated cash reward.</p><button class="primary-button full-width" data-action="rest">${state.home?'Enjoy your home kitchen':'Collect the welcome meal'}</button>`,'KITCHEN');
- else dialog(f.name,`<p>${escapeText(f.copy)}</p><div class="info-box">${id==='sofa'?'Take a seat and look around your living room.':id==='desk'?'Your book is open at the first-day guide. Visit foundation school for the sample lesson.':id==='sink'?'Wash your hands at the kitchen sink. This decorative action does not submit a treatment or utility payment.':'A teal shirt and navy trousers: your current starter outfit.'}</div><button class="primary-button full-width" data-action="furniture-done">${id==='sofa'?'Sit for a moment':id==='desk'?'Read the guide':id==='sink'?'Wash hands':'Look at my outfit'}</button>`,'AT HOME');
+ else dialog(f.name,`<p>${escapeText(furnishingCopy[id])}</p><div class="info-box">${id==='sofa'?'Take a seat and look around your living room.':id==='desk'?'Visit foundation school for the sample lesson.':id==='sink'?'Wash your hands before your welcome meal.':'A teal shirt and navy trousers: your current starter outfit.'}</div><button class="primary-button full-width" data-action="furniture-done">${id==='sofa'?'Sit for a moment':id==='desk'?'Read the guide':id==='sink'?'Wash hands':'Look at my outfit'}</button>`,'AT HOME');
 }
 
 const balance=()=>2000000+(state.shift?25000:0)-(state.foodPurchase?80000:0);
@@ -72,7 +73,7 @@ function update(){
  $('context-name').textContent=info?.name??'Explore your neighbourhood';
  $('context-icon').textContent=info?.icon??'⌖';
  $('context-type').textContent=n==='guide'?'WELCOME GUIDE':n?'NEARBY SERVICE':'ON YOUR WAY';
- $('context-copy').textContent=info?.copy??'Click a location label, or use the movement controls.';
+ $('context-copy').textContent=(state.interior&&furnishingCopy[n])||info?.copy||'Click a location label, or use the movement controls.';
  $('interact-button').disabled=!n||walking;
  $('interact-button').innerHTML=`${n==='exit'?'Step outside':state.interior&&n?'Use':n==='guide'?'Talk':n?'Enter':'Explore'} <kbd>E</kbd>`;
  const at=projection(state.interior?state.roomX:state.x,state.interior?state.roomY:state.y);
@@ -178,7 +179,7 @@ function renderPhone(app){
  }
  if(app==='jobs')html=phoneHeader('Find your first shift.','Start earning while you study.')+`<div class="service-card"><span class="tag">STARTER JOB</span><h3>Parcel sorting assistant</h3><p>Three untimed task choices. A sample ${cash(25000)} wage on completion.</p><button class="primary-button" data-walk="work">${state.shift?'Visit the work desk':'Walk to the work desk ↗'}</button></div><div class="info-box">Full-game jobs, hiring, payroll, and professional eligibility are still being expanded. This preview demonstrates one starting activity.</div>`;
  if(app==='school')html=phoneHeader('Learn your way forward.','Foundation school · representative lesson')+`<div class="service-card"><h3>Day 1 · Finding your feet</h3><p>Visit your guide, discover essential services, and see how work fits alongside education.</p><button class="primary-button" data-walk="school">Walk to school ↗</button></div><div class="info-box">The full five-day programme, examinations, and qualifications belong to the full game. The preview lesson awards no qualification.</div>`;
- if(app==='objects')html=phoneHeader('Inside your home.','Choose an object to walk beside it.')+`<div class="location-list">${HOME.fixtures.map(f=>`<button data-fixture="${f.id}"><span>${escapeText(f.name)}<small>${escapeText(f.copy)}</small></span><span>↗</span></button>`).join('')}</div><button class="secondary-button full-width" data-action="exit-home">Step outside</button>`;
+ if(app==='objects')html=phoneHeader('Inside your home.','Choose an object to walk beside it.')+`<div class="location-list">${HOME.fixtures.map(f=>`<button data-fixture="${f.id}"><span>${escapeText(f.name)}<small>${escapeText(furnishingCopy[f.id])}</small></span><span>↗</span></button>`).join('')}</div><button class="secondary-button full-width" data-action="exit-home">Step outside</button>`;
  if(app==='map')html=phoneHeader('Your neighbourhood.','Choose a place to walk there.')+`<div class="location-list">${Object.entries(places).map(([id,info])=>`<button data-walk="${id}"><span>${info.name}<small>${info.copy}</small></span><span>↗</span></button>`).join('')}</div><div class="info-box">${escapeText(state.region)} · representative Centre district<br>The centre entrances mirror the development game. Connected surrounding blocks extend this exploration sample.</div><h3>Connected streets</h3><div class="location-list">${STREETS.landmarks.map(l=>`<button data-walk="${l.id}">${l.name} ↗</button>`).join('')}</div>`;
  if(app==='care')html=phoneHeader('Essential care.','Sample citizen health: 100 / 100.')+`<div class="service-card"><h3>Community clinic</h3><p>A local fallback for essential game care.</p><button class="primary-button" data-walk="clinic">Walk to the clinic ↗</button></div><div class="info-box">For a game emergency, the full system connects transport, assessment, supplies, treatment, and recovery. This sample does not simulate an emergency.</div>`;
  if(app==='home-info')html=phoneHeader('A safe starting point.','Your shelter stays accessible.')+`<div class="service-card"><h3>Starter home</h3><p>A bed, a welcome meal, and space to begin.</p><button class="primary-button" data-walk="shelter">Walk home ↗</button></div>`;

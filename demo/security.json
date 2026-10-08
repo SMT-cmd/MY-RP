@@ -1,1 +1,1 @@
-{"csp":"default-src 'none'; script-src 'sha256-rnS6PQBHg7XEzYTJl0SnfghJPQJjInFaAlWVlw5nl1Q='; style-src 'sha256-WvncbpY99F+vdLoRYBLaTU4zpLSSnrlN2/dsrXzJRBU='; img-src 'self' data:; base-uri 'none'; form-action 'none'; frame-ancestors 'none'"}
+{"csp":"default-src 'none'; script-src 'sha256-DMVWN6gpGTuf05dX3OWIXDv3biGEChaYEyhPizriVDY='; style-src 'sha256-WvncbpY99F+vdLoRYBLaTU4zpLSSnrlN2/dsrXzJRBU='; img-src 'self' data:; base-uri 'none'; form-action 'none'; frame-ancestors 'none'"}

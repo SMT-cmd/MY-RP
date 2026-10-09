@@ -1,0 +1,15 @@
+# Local clinical care contract
+
+Components of R035; rules version game-health-1.0. Conditions are fictional game abstractions. Full healthcare and emergency acceptance remain open.
+
+A patient consents to sharing one episode with their currently qualified treating staff. Public providers disclose consultation and treatment costs. NPC assessment is free, protected clinical fees depend on starter status and available funds, and existing basic care remains a separate safety net. Private hospitals require a healthcare company, current clinical qualification and operating capital. Clinical staff eligibility derives from current qualifications plus a governance role or active clinical employment contract; unrelated company membership does not grant access.
+
+Private consultation payment is reserved until a verified assessment uses actual facility power. The assessment derives condition from server-owned game needs, not a submitted diagnosis. Treatment requires separate patient consent and funding, current qualified staff, two actual medicine units and two power units. NPC procedures consume budgeted source quantities with regional and patient caps. Clinical rewards and provider earnings settle only after recorded recovery. The patient can finish already verified recovery even after a hospital closes.
+
+Before a procedure, the patient can cancel or transfer to NPC cover. Unearned fees return to the patient, while an already delivered consultation remains earned. Failed supply checks roll back the entire procedure. Providers cannot debit personal wallets or inspect unrelated citizen data. Patient and staff must be in the recorded region for clinical procedures.
+
+An assessed urgent episode can request free regional emergency transport. It locks the patient's one world lease, supports the normal predeparture cancellation window and delivers to the NPC clinic after recorded travel time. Client-supplied severity cannot authorise an emergency. The initial eligibility test uses an isolated server health fixture. A further test now runs real home deterioration, server-recorded exposure, urgent assessment, emergency arrival and clinical recovery. Vehicle wear also produces real bounded incident exposure. Regional disasters, specialist emergency agencies and the complete A19 flood scenario remain pending.
+
+Private PostgreSQL mirrors and deferred constraints reconcile consultation/treatment reserves, unique active patient episodes, emergency-trip links and snapshots. The real HTTP-to-DOM test requests assessment, accepts a treatment quote, commits NPC supplies and completes recovery. Native browser, hosted provider and load evidence remain pending.
+
+Remaining within the full build: broader incident and regional disaster exposure producers, fire and emergency staffing, specialist clinical curricula and minigames, broader hospital infrastructure/quality changes, prescription/custody detail, broader insurance/court integration, institutional referral coordination and final balance tests.

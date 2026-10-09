@@ -2,13 +2,13 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
 import { mkdtemp, rm } from 'node:fs/promises';
-import { tmpdir } from 'node:os';
+import {temporaryFolder} from './temporary.ts';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { request as httpRequest } from 'node:http';
 
 test('HTTP authentication, command replay, server clock and bounded requests work end to end', async t => {
-  const folder = await mkdtemp(join(tmpdir(), 'simulator-api-'));
+  const folder = await temporaryFolder('simulator-api-');
   const child = spawn(process.execPath, ['src/server.ts'], { cwd: fileURLToPath(new URL('..', import.meta.url)), env: { ...process.env, PORT: '0', SIMULATOR_DATA_FILE: join(folder, 'world.json') }, stdio: ['ignore', 'pipe', 'pipe'] });
   t.after(async () => { child.kill(); await new Promise<void>(resolve => child.once('exit', () => resolve())); await rm(folder, { recursive: true, force: true }); });
   const { origin, key } = await new Promise<{ origin: string; key: string }>((resolve, reject) => {
@@ -21,7 +21,8 @@ test('HTTP authentication, command replay, server clock and bounded requests wor
   const health = await fetch(origin + '/healthz'); assert.equal(health.status, 200); assert.deepEqual(await health.json(), { status: 'ok' });
   assert.equal((await fetch(origin + '/api/citizen')).status, 401);
   assert.equal((await fetch(origin + '/api/citizen', { headers: { ...headers, Origin: 'https://another-origin.invalid' } })).status, 403);
-  const cmd = { id: 'create_api_001', type: 'CreateCitizen', payload: { name: 'Adé Ọlá', state: 'Lagos', adultConfirmed: true, actorId: 'intruder' } };
+  const connected=await (await fetch(origin+'/api/connect',{method:'POST',headers,body:JSON.stringify({clientId:'11111111-1111-4111-8111-111111111111'})})).json();
+  const cmd = { clientLease:connected.clientLease,id: 'create_api_001', type: 'CreateCitizen', payload: { name: 'Adé Ọlá', state: 'Lagos', adultConfirmed: true, actorId: 'intruder' } };
   const post = (body: unknown) => fetch(origin + '/api/commands', { method: 'POST', headers, body: JSON.stringify(body) });
   // A character may straddle network chunks; parse only after the bytes are joined.
   const encoded = Buffer.from(JSON.stringify(cmd)), split = encoded.findIndex(byte => byte > 127) + 1;
@@ -33,7 +34,7 @@ test('HTTP authentication, command replay, server clock and bounded requests wor
   assert.equal(first.view.citizen.name, 'Adé Ọlá');
   assert.equal(first.receipt.actorId, 'developer-citizen'); assert.equal(first.view.balance, 2000000);
   const second = await (await post(cmd)).json(); assert.equal(second.replayed, true); assert.deepEqual(second.receipt, first.receipt);
-  const bypass = await post({ id: 'lesson_api_002', type: 'CompleteLesson', payload: { day: 2, now: Date.now() + 86400000 } });
+  const bypass = await post({ clientLease:connected.clientLease,id: 'lesson_api_002', type: 'CompleteLesson', payload: { day: 2, now: Date.now() + 86400000 } });
   assert.equal(bypass.status, 409); assert.equal((await bypass.json()).error, 'LESSON_LOCKED');
   const large = await post({ ...cmd, payload: { oversized: 'a'.repeat(9000) } }); assert.equal(large.status, 413);
   const invalid = await fetch(origin + '/api/commands', { method: 'POST', headers, body: '{' }); assert.equal(invalid.status, 400);

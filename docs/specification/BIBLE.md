@@ -2,11 +2,13 @@
 
 ## Master specification bible
 
-Version 1.0 | 7 October 2026 | Product owner edition
+Version 1.1 | 8 October 2026 | Product owner edition
 
 The game is a persistent Nigerian life and political simulation in which citizens work, study, form households, run businesses, participate in government, socialise and build a legacy. The world should work like a body: changes in one system produce understandable consequences in connected systems, and citizens have practical ways to respond.
 
 This bible defines the product rules and the contracts that connect the simulation. It is the authoritative baseline for implementation, balancing, verification and controlled activation. All specified systems belong to the prelaunch build scope. Public availability may be staggered through the administration dashboard after those systems have been implemented and tested.
+
+Latest build instruction: complete the main game and its connected database/environment setup; do not publish or show further preview iterations. Main publication remains held until all specified systems are implemented and verified.
 
 The initial public service is designed for adults aged 18 and above. Its currency, institutions, laws, elections, financial products and professional qualifications belong to the fictional simulation. Qualification in the game does not confer a real professional credential. Players can pursue an ordinary comfortable life as fully as they can pursue wealth, public office or national influence.
 
@@ -55,7 +57,7 @@ The game teaches through consequences and recoverable decisions. Overspending re
 
 ## 1.3 World geography and identity
 
-The geographic catalogue covers Nigeria's 36 states and the Federal Capital Territory, with named cities, local government areas, neighbourhoods, routes, buildings and service locations. Exact map coverage, city lists and district art budgets are settled in D01. Map geography is representative rather than a promise of street accurate recreation. No state is permanently unavailable for citizenship or interstate travel because its detailed art is incomplete.
+The geographic catalogue covers Nigeria's 36 states and the Federal Capital Territory, with named cities, local government areas, neighbourhoods, routes, buildings and service locations. Exact map coverage, city lists and district art budgets are settled in D01. The current main map is an authored 66×42 neighbourhood with three connected districts; it preserves the original service entrances. The finite regional home and constructed-land catalogues now have distinct representative street entrances; other residential facades remain scenery. This does not establish national city/LGA or property-lot coverage. Map geography is representative rather than a promise of street accurate recreation. No state is permanently unavailable for citizenship or interstate travel because its detailed art is incomplete.
 
 Regions support distinct strengths in agriculture, manufacturing, ports, tourism, technology, government services, energy and mining. These are configurable specialisations, not claims that every real state has one fixed industry. Multiple sectors can operate in each region. Differences in resources, infrastructure, taxes, skills and demand give interstate trade a purpose.
 
@@ -88,6 +90,8 @@ Every domain must declare an owner, inputs, outputs, permission checks, event co
 The entry flow is age and account eligibility, account creation, world selection, citizen name and appearance, state choice, starting path, initial housing and an in world welcome. One eligible account has one active voting citizen in a world. Additional character policy is unresolved under D02; it cannot create additional ballots or duplicate starter benefits.
 
 Names and appearance pass published content rules. Citizens receive a stable identity, bank account, starter phone or SIM access, navigation assistance and a clear record of starting benefits. The welcome NPC directs the first actions; the citizen performs them in the world rather than dismissing a giant manual.
+
+The current main-build appearance component offers curated free skin tones, adult frames, hairstyles, hair colours and clothing styles/colours at creation. Saved changes require a nearby placed wardrobe in the current home, a valid location lease/layout version and an open wall edge. Profile versions and immutable receipts protect reload/retry; appearance grants no economic, voting or professional benefit. These original procedural models remain subject to production-art, cultural and device acceptance under D24. Read docs/appearance-contract.md for the implemented component and remaining customization scope.
 
 The starting bundle is provisioned atomically. Retrying account setup cannot issue another allowance, residence, phone or household assignment. State selection explains services and regional identity without promising an economic advantage that has not been balanced.
 
@@ -168,6 +172,10 @@ Needs include hunger, energy and health. Housing supplies safety, rest and stora
 Proposed offline rule: survival needs stop deteriorating after the bounded offline window. Inactivity cannot cause death, repeated robbery or catastrophic medical bills. Scheduled contracts and business obligations continue through disclosed NPC delegation, grace periods and caps. Citizens see an offline summary before taking new commitments.
 
 Relationships include friends, partners, households, mentors, colleagues and organisations. Privacy, consent, block and leave controls override social benefits. An event invitation or family connection can create an interview opportunity, never a guaranteed licensed job or private information entitlement.
+
+Friendship and partnership requests use an opt-in inbox, exact recipient consent and separate private records. Either participant may leave, and either block ends pending and active ties. An accepted social connection shares no money, home access, wardrobe, household or messaging permission. Disabling requests closes incoming pending requests; invitation expiry refreshes connected private controls even without a business event. See docs/relationships-contract.md for the local component and proposed D31 safeguards; dates/events, marriage, NPC relationships and shared household residence remain in scope.
+
+Home visits require a resident invitation and the recipient's explicit acceptance of the particular home, expiry and permissions. Guests can walk and use allowed placed furnishings; entry does not transfer furniture, wardrobe, parking, tenancy, property or household authority. Leaving and withdrawal remain available. Expiry, blocking and lost resident permission end private access and safely return the guest to the street. Opted-in active peers share only their authorised home instance. See docs/home-visits-contract.md for the local component and proposed D29 bounds; broader relationship and cohabitation systems remain in scope.
 
 ## 2.9 Life events and legacy
 
@@ -331,6 +339,14 @@ Financial markets are implemented as a controlled module with company securities
 
 Property records land or unit identity, owner, tenants, permissions, rent, maintenance, safety, tax and service connections. Purchase and tenancy use contracts and escrow. Eviction follows a notice and review process with starter shelter fallback. A landlord cannot empty a tenant's personal account or storage through a role permission.
 
+Residents can buy multiple furniture models and sets, retain personal ownership, place and rotate items, move them into storage, and customise finishes, walls and floors. Interior partitions and doorway passage use versioned owner permissions and recorded material/labour inputs. Room names and per-room finishes remain resident decoration. Structural changes cannot cross furnishings, block door tiles or strand a floor area. Floor editing must preserve reachable doors and interactions, reject overlaps and occupied tiles, and reconcile saved layouts after reconnect. Tenancy/title changes preserve the departing resident's purchases and revoke obsolete home access. Starter shelter remains usable even without discretionary purchases.
+
+Shared furnishings allocate server-validated use positions with distinct seat anchors. Permission and approach checks precede a claim; occupied positions cannot be claimed twice. Movement, leaving, layout edits and server-time expiry release presentation use without granting another reward. Private availability controls refresh even when a hidden occupant's pose expires without a business event. Public poses exclude account and command-proof identities. See docs/shared-furniture-use-contract.md and proposed D30 component parameters; longer activities and occupant path coordination remain in scope.
+
+Homes provide capacity-limited vehicle parking. Parking and retrieval use actual ownership, location and availability; a vehicle cannot occupy two spaces, depart while still stored, or be sold without releasing its space. The mature catalogue, room architecture, furniture supply/manufacturing and vehicle integration are main-build requirements.
+
+Guests use the resident's persisted interior through explicit visit consent, without gaining layout or structural authority. Furniture edits preserve all occupants' confirmed walkable positions and clear obsolete object-use poses. Tenant invitations survive a title transfer that preserves the tenancy; buying a rented property does not permit landlord entry. Private scene recovery applies consent withdrawal and expiry even when the guest is idle.
+
 Power and water have supply, outages, metering abstraction and bills. Businesses can obtain alternative supply at a real virtual cost. Building quality and fire safety affect risk. Inspections produce actionable repairs and a reasonable compliance window; corrupt inspectors cannot invent unreviewable penalties.
 
 Vehicles have ownership, condition, fuel, insurance, licences, storage and permitted drivers. Public buses, taxis, courier routes, trucking, rail and aircraft services connect to transit and logistics as applicable. Maintenance changes breakdown probability and operating cost. A city with no player drivers retains NPC transport.
@@ -453,7 +469,7 @@ Media freedom and civic conflict do not override block, mute, report or platform
 
 ## 6.1 Architecture baseline
 
-Use TypeScript for the browser and authoritative service contracts, Phaser for the 2D game world, an accessible DOM interface for the phone and administrative tools, PostgreSQL for durable state, and Supabase as the proposed managed authentication, database, storage and low frequency realtime provider. These are architecture recommendations; final versions, providers and hosting contracts are recorded under D16 after a working technical spike.
+Use TypeScript for the browser and authoritative service contracts, locally served Three.js for the main 3D world with Canvas fallback, an accessible DOM interface for the phone and administrative tools, PostgreSQL for durable state, and Supabase as the proposed managed authentication, database, storage and low frequency realtime provider. These are architecture recommendations; final versions, providers and hosting contracts are recorded under D16 after a working technical spike.
 
 Fast movement and combat or crime interaction require an authoritative zone service. Supabase Broadcast is appropriate for authorised notifications and synchronisation signals, but is not a durable ledger or a guarantee of massive concurrent movement capacity. A missed broadcast must be repairable from persisted state. Benchmark before committing to connection counts, instance capacity or cost.
 
@@ -479,6 +495,8 @@ Proposed test seed: 100 visible citizens per outdoor instance and configurable v
 
 Use command identifiers, server sequence numbers, durable event cursors and fresh snapshots on reconnect. Nonfinancial UI can optimistically show a pending action, but ownership and spendable balance change only after acknowledgement. A citizen cannot queue offline votes, purchases or claims and later assume they succeeded.
 
+Current main component: durable tab/incarnation epochs fence new commands atomically with world state; settled retries remain recoverable by the original authenticated actor. Fresh reconnect snapshots, private receipt cursors and origin-bound sequenced nearby presence are implemented with privacy/block filtering and bounded transport. See docs/multiplayer-contract.md for the exact limits and evidence. This does not complete nationwide scaling, production capacity, gameplay disconnect grace or the offline/notification contract below.
+
 For a brief drop, interpolate or predict bounded movement and then reconcile with the server. Proposed grace seed is ten seconds. Long disconnects place the citizen in a safe resumable state; they do not teleport through walls or permit disconnected invulnerability abuse. Every financial retry returns the original result or the authoritative failure.
 
 NPC delegated work and subscriptions continue only within prior consent and published limits. Push notifications require opt in, quiet hours and unsubscribe controls. A missed notification is not consent to a new debt or contract. D18 fixes maximum offline obligations and holiday mode.
@@ -486,6 +504,8 @@ NPC delegated work and subscriptions continue only within prior consent and publ
 ## 6.5 PWA and low bandwidth delivery
 
 The browser game supports an installable PWA where the device permits it. Native store distribution is a separate packaging decision and is not implied by PWA installation. Cache static art, code and the approved tutorial shell; never cache sensitive private data or an authoritative balance as though it were live.
+
+Current main component: public manifest/icons, explicit installation, content-versioned allowlisted static caching and a public offline recovery screen are implemented. APIs and private state bypass caching, updates preserve pending command intent, and data saver chooses text controls before optional 3D loading. See docs/pwa-delivery-contract.md. Actual worker/PWA installation, supported-device/weak-network performance and broader progressive art/media delivery still require acceptance.
 
 Load zones progressively, use compressed textures, reuse atlases, defer optional voice and music, and provide a text oriented low data view for essential tasks. Data saver disables automatic audio download and prefetch. A citizen can inspect balances, work, lessons and support after a recoverable scene rendering problem.
 
@@ -643,6 +663,8 @@ The administration dashboard separates platform authority from in game governmen
 
 Proposed default: high impact staff grants, economic corrections, sensitive data access and national configuration changes require two authorised staff approvals. Break glass recovery has a time limit, complete audit and subsequent independent review.
 
+Implementation checkpoint, 8 October: the local scoped staff-grant component uses recent verified TOTP MFA, exact terms and two distinct current authorities for grants/revocations. The dashboard, private mirrors, session/audit proof and safe receipt recovery are tested; initial trusted setup is an offline operator action. This does not complete R058, the wider dashboard, emergency recovery or independently protected audit copies. The hosted staff migration remains unapplied after automatic approval review rejected the DDL change under the publication hold. See docs/staff-authority-contract.md. Its fifteen-minute MFA/review windows, thirty-day grant ceiling and two-role routine limit are operational defaults requiring prelaunch review.
+
 ## 8.2 Dashboard capabilities
 
 Provide scoped views for active worlds, service availability, citizen support, moderation queues, economy indicators, treasuries, NPC coverage, entity health, jobs and event processing, feature bundles, announcements, scheduled releases, assets, curricula, music rights and restore readiness.
@@ -709,7 +731,11 @@ Before opening the public service, settle adult eligibility, privacy and retenti
 
 ## 9.1 World presentation
 
-Proposed visuals use readable stylised 2D streets and interiors, consistent perspective, recognisable Nigerian architecture, regional identity, adult characters and clear vehicles. D24 confirms camera, art, cultural review and animation budget through a prototype.
+The owner rejected the small toy-like character and rigid movement. The main game's art goal uses mature adult proportions, detailed furniture and believable directional walking, with The Sims 1–4, My Life in New York and Lagos Life as life/home experience references, and OneState RP and MadOut as connected-city/vehicle presentation references. Read docs/reference-game-study.md for source evidence, uncertainty and measurable quality gates. The previous prototype does not approve the final art direction. The current main implementation uses locally served Three.js for an orthographic 3D cutaway world, with Canvas and accessible DOM fallbacks. Its procedural articulated adult and fourteen furniture models are an implementation baseline; cultural review, production asset quality, camera/device usability and animation acceptance remain D24 gates. No copied franchise assets are required.
+
+The user's 8 October visual direction requires entering homes, seeing their furnishings and approaching objects for contextual interaction. Direct floor selection offers a placement draft with explicit server-validated saving; keyboard placement remains available. Click-to-walk and selected-object approach must use authorised adjacent movement, interact only after confirmed arrival and stop on uncertain responses, blur or a changed account/location/layout. Resolving a pending move must not silently resume a route or object action. Characters must remain readable at the default view and visibly face front, back, left and right. Held movement controls support walking without repeated individual button presses; animations follow confirmed movement and respect reduced-motion settings. Home objects have appropriate contextual actions, and interiors support multiple furniture purchases and saved placement. The camera supports touch dragging, screen scrolling, zoom and return-to-character controls. Connected neighbourhoods extend beyond the starting street; a representative prototype does not establish completion of the nationwide map or full interior simulation.
+
+The main-build residence component now ties owned/rented home entry and parking to distinct authored street entrances. Changing residence stores personal furnishings, releases parking, exits the old room and preserves title and contractual obligations. A completed owned home can be selected explicitly. Distance-driven gait and two-link leg contact now keep stance feet grounded; seats use cushion heights, beds align lying bodies, and standing activities face the object. Original head geometry and idle blinking improve the current procedural baseline. Numerical/geometry and HTTP/DOM/PostgreSQL checks are component evidence; full production art, guests, nationwide property lots, floors/extensions and browser/device acceptance remain open. Read docs/residence-and-motion-contract.md.
 
 Jobs, queues, transport, services and social activity remain visible. Objects have consistent labels and accessible focus. Buildings show purpose, opening state and service; a closed clinic directs citizens to an alternative or NPC fallback.
 
@@ -954,7 +980,7 @@ All entries begin as Proposed. Assign an owner, approval date and evidence befor
 | D13 | Election ages residence terms candidates quorum | Age fourteen days residence seven days foundation | Anti fraud ballot privacy and election simulation |
 | D14 | Court timing sentences bail and rehabilitation | Playable capped detention with appeal | Prison usability and rights tests |
 | D15 | Crime territory pursuit and military missions | Bounded voluntary fictional activity | Harm limits permissions recovery prototype |
-| D16 | Provider versions server framework and hosting | TypeScript Phaser PostgreSQL Supabase plus zones | Technical spike cost security and capacity |
+| D16 | Provider versions server framework and hosting | TypeScript Three.js PostgreSQL Supabase plus zones | Technical spike cost security and capacity |
 | D17 | Concurrency instance size geographic hosting | One nation per world seeded 100 visible citizens | Concurrent mixed workload benchmarks |
 | D18 | Offline liabilities leave and delegation | Bounded needs and disclosed contractual effects | Long absence financial recovery test |
 | D19 | Device browser and performance matrix | Targets in 6.6 | Named low end device and network measurements |
@@ -962,9 +988,14 @@ All entries begin as Proposed. Assign an owner, approval date and evidence befor
 | D21 | Music rights live audio commercial catalogue | Approved catalogue control sync | Rights review playback moderation cost model |
 | D22 | Privacy retention erasure and evidence access | Purpose limited scoped retention | Data inventory reviewer approval erasure drill |
 | D23 | Moderation support coverage and targets | Staffing dependent response targets | Queue simulations escalation coverage plan |
-| D24 | Camera art characters animation languages | Readable stylised 2D | World prototype cultural and accessibility review |
+| D24 | Camera art characters animation languages | Mature readable 3D with Canvas and DOM fallbacks; production art pending | World prototype cultural and accessibility review |
 | D25 | Sport match mechanics fixture catalogue | Football initial playable sport | Outcome verification and low device playtest |
 | D26 | Team capacity build order cost and dates | Full system scope before public launch | Dependency work plan budget milestone evidence |
+| D27 | Staff authority windows role limits succession and independent audit protection | Fifteen-minute MFA/review; thirty-day routine grants; two roles and two current grant authorities | Live MFA; expiry staffing; root rotation and independent recovery; protected audit copies; operator review |
+| D28 | Reference-game art and interaction acceptance | Mature Sims/My Life in New York life/home depth and OneState/MadOut city presentation | Original production assets; cultural/device/art review; documented reference uncertainty |
+| D29 | Home visit duration capacity and permissions | 15/30/60-minute reviewed visits; eight active invitations per home | Consent, tenant continuity, SQL recovery and idle expiry; owner/device/load review |
+| D30 | Shared furniture use positions and duration | Three sofa positions; one on other timed fixtures; ten-second presentation window | Receipt-backed SQL recovery; rotated contacts; private expiry; longer activity/traffic and device review |
+| D31 | Social invitation safeguards and private history | Opt-in inbox; seven-day pending expiry; twenty pending; twenty outgoing per rolling day; one hundred active; one hundred ended records visible | Mutual consent, leave/block, SQL recovery and private expiry; abuse/load/retention and owner review |
 
 ## 12.3 Acceptance scenario catalogue
 
@@ -1026,7 +1057,7 @@ NPC fallback means a budgeted system operated service used to preserve essential
 
 These sources inform technical feasibility and browser constraints. The proposed architecture, performance targets, economic formulas and product rules are design decisions in this bible, not claims made by the sources. Pin versions and revalidate provider behaviour during the technical spike.
 
-1. Phaser documentation, https://docs.phaser.io/ . Describes the browser game framework and rendering APIs. Rendering capabilities vary by version; do not assume Canvas parity with all WebGL effects.
+1. Three.js documentation, https://threejs.org/docs/ . The main renderer uses locally served pinned engine modules; WebGL capability and performance require device verification. Canvas and DOM fallbacks preserve command access.
 2. Supabase Broadcast, https://supabase.com/docs/guides/realtime/broadcast . Reference for realtime control event distribution. Durable transaction correctness remains in the server and database contracts.
 3. Supabase Realtime Authorization, https://supabase.com/docs/guides/realtime/authorization . Reference for access control on private Broadcast and Presence channels; policies must match the world's permitted audiences.
 4. MDN Using the Web Audio API, https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API/Using_Web_Audio_API . Reference for browser audio processing and media source integration; cross origin delivery requires suitable configuration.

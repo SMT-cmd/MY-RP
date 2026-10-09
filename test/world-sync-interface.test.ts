@@ -1,0 +1,38 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {randomUUID} from 'node:crypto';
+import {WebSocket} from 'ws';
+import {JSDOM,VirtualConsole} from 'jsdom';
+import {WorldStore} from '../src/store.ts';
+import {createApp} from '../src/http.ts';
+import {DomainError,RULES} from '../src/domain.ts';
+const waitFor=async(check:()=>boolean)=>{for(let i=0;i<400;i++){if(check())return;await new Promise(resolve=>setTimeout(resolve,10));}throw Error('Browser did not recover');};
+test('main browser shows a privacy-filtered crowd and preserves an uncertain purchase through takeover and reconnect',async t=>{
+ const store=await WorldStore.open(),sockets:WebSocket[]=[],errors:unknown[]=[],at=Date.now();let drop=false;
+ for(const [actor,name] of [['viewer-one','Ada'],['peer-one','Bola']])await store.dispatch(actor,{id:'sync_create_'+actor,type:'CreateCitizen',payload:{name,state:'Lagos',adultConfirmed:true}},at);
+ const peer=(await store.claimClient('peer-one','peer-session',{id:randomUUID(),claimId:randomUUID()},false,at)).clientLease;
+ await store.dispatch('peer-one',{id:'sync_privacy_001',type:'SetPrivacy',payload:{dm:false,presence:true,location:true}},at);
+ const server=createApp({store,multiplayer:true,authenticate:async req=>{if(req.headers['x-development-key']!=='browser-key')throw new DomainError('AUTH_REQUIRED','Enter key.',401);return{actorId:'viewer-one',sessionId:'viewer-session',assurance:'aal1'};}});
+ await new Promise<void>(resolve=>server.listen(0,'127.0.0.1',resolve));t.after(async()=>{sockets.forEach(ws=>ws.terminate());await new Promise<void>(resolve=>server.close(()=>resolve()));});
+ const address=server.address();if(!address||typeof address==='string')throw Error();const origin='http://127.0.0.1:'+address.port,virtualConsole=new VirtualConsole();virtualConsole.on('jsdomError',error=>errors.push(error));
+ const dom=await JSDOM.fromURL(origin,{runScripts:'dangerously',resources:'usable',pretendToBeVisual:true,virtualConsole,beforeParse(window){
+  Object.defineProperty(window.crypto,'randomUUID',{value:randomUUID});window.AbortSignal=AbortSignal as typeof window.AbortSignal;
+  window.WebSocket=class extends WebSocket{constructor(url:string|URL){super(String(url),{origin});sockets.push(this);}} as unknown as typeof window.WebSocket;
+  window.fetch=async(url,options)=>{const response=await fetch(new URL(String(url),origin),options);if(drop&&String(url)==='/api/commands'){drop=false;await response.text();throw new TypeError('Purchase response lost after commit');}return response;};
+ }});t.after(()=>dom.window.close());
+ if(dom.window.document.readyState!=='complete')await new Promise<void>(resolve=>dom.window.addEventListener('load',()=>resolve(),{once:true}));
+ const doc=dom.window.document,el=(id:string)=>doc.getElementById(id)!;(el('access-key') as HTMLInputElement).value='browser-key';(el('access-form') as HTMLFormElement).requestSubmit();
+ await waitFor(()=>el('connection-status').textContent!.startsWith('Connected')&&!el('meal').hasAttribute('disabled'));
+ await waitFor(()=>el('world-neighbours').textContent!.includes('Bola'));assert.equal(doc.querySelectorAll('#world-neighbours li').length,1);
+ const beforeSaver=store.snapshot().outbox.length;(el('data-saver') as HTMLInputElement).checked=true;el('data-saver').dispatchEvent(new dom.window.Event('change'));assert.equal((el('graphics') as HTMLSelectElement).value,'low');assert.equal((el('graphics') as HTMLSelectElement).disabled,true);assert.equal(el('world-canvas').hidden,true);assert.equal(store.snapshot().outbox.length,beforeSaver);assert.equal(dom.window.localStorage.getItem('simulator-data-saver'),'1');
+ drop=true;el('meal').click();await waitFor(()=>!el('retry-panel').hidden);const pending=dom.window.sessionStorage.getItem('simulator-pending');assert.ok(pending);assert.equal(store.snapshot().balances['citizen:viewer-one'],RULES.starterCash-RULES.basicMealCost);
+ await store.claimClient('viewer-one','viewer-session',{id:randomUUID(),claimId:randomUUID()},true,Date.now());
+ await waitFor(()=>!el('connection-takeover').hidden);assert.equal(el('retry').hasAttribute('disabled'),true);assert.equal(el('world-neighbours').children.length,0);assert.equal(dom.window.sessionStorage.getItem('simulator-pending'),pending);
+ el('connection-takeover').click();await waitFor(()=>el('connection-status').textContent!.startsWith('Connected')&&!el('retry').hasAttribute('disabled'));
+ el('retry').click();await waitFor(()=>el('retry-panel').hidden);assert.equal(store.snapshot().balances['citizen:viewer-one'],RULES.starterCash-RULES.basicMealCost);assert.equal(store.snapshot().outbox.filter(e=>e.actorId==='viewer-one').length,2);
+ assert.equal(dom.window.sessionStorage.getItem('simulator-pending'),null);assert.ok(!JSON.stringify({...dom.window.sessionStorage}).includes('browser-key'));
+ const oldEpoch=store.snapshot().sessions!.leases['viewer-one'].epoch;sockets.at(-1)!.terminate();await waitFor(()=>store.snapshot().sessions!.leases['viewer-one'].epoch>oldEpoch&&el('connection-status').textContent!.startsWith('Connected'));
+ assert.equal(store.snapshot().outbox.filter(e=>e.actorId==='viewer-one').length,2);
+ await store.revokeSession('viewer-one','viewer-session');await waitFor(()=>!el('access-panel').hidden&&el('citizen-panel').hidden);assert.match(el('notice').textContent!,/Sign in again/);assert.deepEqual(errors,[]);
+ assert.equal(peer.epoch,1);
+});

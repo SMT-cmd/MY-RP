@@ -1,0 +1,13 @@
+# Local vehicles and driving contract
+
+Components of R034 and R008, with R002/R028 integration. No full requirement or acceptance gate is complete. Model prices, capacities and timings are proposed game balance seeds.
+
+Regional NPC vehicle sales have finite daily model budgets. Title purchases produce one durable vehicle with an empty tank at the buyer's current location. A driving course requires foundation certification, its official examination, supervised practice and a current scoped game licence. Player driver invitations require mutual consent, qualifications and contact permission; permissions confer no title. Revocation or blocking prevents future trips and retains safe arrival for already-started journeys.
+
+Refuelling transfers actual local inventory into a tank through quantity journals. Tank capacity is enforced. The earliest committed fuel shelf-life is retained conservatively, expired fuel cannot start a journey, and disposal records a quantity sink. Travel quotes use model fuel consumption, route distance, tolls, condition and road quality. Starting travel reserves the vehicle, one actor location lease, actual fuel and the toll. Cancellation within five seconds returns both reservations. Verified arrival consumes reserved fuel once, settles the toll to the origin treasury, applies bounded wear and moves both citizen and vehicle to the destination. Public NPC buses remain available without personal vehicle ownership or a driving credential.
+
+Player title offers disclose location, fuel and condition. A buyer reserves the complete price for one minute; transfer or refund reconciles once. Transfers remove old driver permissions and do not transfer a former owner's personal insurance. Repairs consume a real material unit and reserve condition-based labour. Verified completion restores condition and pays an NPC or a local transport company with a current qualified technician; cancelling unearned labour returns its payment but does not recreate committed material.
+
+Private PostgreSQL mirrors, stock and cash journals commit with command receipts and outbox. Deferred constraints reconcile tank quantities, route fuel and sale/repair reserves. Recovery also checks vehicle title and journey relationships.
+
+Remaining within the full build: vehicle manufacturing, company fleets, garages and storage permissions, broader incident/insurance integration and collision/breakdown assistance, vehicle duties connected to actual cargo orders, buses/taxis/rail/aircraft player operation, specialist driving curricula, native browser/device verification and final balance/load testing.

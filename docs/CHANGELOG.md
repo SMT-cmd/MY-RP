@@ -1,5 +1,11 @@
 # Change log
 
+## Hosted development schema completion on 9 October 2026
+
+The four reviewed development migrations are now applied and verified in MY-RP Development. Hosted history has ten entries through 20261009031653_mutual_relationships. All eighteen simulator tables enforce RLS; anon/authenticated have no schema usage; all fourteen new helpers are invoker functions unavailable to browser roles. No live staff grant or player record was created. Scoped-server/unchanged-state validation, cross-world and browser-role denial, and rolled-back forged staff/home/furniture/relationship checks passed; the empty world remains revision zero. Four focused PostgreSQL regression tests passed; the prior full code checkpoint remains 192 passing tests. Security advisor is clear; performance has five existing unused-index informational findings. Read docs/hosted-schema-verification.md and the updated migration manifest. DATABASE_URL, any required CA, Render runtime settings, provider signup and full-game gates remain open. No Render deployment or demo change occurred.
+
+Applied the exact reviewed SQL source hashes through the Supabase migration API, in dependency order, following the owner’s instruction to finish the reviewed setup. Added the four returned hosted versions and source hashes to docs/hosted-migration-manifest.json. The earlier automatic approval block is resolved for this reviewed migration package; no security bypass, public function or staff provisioning was used. Documentation changes do not modify game code. Full runtime/provider/device/load and full-game acceptance remain incomplete.
+
 ## Verified GitHub source publication and Supabase access on 8 October 2026
 
 Published all 193 tracked files through the connected GitHub app as code snapshot 4d1a4f5e15285f698f837219ea39f4e35a5e48a5 on build/main-game-2026-10-08. Binary blobs, file modes and the complete Git tree match local checkpoint 56c5fd3629c1b15f600134067ac0daf14d825006. Recursive API verification and a fresh Git fetch/diff passed. Remote main/demo remain unchanged; no Render deploy, force push, hosted mutation or paid resource occurred. The snapshot publishes source contents while retaining separate local commit history.

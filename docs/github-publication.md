@@ -15,6 +15,14 @@ The terminal lacked GitHub authentication, so the connected GitHub app published
 
 ## Supabase access and remaining setup
 
+### Update, 9 October 2026
+
+The four reviewed development migrations are now applied and verified in MY-RP Development. Hosted history has ten entries through 20261009031653_mutual_relationships. All eighteen simulator tables enforce RLS; anon/authenticated have no schema usage; all fourteen new helpers are invoker functions unavailable to browser roles. No live staff grant or player record was created. Scoped-server/unchanged-state validation, cross-world and browser-role denial, and rolled-back forged staff/home/furniture/relationship checks passed; the empty world remains revision zero. Four focused PostgreSQL regression tests passed; the prior full code checkpoint remains 192 passing tests. Security advisor is clear; performance has five existing unused-index informational findings. Read docs/hosted-schema-verification.md and the updated migration manifest. DATABASE_URL, any required CA, Render runtime settings, provider signup and full-game gates remain open. No Render deployment or demo change occurred.
+
+The four-migration review package below is now applied, with exact source hashes preserved in the hosted manifest. The earlier approval rejection and pending statements describe the 8 October checkpoint and no longer block these four schema changes. This update is also published on the isolated build branch.
+
+### Earlier review, 8 October 2026
+
 The Supabase connector can access MY-RP Development (`ogkuirfuwxqwstyjijln`), status ACTIVE_HEALTHY. A successful dashboard sign-in was observed earlier; a newly opened dashboard tab later returned to sign-in. Connector authentication remains available independently of that browser session.
 
 Read-only verification confirms six applied migrations through authoritative_client_sessions, fifteen simulator tables with enabled and forced RLS, no schema usage for anon/authenticated, and no security-advisor findings. No hosted data or schema was changed during publication.

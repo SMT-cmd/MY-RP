@@ -1,8 +1,14 @@
 # Connected infrastructure
 
-Verified 8 October 2026. This is development infrastructure, not a launched game.
+Verified 9 October 2026. This is development infrastructure, not a launched game.
 
-## Current main setup, 8 October 2026
+## Current main setup
+
+### Hosted development schema, 9 October 2026
+
+The four reviewed development migrations are now applied and verified in MY-RP Development. Hosted history has ten entries through 20261009031653_mutual_relationships. All eighteen simulator tables enforce RLS; anon/authenticated have no schema usage; all fourteen new helpers are invoker functions unavailable to browser roles. No live staff grant or player record was created. Scoped-server/unchanged-state validation, cross-world and browser-role denial, and rolled-back forged staff/home/furniture/relationship checks passed; the empty world remains revision zero. Four focused PostgreSQL regression tests passed; the prior full code checkpoint remains 192 passing tests. Security advisor is clear; performance has five existing unused-index informational findings. Read docs/hosted-schema-verification.md and the updated migration manifest. DATABASE_URL, any required CA, Render runtime settings, provider signup and full-game gates remain open. No Render deployment or demo change occurred.
+
+Older configuration/history paragraphs below remain checkpoint records; pending-schema statements are superseded by this verified migration application.
 
 Source is now published and verified on build/main-game-2026-10-08 (code snapshot 4d1a4f5e15285f698f837219ea39f4e35a5e48a5). Main and demo remain unchanged; the game was not deployed. Supabase connector access is healthy and the latest read-only audit confirms fifteen forced-RLS tables, no anon/authenticated schema access and zero security findings. Four newer local migrations remain blocked by the recorded automatic approval rejection. DATABASE_URL, any required CA, provider signup and Render runtime settings are still incomplete. Read docs/github-publication.md; older checkpoint statements below are historical.
 

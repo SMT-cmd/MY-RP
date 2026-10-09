@@ -54,6 +54,34 @@
       "source_files": [
         "20261008104122_authoritative_client_sessions.sql"
       ]
+    },
+    {
+      "version": "20261009031611",
+      "name": "scoped_staff_authority",
+      "source_files": [
+        "20261008113540_scoped_staff_authority.sql"
+      ]
+    },
+    {
+      "version": "20261009031643",
+      "name": "consented_home_visits",
+      "source_files": [
+        "20261008153709_consented_home_visits.sql"
+      ]
+    },
+    {
+      "version": "20261009031649",
+      "name": "shared_furniture_use",
+      "source_files": [
+        "20261008161823_shared_furniture_use.sql"
+      ]
+    },
+    {
+      "version": "20261009031653",
+      "name": "mutual_relationships",
+      "source_files": [
+        "20261008165535_mutual_relationships.sql"
+      ]
     }
   ],
   "source_files": [
@@ -120,6 +148,22 @@
     {
       "file": "20261008104122_authoritative_client_sessions.sql",
       "sha256": "4313f400594cd503b734fd2a6d8e28a60791e67e51d0f90aa1c5c5895092b281"
+    },
+    {
+      "file": "20261008113540_scoped_staff_authority.sql",
+      "sha256": "d507c87f7cfda0aaf12a8edd6ffb2dc7348b7c425fa1cba01a3acbe79452c5fd"
+    },
+    {
+      "file": "20261008153709_consented_home_visits.sql",
+      "sha256": "f39352eb6d9462d34f4dcb7ebebbf88cba9e5163d1eaf6ca18a959d5790cb143"
+    },
+    {
+      "file": "20261008161823_shared_furniture_use.sql",
+      "sha256": "d750da4b8e51cfa4e76fafce6b96e09fea5ba288c924b68d023357fffd3ba1a7"
+    },
+    {
+      "file": "20261008165535_mutual_relationships.sql",
+      "sha256": "f6a8f15b95b9a62fa78e5aab6a2ba2eb8330eeae9371c6387452a6d7d891f9d8"
     }
   ]
 }

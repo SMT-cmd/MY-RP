@@ -82,6 +82,13 @@
       "source_files": [
         "20261008165535_mutual_relationships.sql"
       ]
+    },
+    {
+      "version": "20261009033201",
+      "name": "restricted_runtime_login",
+      "source_files": [],
+      "operational": true,
+      "description": "Dedicated NOINHERIT runtime login with simulator_server membership; credentials/verifier intentionally excluded from source. Provision separately after restore; not replayable from this manifest."
     }
   ],
   "source_files": [

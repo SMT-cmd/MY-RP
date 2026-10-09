@@ -1,5 +1,17 @@
 # Verified GitHub build publication
 
+Latest publication package, 9 October 2026: restricted runtime/eleven-entry hosted manifest, saved Render/manual/readiness settings, canceled connector-triggered build, exact Supabase confirmation Site URL and tested email-return credential cleanup. All 193 tests and strict TypeScript pass. Publish this complete tree after a853d41da7ebe5b61d7c4b9ce9b0521fa5218f2e on the isolated build branch; verify an exact fresh Git diff. No main/demo source or public activation change is included.
+
+## Runtime setup record, 9 October 2026
+
+The restricted runtime connection is now saved in the existing free MY-RP Render service. Supabase hosted history has eleven entries, including operational migration 20261009033201_restricted_runtime_login. The dedicated myrp_runtime login has NOINHERIT, no superuser/createdb/createrole/replication/BYPASSRLS, a connection limit of eight and only simulator_server membership; server transactions explicitly SET LOCAL ROLE and world/actor scope. The dashboard verified the actual session-pooler endpoint. No administrative password was read or reset; no plaintext password or SCRAM verifier is published. Security advisor remains clear.
+
+Render now has automatic deployment off, build npm ci --omit=dev, start npm run start:postgres and health path /readyz. All seven expected environment names, including masked DATABASE_URL, are visible. The environment-update connector unexpectedly triggered API build dep-db465sss728c739n5kgg even after automatic deployment was independently confirmed off. It was immediately canceled and verified canceled at 03:44:15 UTC before a successful deployment; further settings used dashboard Save Changes only. Do not use that connector for save-only updates while deployment is held. Main remains the old source and the isolated demo is unchanged. This configuration does not launch or complete the game.
+
+A direct pg-driver connection from this workspace failed DNS resolution with EAI_AGAIN before authentication or TLS. Login usability, the provider TLS chain/any required CA, live account signup/email delivery, reboot/restore, device/GPU/load and the remaining Bible systems are still unverified. Do not weaken TLS validation or call this production ready. The existing 192-test code checkpoint remains unchanged by these infrastructure/documentation changes.
+
+Earlier checkpoint statements below are historical and are superseded where configuration differs.
+
 Verified 8 October 2026. Source publication only; the full game and hosted runtime are not complete.
 
 - Repository: https://github.com/SMT-cmd/MY-RP

@@ -36,6 +36,7 @@ export function createApp(options: { store: CommandStore; authenticate: (req: In
     try{const parsed=JSON.parse(Buffer.concat(chunks).toString('utf8'));if(!parsed||typeof parsed!=='object'||Array.isArray(parsed))throw Error();return parsed;}catch{throw new DomainError('INVALID_JSON','Send a valid JSON object.',400);}
   }
   const assets = new Map([['/', ['index.html','text/html']], ['/app.js',['app.js','text/javascript']], ['/style.css',['style.css','text/css']], ['/favicon.svg',['favicon.svg','image/svg+xml']]]);
+  assets.set('/auth-return.js',['auth-return.js','text/javascript']);
   assets.set('/world-sync.js',['world-sync.js','text/javascript']);
   assets.set('/admin-ui.js',['admin-ui.js','text/javascript']);
   for(const [url,type] of [['manifest.webmanifest','application/manifest+json'],['offline.html','text/html'],['pwa.js','text/javascript'],['app-icon-192.png','image/png'],['app-icon-512.png','image/png']])assets.set('/'+url,[url,type]);

@@ -218,6 +218,7 @@ async function accountRequest(action,payload={}){
 function useSession(data){key=data.access_token;refreshToken=data.refresh_token;expiresAt=Date.now()+data.expires_in*1000;}
 async function refreshAccount(){try{useSession(await accountRequest('refresh',{refresh_token:refreshToken}));}catch(error){key='';refreshToken='';stopWalking();render();throw error;}}
 $('account-form').addEventListener('submit',async event=>{
+ if(window.AuthReturn?.cleanupFailed){event.preventDefault();$('account-password').value='';notice('Close this account link and open the game from its main address to sign in.',true);return;}
  event.preventDefault();if(busy||!accountMode)return;busy=true;lock();
  const payload={email:$('account-email').value.trim(),password:$('account-password').value};$('account-password').value='';
  try{const data=await accountRequest(event.submitter?.id==='account-signup'?'signup':'login',payload);if(data.confirmationRequired){notice(data.message);return;}useSession(data);view=await request('/api/citizen');render();notice(pending?'Signed in. Resolve your unconfirmed action before continuing.':'Signed in. Your saved citizen is ready.');}
@@ -226,7 +227,7 @@ $('account-form').addEventListener('submit',async event=>{
 $('account-logout').addEventListener('click',async()=>{
  if(busy||pending&&pending.accountId===view?.accountId)return;stopWalking();busy=true;lock();try{await accountRequest('logout');window.WorldSync?.stop();window.AdminUI?.reset();key='';refreshToken='';view=null;window.RelationshipsUI?.render(null,perform,true);window.WorldRenderer?.destroy();$('citizen-panel').hidden=true;$('creation-panel').hidden=true;$('access-panel').hidden=true;$('account-panel').hidden=false;$('account-logout').hidden=true;notice('Signed out.');}catch(error){notice(error.message,true);}finally{busy=false;lock();}
 });
-fetch('/api/config').then(r=>{if(!r.ok)throw Error();return r.json();}).then(config=>{accountMode=config.mode==='supabase';$('access-panel').hidden=accountMode;$('account-panel').hidden=!accountMode;}).catch(()=>notice('The account configuration could not be loaded. Refresh to try again.',true));
+fetch('/api/config').then(r=>{if(!r.ok)throw Error();return r.json();}).then(config=>{accountMode=config.mode==='supabase';$('access-panel').hidden=accountMode;$('account-panel').hidden=!accountMode;if(accountMode&&window.AuthReturn){notice(window.AuthReturn.cleanupFailed?'Close this account link and open the game from its main address to sign in.':window.AuthReturn.failed?'The account link could not be completed. Try signing in or request a new link.':'Account link opened. Sign in with your email and password to continue.',window.AuthReturn.failed||window.AuthReturn.cleanupFailed);}}).catch(()=>notice('The account configuration could not be loaded. Refresh to try again.',true));
 const movementKeys={ArrowUp:[0,-1],ArrowDown:[0,1],ArrowLeft:[-1,0],ArrowRight:[1,0],w:[0,-1],s:[0,1],a:[-1,0],d:[1,0]};
 let heldDirection=null,stepTimer=null,lastStep=0,walkRun=0;
 function cancelRoute(){walkRun++;}

@@ -6,6 +6,7 @@ import type {ClientFence} from './sessions.ts';
 import {settleHomeVisits,authorisedInterior} from './home-visits.ts';
 import {publicCitizenReceipt} from './public-receipts.ts';
 import {relationshipRevision} from './relationships.ts';
+import {nearbyNeighbours} from './neighbours.ts';
 import {homeUseRevision} from './furniture-use.ts';
 export const PRESENCE_RULES={radius:12,maxVisible:32,protocol:1};
 export function nearbyPresence(s:State,actor:string,sessionId:string,fence:ClientFence,now:number){
@@ -17,7 +18,7 @@ export function nearbyPresence(s:State,actor:string,sessionId:string,fence:Clien
   const pos=s.world?.positions[c.actorId],lease=s.sessions?.leases[c.actorId];
   return c.actorId!==actor&&lease?.status==='active'&&lease.expiresAt>now&&!s.sessions?.revoked[lease.sessionId]&&c.life?.privacy.location===true&&c.life.privacy.presence===true&&pos&&pos.region===here.region&&(room?pos.interior==='shelter'&&pos.homeId===room.id&&!!authorisedInterior(s,c.actorId,now):!pos.interior)&&!s.world?.activeTrips[c.actorId]&&!s.life?.blocks[actor]?.includes(c.actorId)&&!s.life?.blocks[c.actorId]?.includes(actor)&&distance(pos)<=PRESENCE_RULES.radius;
  }).sort((a,b)=>distance(s.world!.positions[a.actorId])-distance(s.world!.positions[b.actorId])||a.id.localeCompare(b.id)).slice(0,PRESENCE_RULES.maxVisible).map(c=>{const p=s.world!.positions[c.actorId];return{id:c.id,name:c.name,...coords(p),facing:p.facing??'front',avatar:appearanceRender(c.appearance??DEFAULT_APPEARANCE),...(room&&p.activity&&now>=p.activity.startedAt&&now-p.activity.startedAt<10000?{activity:{kind:p.activity.kind,fixtureId:p.activity.fixtureId,startedAt:p.activity.startedAt,...(p.activity.slot!==undefined?{slot:p.activity.slot}:{})}}:{})};}):[];
- return{protocol:PRESENCE_RULES.protocol,cursor:s.outbox.length,serverTime:now,scope,relationshipRevision:relationshipRevision(s,actor,now),homeUseRevision:room?homeUseRevision(s,room,now):null,people,limits:{visible:PRESENCE_RULES.maxVisible,connections:SESSION_RULES.maxActive}};
+ return{npcs:nearbyNeighbours(s,actor,now),protocol:PRESENCE_RULES.protocol,cursor:s.outbox.length,serverTime:now,scope,relationshipRevision:relationshipRevision(s,actor,now),homeUseRevision:room?homeUseRevision(s,room,now):null,people,limits:{visible:PRESENCE_RULES.maxVisible,connections:SESSION_RULES.maxActive}};
 }
 export function recoveryCursor(s:State,actor:string,after:unknown){
  const latest=s.outbox.length;let cursor=after===undefined?latest:Number(after);

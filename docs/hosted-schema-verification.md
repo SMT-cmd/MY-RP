@@ -1,5 +1,16 @@
 # Hosted schema verification, 9 October 2026
 
+12 October hosting audit: remote main now points to merge commit 2ffe8fb8d0c3b94aa1290b481e1a1638207b64f0. The subsequently recorded manual deployment dep-db46eivlot8c73fvmngg failed on 9 October with SELF_SIGNED_CERT_IN_CHAIN during PostgreSQL startup; dependency installation/build succeeded. This is new evidence after the earlier checkpoint, not a deployment requested by this NPC implementation. DATABASE_CA_CERT must contain the trusted Supabase CA. Certificate validation remains enabled. The Supabase dashboard session has expired; the connector cannot retrieve that certificate, and public file retrieval is unavailable. Secure dashboard reauthentication is required to obtain/save the CA; no CA was guessed, no TLS bypass or deployment retry was used. Existing automatic deployment remains off. Public SMTP and whole-game completion remain open.
+
+
+## Scheduled NPC neighbours, 12 October 2026
+
+Scheduled adult NPC neighbours are implemented in the main world: six authored roles per representative regional neighbourhood, deterministic server-time walking and in-person conversations. Current city/lease/range/topic/cooldown checks, private repeated-conversation history, unchanged-cursor live updates, stable keyboard focus, session revocation, lost-response replay, file/backup recovery and SQL mirrors/rollback/reopening pass. The full suite passes 199 tests; final focused interface/PostgreSQL/motion/Canvas checks and strict TypeScript pass. Read docs/npc-neighbours-contract.md. Full NPC economies/events, production assets, nationwide maps, device/load and the remaining Bible systems are still open. No demo update or Render deployment was performed.
+
+Hosted migration 20261012130207_scheduled_neighbour_conversations is applied and verified; history now has twelve entries. The four new helpers are invoker functions, denied to anon/authenticated and executable by simulator_server. Security advisor is clear. Scoped unchanged-world and rolled-back forged-conversation checks passed; the world remains revision zero with zero citizens. Render automatic deployment remains off and existing npm/PostgreSQL/readiness settings are unchanged.
+
+Earlier checkpoints below are historical.
+
 Validation after the account-return change: npm test passes all 193 tests (78.66 s), strict TypeScript passes, both changed browser scripts pass node --check, and git diff --check is clean. The provider certificate-download attempt timed out without a returned file; no CA certificate was saved and TLS validation remains enabled. Runtime authentication/TLS still requires permitted network/provider verification.
 
 

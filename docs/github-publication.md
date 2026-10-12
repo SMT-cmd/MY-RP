@@ -1,5 +1,7 @@
 # Verified GitHub build publication
 
+12 October publication package: scheduled NPC neighbours and physical private conversations, tested main-client controls/rendering, twelve-entry hosted manifest and the diagnosed outstanding CA configuration. Build branch remains the authorised target; existing remote main is now 2ffe8fb8d0c3b94aa1290b481e1a1638207b64f0 after a prior merge, and its prior manual Render deployment failed TLS validation. This checkpoint does not merge main, change the demo, or retry deployment.
+
 Latest publication package, 9 October 2026: restricted runtime/eleven-entry hosted manifest, saved Render/manual/readiness settings, canceled connector-triggered build, exact Supabase confirmation Site URL and tested email-return credential cleanup. All 193 tests and strict TypeScript pass. Publish this complete tree after a853d41da7ebe5b61d7c4b9ce9b0521fa5218f2e on the isolated build branch; verify an exact fresh Git diff. No main/demo source or public activation change is included.
 
 ## Runtime setup record, 9 October 2026

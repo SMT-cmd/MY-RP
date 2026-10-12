@@ -1,5 +1,7 @@
 # Project instructions
 
+12 October NPC update: scheduled adult neighbours and private physical conversations are implemented/tested; the hosted schema has twelve migrations. Read docs/npc-neighbours-contract.md. The full checkpoint is 199 passing tests with focused follow-ups and strict TypeScript. Publish completed source on the existing build branch; preserve the full-game deployment hold and unchanged demo.
+
 9 October runtime update: eleven hosted migrations now include a restricted NOINHERIT runtime login. DATABASE_URL is saved and masked; automatic deployment is off; npm/PostgreSQL/readiness settings are saved. The Render environment-update connector ALWAYS triggers a deploy even when automatic deployment is off: its accidental build was canceled and verified canceled. Use dashboard Save Changes only for held configuration. Never repeat that connector under the no-deploy hold. Read the latest infrastructure checkpoint. Direct driver/TLS, provider signup and full-game gates remain open.
 
 9 October update: the owner instructed “Finish it” after review of the four pending development migrations. All four exact scripts have now been applied and verified; hosted history has ten entries and eighteen forced-RLS simulator tables. Read docs/hosted-schema-verification.md. The earlier automatic approval rejection is resolved for this reviewed migration package; do not ask to approve it again or replay it. Continue remaining build/configuration work, preserve the no-deployment hold and publish completed source on build/main-game-2026-10-08.

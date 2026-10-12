@@ -945,6 +945,8 @@ Every requirement below is in prelaunch implementation scope. Initial delivery s
 
 ## 11.2 NPC behaviour contract
 
+Implementation checkpoint, 12 October: six authored adult NPC neighbours per representative regional map follow server-clock routes and support nearby scripted conversations with private repeated-contact history. Physical lease/range/cooldown checks, live updates, durable command/SQL evidence and recovery are tested. This does not finish evolving NPC personalities, individual finances/obligations, interiors/events or nationwide content. Read docs/npc-neighbours-contract.md; D32 parameters remain proposed.
+
 NPCs use bounded deterministic state machines or scheduled jobs for essential work. Each has role, location, household or employer link, resource budget, personality profile, availability, relationships, task queue and event history. Personality affects dialogue and optional event choices within the same published legal and financial limits.
 
 Essential service transactions use validated rules. Generative dialogue, if chosen, cannot issue currency, decide guilt, certify a licence, change prices outside the model or overwrite civic rules. NPC actions are audited as NPC actions and do not inflate player attendance, protests, public polls or election totals.

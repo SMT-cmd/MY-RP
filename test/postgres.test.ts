@@ -4,6 +4,7 @@ import { readFile, readdir } from 'node:fs/promises';
 import { PGlite } from '@electric-sql/pglite';
 import { PostgresWorldStore } from '../src/postgres.ts';
 import type { Database, Sql } from '../src/postgres.ts';
+import type {QueryResultRow} from 'pg';
 import { RULES } from '../src/domain.ts';
 import type { Command } from '../src/domain.ts';
 import { createApp } from '../src/http.ts';
@@ -14,7 +15,25 @@ import {PRACTICALS} from '../src/education.ts';
 import {DAY} from '../src/domain.ts';
 import {completeStoredCourse} from './helpers.ts';
 import {reconcile} from '../src/recovery.ts';
+import {neighbourAt} from '../src/neighbours.ts';
 const command: Command = { id:'create_database_01',type:'CreateCitizen',payload:{ name:'Ada',state:'Lagos',adultConfirmed:true } };
+test('NPC conversation mirrors commit with immutable receipts, reject forged counts, roll back failed updates and survive SQL reopening',async t=>{
+ const {pg,database,store}=await setup(t),actor='npc-walker';await store.dispatch(actor,{...command,id:'npc_pg_create'},100);let sequence=0;
+ async function approach(at:number,start:number){const n=neighbourAt(await store.snapshot(),'Lagos',0,at),p=(await store.snapshot()).world!.positions[actor];let x=p.x,y=p.y,clock=start;
+  while(x!==n.x){const dx=Math.sign(n.x-x);await store.dispatch(actor,{id:'npc_pg_move_'+ ++sequence,type:'MoveCitizen',payload:{dx,dy:0}},clock+=500);x+=dx;}
+  while(y!==n.y){const dy=Math.sign(n.y-y);await store.dispatch(actor,{id:'npc_pg_move_'+ ++sequence,type:'MoveCitizen',payload:{dx:0,dy}},clock+=500);y+=dy;}return n;
+ }
+ const n=await approach(20000,1000),talk={id:'npc_pg_first_talk',type:'TalkToNeighbour',payload:{npcId:n.id,topic:'hello',leaseVersion:1}};await store.dispatch(actor,talk,20000);
+ const reopened=new PostgresWorldStore(database,'test-world');assert.equal((await reopened.dispatch(actor,talk,40000)).replayed,true);assert.equal(Object.values((await reopened.snapshot()).neighbours!.conversations)[0].count,1);reconcile(await reopened.snapshot());
+ await assert.rejects(database.transaction(async sql=>{await sql.query('SET LOCAL ROLE simulator_server');await sql.query("SELECT set_config('simulator.world_id','test-world',true)");await sql.query("UPDATE simulator.domain_records SET data=jsonb_set(data,'{count}','2') WHERE world_id='test-world' AND domain='npc.conversation'");}),/neighbour conversation/i);
+ const forged=await reopened.snapshot();Object.values(forged.neighbours!.conversations)[0].count=2;
+ await assert.rejects(database.transaction(async sql=>{await sql.query('SET LOCAL ROLE simulator_server');await sql.query("SELECT set_config('simulator.world_id','test-world',true)");await sql.query('UPDATE simulator.worlds SET state=$1::jsonb WHERE id=$2',[JSON.stringify(forged),'test-world']);}),/neighbour conversation/i);
+ await approach(70000,50000);const before=await reopened.snapshot(),next={id:'npc_pg_second_talk',type:'TalkToNeighbour',payload:{npcId:n.id,topic:'hello',leaseVersion:1}};
+ const failing:Database={transaction:work=>database.transaction(sql=>work({query:async<T extends QueryResultRow>(text:string,values?:unknown[])=>{const result=await sql.query<T>(text,values);if(text.startsWith('INSERT INTO simulator.domain_records')&&values?.[1]==='npc.conversation')throw Error('Injected NPC commit failure');return result;}}))};
+ await assert.rejects(new PostgresWorldStore(failing,'test-world').dispatch(actor,next,70000),/Injected NPC commit failure/);assert.deepEqual(await reopened.snapshot(),before);
+ await reopened.dispatch(actor,next,70000);assert.equal(Object.values((await reopened.snapshot()).neighbours!.conversations)[0].count,2);assert.equal((await store.dispatch(actor,next,999999)).replayed,true);reconcile(await reopened.snapshot());
+ assert.equal((await pg.query<{count:number}>("SELECT count(*)::int count FROM simulator.domain_records WHERE domain='npc.conversation'")).rows[0].count,1);
+});
 test('furnished shelter position and nearby actions persist without changing the outdoor lease or duplicating rest',async t=>{
  const {database,store}=await setup(t);await store.dispatch('citizen-one',command,100);
  for(let i=0;i<3;i++)await store.dispatch('citizen-one',{id:'home_walk_'+i,type:'MoveCitizen',payload:{dx:-1,dy:0}},500+i*300);

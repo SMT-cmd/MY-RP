@@ -65,17 +65,18 @@ export function createEngine(host,onFailure){
  function clearGeometry(){if(geometry){scene.remove(geometry.root);disposeModels(geometry.root);geometry=null;}}
  function syncCrowd(next){
   const present=new Set(),now=performance.now();
-  for(const person of (next.people??[]).slice(0,32)){
+  for(const person of [...(next.people??[]).slice(0,32),...(next.npcs??[]).slice(0,6)]){
    present.add(person.id);const signature=JSON.stringify(person.avatar),previous=neighbours.get(person.id);let item=previous;
    if(!item||item.signature!==signature){
     const rig=adultModel(person.avatar),position=previous?.position??new THREE.Vector3(person.x+.5,0,person.y+.5);rig.root.position.copy(position);
     if(previous){scene.remove(previous.rig.root);disposeModels(previous.rig.root);}
+    if(person.kind==='npc')rig.root.traverse(o=>o.userData.npcId=person.id);
     item={rig,position,signature,person,motion:previous?.motion??null,distance:previous?.distance??0,yaw:heading[person.facing]??0,activityKey:previous?.activityKey??'',activityStart:previous?.activityStart??now};neighbours.set(person.id,item);scene.add(rig.root);
    }
    const before=previous?.person;
    if(before&&(before.x!==person.x||before.y!==person.y)){
     const to={x:person.x+.5,z:person.y+.5},steps=Math.abs(before.x-person.x)+Math.abs(before.y-person.y);
-    if(steps===1)item.motion=adjacentMotion({x:item.position.x,z:item.position.z},to,now);
+    if(steps===1)item.motion=adjacentMotion({x:item.position.x,z:item.position.z},to,now,person.kind==='npc'?1500:undefined);
     else{item.motion=null;item.position.set(to.x,0,to.z);item.distance=0;}
    }
    const activityKey=JSON.stringify(person.activity??null);if(activityKey!==item.activityKey){item.activityKey=activityKey;item.activityStart=Math.max(now,item.motion?.end??0);}item.person=person;
@@ -96,7 +97,7 @@ export function createEngine(host,onFailure){
  canvas.addEventListener('pointerup',e=>{if(!drag)return;const moved=drag.moved;drag=null;if(moved||!world)return;const bounds=canvas.getBoundingClientRect();raycaster.setFromCamera(new THREE.Vector2((e.clientX-bounds.left)/bounds.width*2-1,-(e.clientY-bounds.top)/bounds.height*2+1),camera);
   if(selection){if(raycaster.ray.intersectPlane(floorPlane,hit))refreshGhost(hit);return;}
   if(world.home){const fixture=raycaster.intersectObjects(geometry.fixtures,true)[0]?.object.userData.fixtureId;if(fixture){window.dispatchEvent(new CustomEvent('home-fixture-select',{detail:{fixtureId:fixture,homeId:world.home.id,leaseVersion:world.position.leaseVersion}}));return;}}
-  if(!world.home){const object=raycaster.intersectObjects(geometry.places,true)[0]?.object.userData;if(object?.buildingId){window.dispatchEvent(new CustomEvent('building-select',{detail:{buildingId:object.buildingId,leaseVersion:world.position.leaseVersion}}));return;}if(object?.streetObjectId){window.dispatchEvent(new CustomEvent('street-object-select',{detail:{objectId:object.streetObjectId,leaseVersion:world.position.leaseVersion}}));return;}}
+  if(!world.home){const npc=raycaster.intersectObjects([...neighbours.values()].filter(n=>n.person.kind==='npc').map(n=>n.rig.root),true)[0]?.object.userData.npcId;if(npc){window.dispatchEvent(new CustomEvent('npc-select',{detail:{npcId:npc}}));return;}const object=raycaster.intersectObjects(geometry.places,true)[0]?.object.userData;if(object?.buildingId){window.dispatchEvent(new CustomEvent('building-select',{detail:{buildingId:object.buildingId,leaseVersion:world.position.leaseVersion}}));return;}if(object?.streetObjectId){window.dispatchEvent(new CustomEvent('street-object-select',{detail:{objectId:object.streetObjectId,leaseVersion:world.position.leaseVersion}}));return;}}
   if(raycaster.ray.intersectPlane(floorPlane,hit))window.dispatchEvent(new CustomEvent('world-tile-select',{detail:{x:Math.floor(hit.x),y:Math.floor(hit.z),homeId:world.home?.id??null,leaseVersion:world.position.leaseVersion}}));
  },options);canvas.addEventListener('pointercancel',()=>drag=null,options);
  window.addEventListener('furniture-edit',e=>{selection=e.detail;setGhost(null);if(selection&&Number.isInteger(selection.x)&&Number.isInteger(selection.y))refreshGhost({x:selection.x+.5,z:selection.y+.5});status.textContent=selection?'Click a clear floor tile, then save the position below. Red footprints need a different position.':'Drag to pan · scroll to zoom · click a reachable object to use it';},options);

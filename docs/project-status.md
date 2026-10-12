@@ -1,5 +1,13 @@
 # Project status
 
+## Current build live, 12 October 2026
+
+The owner explicitly authorised push and deployment. Verified source was merged to main as 71bb1111e3aa7baf0712bbc4899e2c3ed02d13d0, preserving both prior main and build ancestry. Existing free MY-RP service deployed successfully as dep-db6laa59fdbs73b0hpq0 at 21:46:48 UTC. Node 24.21.0 dependency installation passed with zero reported vulnerabilities; the PostgreSQL entry point authenticated over validated TLS, acquired server scope, initialised/read the hosted world and listened on port 10000. DATABASE_CA_CERT resolves the prior startup certificate failure. No extra service, paid resource or demo change was made; automatic deployment remains off.
+
+Live HTTP checks: /readyz returns 200 with only ready status; /api/config returns Supabase mode, build stage and multiplayer enabled; unauthenticated /api/citizen returns 401. The actual browser renders the account sign-in form and the visible main-build development badge. The misleading local-file/shared-developer footer was found during live QA and corrected to an accurate generic build-progress notice; account tests validate the retained account flow. The complete game is not finished.
+
+The hosted Auth project currently has zero game accounts. Supabase/Render dashboard sign-in does not create a player login. A first game account and email confirmation are required to verify citizen creation, real authenticated movement and saved progress across reload; the owner must enter their own signup credentials. Public SMTP still needs a configured sender/provider; the built-in provider is limited to project team email. No fabricated auth record, password reset, disabled email confirmation, new staff grant or test citizen was used to claim acceptance. Full Bible, device/load, operational backup/restore and public signup gates remain open.
+
 ## Current build deployment authorised, 12 October 2026
 
 The owner now explicitly requests push and deployment of the verified current build to the existing free MY-RP Render service. This supersedes the earlier deployment hold for the build-in-progress release only. Source/runtime are being verified; no successful deployment or whole-game completion is claimed yet. GAME_RELEASE_STAGE remains build and the visible main-build development label stays present. All thirteen development migrations and the trusted CA are already saved. Public SMTP and full Bible acceptance remain open; no paid resource or demo change is included. Application source remains the 206-test checkpoint.

@@ -1,5 +1,7 @@
 # Project instructions
 
+12 October CA update: renewed Supabase/Render dashboard sign-in succeeded. Validated provider CA is saved as DATABASE_CA_CERT on existing MY-RP service using Save only, reloaded and byte-matched. Eight environment names are present. Latest deployment remains the 9 October manual failure; no new deployment. Read the latest infrastructure checkpoint. Actual runtime/TLS/readiness, public SMTP and full-game gates remain open. Do not repeat the environment-update connector under the deployment hold.
+
 12 October civic update: private same-state petition consent, threshold notices and non-spending delayed NPC consideration are implemented and tested. Read docs/civic-petitions-contract.md. Full checkpoint 206 tests plus focused final checks and strict TypeScript. Hosted history has thirteen migrations. Publish on the existing build branch; preserve the full-game deployment hold and unchanged demo. Render CA/dashboard login and public SMTP remain unresolved.
 
 12 October NPC update: scheduled adult neighbours and private physical conversations are implemented/tested; the hosted schema has twelve migrations. Read docs/npc-neighbours-contract.md. The full checkpoint is 199 passing tests with focused follow-ups and strict TypeScript. Publish completed source on the existing build branch; preserve the full-game deployment hold and unchanged demo.

@@ -1,5 +1,7 @@
 # Verified GitHub build publication
 
+12 October configuration publication: publish the verified Supabase/Render reauthentication and trusted CA save-only checkpoint after build commit 98e40f702d209f3e660d69f6e769c6e0c6209e90. No application source, credentials, PEM, demo or main change. Deployment history is unchanged; actual runtime/readiness and full-game gates remain open.
+
 12 October civic publication package: thirteen-entry hosted manifest, private receipt-backed petitions, threshold notices and non-spending NPC consideration, actual HTTP/WebSocket client controls and tested recovery. Full suite: 206 passing tests with focused final checks and strict TypeScript. Publish after remote 2cd54a3c8c8e92601ed99fdd5b8951d68b7b6507 on the existing build branch and verify the exact tree through a fresh Git fetch. Preserve main 2ffe8fb8d0c3b94aa1290b481e1a1638207b64f0 and the independent demo; no deployment. Earlier checkpoint packages below are historical.
 
 12 October publication package: scheduled NPC neighbours and physical private conversations, tested main-client controls/rendering, twelve-entry hosted manifest and the diagnosed outstanding CA configuration. Build branch remains the authorised target; existing remote main is now 2ffe8fb8d0c3b94aa1290b481e1a1638207b64f0 after a prior merge, and its prior manual Render deployment failed TLS validation. This checkpoint does not merge main, change the demo, or retry deployment.

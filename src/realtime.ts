@@ -21,7 +21,7 @@ export function attachRealtime(server:Server,options:{store:LiveStore;authentica
    for(const client of connected){
     try{
      if(revoked.has(client.identity.sessionId))throw new DomainError('SESSION_REVOKED','Sign in again.',401);
-     const frame=nearbyPresence(state,client.identity.actorId,client.identity.sessionId,client.fence,now),signature=JSON.stringify([frame.cursor,frame.scope,frame.homeUseRevision,frame.relationshipRevision,frame.people,frame.npcs]);
+     const frame=nearbyPresence(state,client.identity.actorId,client.identity.sessionId,client.fence,now),signature=JSON.stringify([frame.cursor,frame.scope,frame.homeUseRevision,frame.relationshipRevision,frame.civicRevision,frame.people,frame.npcs]);
      if(signature!==client.signature){client.signature=signature;send(client,{type:'snapshot',sequence:++client.sequence,leaseEpoch:client.fence.epoch,...frame});}
     }catch(e){close(client.ws,e instanceof DomainError&&e.status===401?4401:4409,'Reconnect this tab before continuing.');}
    }

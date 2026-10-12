@@ -415,6 +415,8 @@ Businesses and organisations can lobby legally in the simulation through proposa
 
 Workers can form transport unions, medical and teaching associations, business chambers and other professional organisations. They negotiate, publish positions, endorse candidates and arrange lawful demonstrations. A petition records subject, jurisdiction, signatures and threshold; crossing the threshold triggers formal notice and the defined consideration process, not an automatic law change.
 
+Implementation checkpoint, 12 October: authenticated same-state citizens can propose authored service petitions, privately support or withdraw, retain one threshold notice and request delayed NPC consideration against current support and the journal-backed treasury. Consideration grants no spending, law or office authority. Commands, client/live controls, consent evidence and recovery are integrated. Read docs/civic-petitions-contract.md. D33 bounds remain proposed; lobbying, organisations, protests, actual public budgets and full A26 remain open.
+
 Protests use assembly booking, capacity, safety and media coverage. Police manage crowd safety under bounded rules. The game displays verified participating citizens separately from NPC ambience. Civic play cannot target real people or enable unrestricted harassment and violence.
 
 ## 5.5 Elections eligibility and ballot secrecy

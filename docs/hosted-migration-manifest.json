@@ -96,6 +96,13 @@
       "source_files": [
         "20261012124905_scheduled_neighbour_conversations.sql"
       ]
+    },
+    {
+      "version": "20261012212218",
+      "name": "civic_petitions",
+      "source_files": [
+        "20261012211508_civic_petitions.sql"
+      ]
     }
   ],
   "source_files": [
@@ -182,6 +189,10 @@
     {
       "file": "20261012124905_scheduled_neighbour_conversations.sql",
       "sha256": "38ed8ca19c13f0f85fb91d804bd702982ac585b4a2ea83aeb36417c8bee02ef3"
+    },
+    {
+      "file": "20261012211508_civic_petitions.sql",
+      "sha256": "123ec1846b871895a7aee73f6a36431257fd27e78462cd10e4164c0caf5a5458"
     }
   ]
 }

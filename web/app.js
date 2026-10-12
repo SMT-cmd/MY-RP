@@ -122,6 +122,7 @@ function render() {
   window.AppearanceUI?.render(view,perform,busy||!!pending||window.WorldSync?.ready()===false);
   if(view.regions && !$('citizen-state').dataset.complete){$('citizen-state').replaceChildren(...view.regions.map(region=>{const option=document.createElement('option');option.value=region.name;option.textContent=region.name+' · '+region.capital;return option;}));$('citizen-state').value='Lagos';$('citizen-state').dataset.complete='true';}
   $('access-panel').hidden = accountMode || !!key; $('account-panel').hidden = !accountMode || !!key; $('account-logout').hidden = !accountMode || !key; $('creation-panel').hidden = !key || !!citizen; $('citizen-panel').hidden = !key || !citizen;
+  window.CivicUI?.render(key&&citizen?view:null,perform,busy||!!pending||window.WorldSync?.ready()===false);
   window.RelationshipsUI?.render(key&&citizen?view:null,perform,busy||!!pending||window.WorldSync?.ready()===false);
   if (!key || !citizen) return;
   $('greeting').textContent = `Welcome, ${citizen.name}.`;
@@ -228,7 +229,7 @@ $('account-form').addEventListener('submit',async event=>{
  catch(error){key='';refreshToken='';notice(error.message,true);}finally{busy=false;lock();}
 });
 $('account-logout').addEventListener('click',async()=>{
- if(busy||pending&&pending.accountId===view?.accountId)return;stopWalking();busy=true;lock();try{await accountRequest('logout');window.WorldSync?.stop();window.AdminUI?.reset();key='';refreshToken='';view=null;window.RelationshipsUI?.render(null,perform,true);window.NeighboursUI?.render(null,perform,true);window.WorldRenderer?.destroy();$('citizen-panel').hidden=true;$('creation-panel').hidden=true;$('access-panel').hidden=true;$('account-panel').hidden=false;$('account-logout').hidden=true;notice('Signed out.');}catch(error){notice(error.message,true);}finally{busy=false;lock();}
+ if(busy||pending&&pending.accountId===view?.accountId)return;stopWalking();busy=true;lock();try{await accountRequest('logout');window.WorldSync?.stop();window.AdminUI?.reset();key='';refreshToken='';view=null;window.CivicUI?.render(null,perform,true);window.RelationshipsUI?.render(null,perform,true);window.NeighboursUI?.render(null,perform,true);window.WorldRenderer?.destroy();$('citizen-panel').hidden=true;$('creation-panel').hidden=true;$('access-panel').hidden=true;$('account-panel').hidden=false;$('account-logout').hidden=true;notice('Signed out.');}catch(error){notice(error.message,true);}finally{busy=false;lock();}
 });
 fetch('/api/config').then(r=>{if(!r.ok)throw Error();return r.json();}).then(config=>{accountMode=config.mode==='supabase';$('access-panel').hidden=accountMode;$('account-panel').hidden=!accountMode;if(accountMode&&window.AuthReturn){notice(window.AuthReturn.cleanupFailed?'Close this account link and open the game from its main address to sign in.':window.AuthReturn.failed?'The account link could not be completed. Try signing in or request a new link.':'Account link opened. Sign in with your email and password to continue.',window.AuthReturn.failed||window.AuthReturn.cleanupFailed);}}).catch(()=>notice('The account configuration could not be loaded. Refresh to try again.',true));
 const movementKeys={ArrowUp:[0,-1],ArrowDown:[0,1],ArrowLeft:[-1,0],ArrowRight:[1,0],w:[0,-1],s:[0,1],a:[-1,0],d:[1,0]};

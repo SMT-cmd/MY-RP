@@ -125,7 +125,7 @@ export class PostgresWorldStore {
         await sql.query('INSERT INTO simulator.staff_audit(world_id,sequence,actor_id,command_id,data) VALUES($1,$2,$3,$4,$5::jsonb)',[this.#world,record.sequence,record.actor,record.commandKey.slice(record.actor.length+1),JSON.stringify(record)]);
       }
       const records=(state:State)=>({
-        'npc.conversation':state.neighbours?.conversations??{},'social.relationship':state.relationships?.records??{},'furnishing.home':state.furnishing?.homes??{},'furnishing.item':state.furnishing?.items??{},'furnishing.parking':state.furnishing?.parking??{},'furnishing.visit':state.furnishing?.visits??{},
+        'civic.petition':state.civic?.petitions??{},'npc.conversation':state.neighbours?.conversations??{},'social.relationship':state.relationships?.records??{},'furnishing.home':state.furnishing?.homes??{},'furnishing.item':state.furnishing?.items??{},'furnishing.parking':state.furnishing?.parking??{},'furnishing.visit':state.furnishing?.visits??{},
         'world.position':state.world?.positions??{}, 'world.trip':state.world?.trips??{},
         'education.foundation':state.education?.foundation??{}, 'education.enrolment':state.education?.enrolments??{},
         'education.scholarship':state.education?.scholarships??{}, 'education.licence':state.education?.licences??{}

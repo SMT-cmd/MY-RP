@@ -1,5 +1,7 @@
 # Connected infrastructure
 
+12 October civic checkpoint: hosted history has thirteen migrations through 20261012212218_civic_petitions. Four new private invoker helpers enforce immutable petition receipts/consent/threshold/consideration and deny browser-role execution. Security advisor is clear; positive PostgreSQL 17 replay and forged-state rollback probes passed without retained data. Render deployment/configuration is unchanged. Trusted CA/dashboard authentication and public email provider remain unresolved. Read docs/civic-petitions-contract.md and docs/hosted-schema-verification.md.
+
 12 October hosting audit: remote main now points to merge commit 2ffe8fb8d0c3b94aa1290b481e1a1638207b64f0. The subsequently recorded manual deployment dep-db46eivlot8c73fvmngg failed on 9 October with SELF_SIGNED_CERT_IN_CHAIN during PostgreSQL startup; dependency installation/build succeeded. This is new evidence after the earlier checkpoint, not a deployment requested by this NPC implementation. DATABASE_CA_CERT must contain the trusted Supabase CA. Certificate validation remains enabled. The Supabase dashboard session has expired; the connector cannot retrieve that certificate, and public file retrieval is unavailable. Secure dashboard reauthentication is required to obtain/save the CA; no CA was guessed, no TLS bypass or deployment retry was used. Existing automatic deployment remains off. Public SMTP and whole-game completion remain open.
 
 

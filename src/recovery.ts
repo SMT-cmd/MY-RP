@@ -1,3 +1,5 @@
+import {reconcileCivic} from './civic.ts';
+import {reconcileNeighbours} from './neighbours.ts';
 import {reconcileAdministration} from './admin.ts';
 import {reconcileSessions} from './sessions.ts';
 import {reconcileAppearance} from './appearance.ts';
@@ -28,6 +30,8 @@ export function reconcile(state: State) {
   }
 
   for(const position of Object.values(state.world?.positions??{}))if(position.interior==='shelter'&&(position.interiorX!==undefined||position.interiorY!==undefined)&&!(position.homeId&&state.furnishing?.homes[position.homeId]?homeWalkable(state,state.furnishing.homes[position.homeId],position.interiorX!,position.interiorY!):homeTile(position.interiorX!,position.interiorY!)))throw new Error('Invalid starter home position');
+  reconcileCivic(state);
+  reconcileNeighbours(state);
   reconcileAdministration(state);
   reconcileSessions(state);
   reconcileAppearance(state);

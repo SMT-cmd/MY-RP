@@ -1,5 +1,26 @@
 # Connected infrastructure
 
+## Trusted database CA saved, 12 October 2026
+
+The owner requested renewed cloud-browser login and the Supabase-to-Render connection. Supabase and Render dashboard sign-in succeeded with fresh authenticated project/service evidence. Retrieved the certificate through MY-RP Development's Database Settings download link and validated it as a self-signed CA with a valid signature and validity window. Saved the exact PEM as DATABASE_CA_CERT on existing free MY-RP service srv-db378467bikc73bta2e0 in Alonge's workspace using the dashboard's Save only control. After reload the stored public certificate exactly matched the provider download; all eight expected environment names are present and values are masked.
+
+Certificate: Supabase Root 2021 CA, valid 28 April 2021 through 26 April 2031. SHA-256 fingerprint: 80:70:25:AD:50:D4:ED:21:9D:2C:9C:7D:29:9C:00:4F:82:4E:B0:0C:F7:F6:5A:FE:F6:07:D0:7B:72:E6:CA:FA. Source: https://supabase-downloads.s3-ap-southeast-1.amazonaws.com/prod/ssl/prod-ca-2021.crt, linked by the authenticated provider dashboard. No private key, password or token was copied into source. No administrative password was reset, runtime credential regenerated, TLS validation disabled, or scope widened.
+
+Deployment history is unchanged: the latest remains the manual 9 October failure dep-db46eivlot8c73fvmngg. No rebuild, restart, new deployment or public game activation was requested. The server already consumes DATABASE_CA_CERT with rejectUnauthorized true; saving the CA resolves the missing setting but does not prove a successful live driver handshake or database login. Runtime/readiness verification remains held until the authorised build is deployable. Public email/SMTP, complete-game acceptance and remaining Bible systems are still open. The application-code checkpoint remains 206 passing tests plus focused checks and strict TypeScript; this update changes configuration evidence only. Earlier unresolved-certificate/login statements below are historical.
+
+12 October civic checkpoint: hosted history has thirteen migrations through 20261012212218_civic_petitions. Four new private invoker helpers enforce immutable petition receipts/consent/threshold/consideration and deny browser-role execution. Security advisor is clear; positive PostgreSQL 17 replay and forged-state rollback probes passed without retained data. Render deployment/configuration is unchanged. Trusted CA/dashboard authentication and public email provider remain unresolved. Read docs/civic-petitions-contract.md and docs/hosted-schema-verification.md.
+
+12 October hosting audit: remote main now points to merge commit 2ffe8fb8d0c3b94aa1290b481e1a1638207b64f0. The subsequently recorded manual deployment dep-db46eivlot8c73fvmngg failed on 9 October with SELF_SIGNED_CERT_IN_CHAIN during PostgreSQL startup; dependency installation/build succeeded. This is new evidence after the earlier checkpoint, not a deployment requested by this NPC implementation. DATABASE_CA_CERT must contain the trusted Supabase CA. Certificate validation remains enabled. The Supabase dashboard session has expired; the connector cannot retrieve that certificate, and public file retrieval is unavailable. Secure dashboard reauthentication is required to obtain/save the CA; no CA was guessed, no TLS bypass or deployment retry was used. Existing automatic deployment remains off. Public SMTP and whole-game completion remain open.
+
+
+## Scheduled NPC neighbours, 12 October 2026
+
+Scheduled adult NPC neighbours are implemented in the main world: six authored roles per representative regional neighbourhood, deterministic server-time walking and in-person conversations. Current city/lease/range/topic/cooldown checks, private repeated-conversation history, unchanged-cursor live updates, stable keyboard focus, session revocation, lost-response replay, file/backup recovery and SQL mirrors/rollback/reopening pass. The full suite passes 199 tests; final focused interface/PostgreSQL/motion/Canvas checks and strict TypeScript pass. Read docs/npc-neighbours-contract.md. Full NPC economies/events, production assets, nationwide maps, device/load and the remaining Bible systems are still open. No demo update or Render deployment was performed.
+
+Hosted migration 20261012130207_scheduled_neighbour_conversations is applied and verified; history now has twelve entries. The four new helpers are invoker functions, denied to anon/authenticated and executable by simulator_server. Security advisor is clear. Scoped unchanged-world and rolled-back forged-conversation checks passed; the world remains revision zero with zero citizens. Render automatic deployment remains off and existing npm/PostgreSQL/readiness settings are unchanged.
+
+Earlier checkpoints below are historical.
+
 Validation after the account-return change: npm test passes all 193 tests (78.66 s), strict TypeScript passes, both changed browser scripts pass node --check, and git diff --check is clean. The provider certificate-download attempt timed out without a returned file; no CA certificate was saved and TLS validation remains enabled. Runtime authentication/TLS still requires permitted network/provider verification.
 
 

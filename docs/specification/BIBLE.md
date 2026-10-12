@@ -415,6 +415,8 @@ Businesses and organisations can lobby legally in the simulation through proposa
 
 Workers can form transport unions, medical and teaching associations, business chambers and other professional organisations. They negotiate, publish positions, endorse candidates and arrange lawful demonstrations. A petition records subject, jurisdiction, signatures and threshold; crossing the threshold triggers formal notice and the defined consideration process, not an automatic law change.
 
+Implementation checkpoint, 12 October: authenticated same-state citizens can propose authored service petitions, privately support or withdraw, retain one threshold notice and request delayed NPC consideration against current support and the journal-backed treasury. Consideration grants no spending, law or office authority. Commands, client/live controls, consent evidence and recovery are integrated. Read docs/civic-petitions-contract.md. D33 bounds remain proposed; lobbying, organisations, protests, actual public budgets and full A26 remain open.
+
 Protests use assembly booking, capacity, safety and media coverage. Police manage crowd safety under bounded rules. The game displays verified participating citizens separately from NPC ambience. Civic play cannot target real people or enable unrestricted harassment and violence.
 
 ## 5.5 Elections eligibility and ballot secrecy
@@ -944,6 +946,8 @@ Every requirement below is in prelaunch implementation scope. Initial delivery s
 | R075 | Persistent specification memory and change control | 12.4 | A31 |
 
 ## 11.2 NPC behaviour contract
+
+Implementation checkpoint, 12 October: six authored adult NPC neighbours per representative regional map follow server-clock routes and support nearby scripted conversations with private repeated-contact history. Physical lease/range/cooldown checks, live updates, durable command/SQL evidence and recovery are tested. This does not finish evolving NPC personalities, individual finances/obligations, interiors/events or nationwide content. Read docs/npc-neighbours-contract.md; D32 parameters remain proposed.
 
 NPCs use bounded deterministic state machines or scheduled jobs for essential work. Each has role, location, household or employer link, resource budget, personality profile, availability, relationships, task queue and event history. Personality affects dialogue and optional event choices within the same published legal and financial limits.
 

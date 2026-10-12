@@ -4,6 +4,7 @@ import { readFile, readdir } from 'node:fs/promises';
 import { PGlite } from '@electric-sql/pglite';
 import { PostgresWorldStore } from '../src/postgres.ts';
 import type { Database, Sql } from '../src/postgres.ts';
+import type {QueryResultRow} from 'pg';
 import { RULES } from '../src/domain.ts';
 import type { Command } from '../src/domain.ts';
 import { createApp } from '../src/http.ts';
@@ -14,7 +15,25 @@ import {PRACTICALS} from '../src/education.ts';
 import {DAY} from '../src/domain.ts';
 import {completeStoredCourse} from './helpers.ts';
 import {reconcile} from '../src/recovery.ts';
+import {neighbourAt} from '../src/neighbours.ts';
 const command: Command = { id:'create_database_01',type:'CreateCitizen',payload:{ name:'Ada',state:'Lagos',adultConfirmed:true } };
+test('NPC conversation mirrors commit with immutable receipts, reject forged counts, roll back failed updates and survive SQL reopening',async t=>{
+ const {pg,database,store}=await setup(t),actor='npc-walker';await store.dispatch(actor,{...command,id:'npc_pg_create'},100);let sequence=0;
+ async function approach(at:number,start:number){const n=neighbourAt(await store.snapshot(),'Lagos',0,at),p=(await store.snapshot()).world!.positions[actor];let x=p.x,y=p.y,clock=start;
+  while(x!==n.x){const dx=Math.sign(n.x-x);await store.dispatch(actor,{id:'npc_pg_move_'+ ++sequence,type:'MoveCitizen',payload:{dx,dy:0}},clock+=500);x+=dx;}
+  while(y!==n.y){const dy=Math.sign(n.y-y);await store.dispatch(actor,{id:'npc_pg_move_'+ ++sequence,type:'MoveCitizen',payload:{dx:0,dy}},clock+=500);y+=dy;}return n;
+ }
+ const n=await approach(20000,1000),talk={id:'npc_pg_first_talk',type:'TalkToNeighbour',payload:{npcId:n.id,topic:'hello',leaseVersion:1}};await store.dispatch(actor,talk,20000);
+ const reopened=new PostgresWorldStore(database,'test-world');assert.equal((await reopened.dispatch(actor,talk,40000)).replayed,true);assert.equal(Object.values((await reopened.snapshot()).neighbours!.conversations)[0].count,1);reconcile(await reopened.snapshot());
+ await assert.rejects(database.transaction(async sql=>{await sql.query('SET LOCAL ROLE simulator_server');await sql.query("SELECT set_config('simulator.world_id','test-world',true)");await sql.query("UPDATE simulator.domain_records SET data=jsonb_set(data,'{count}','2') WHERE world_id='test-world' AND domain='npc.conversation'");}),/neighbour conversation/i);
+ const forged=await reopened.snapshot();Object.values(forged.neighbours!.conversations)[0].count=2;
+ await assert.rejects(database.transaction(async sql=>{await sql.query('SET LOCAL ROLE simulator_server');await sql.query("SELECT set_config('simulator.world_id','test-world',true)");await sql.query('UPDATE simulator.worlds SET state=$1::jsonb WHERE id=$2',[JSON.stringify(forged),'test-world']);}),/neighbour conversation/i);
+ await approach(70000,50000);const before=await reopened.snapshot(),next={id:'npc_pg_second_talk',type:'TalkToNeighbour',payload:{npcId:n.id,topic:'hello',leaseVersion:1}};
+ const failing:Database={transaction:work=>database.transaction(sql=>work({query:async<T extends QueryResultRow>(text:string,values?:unknown[])=>{const result=await sql.query<T>(text,values);if(text.startsWith('INSERT INTO simulator.domain_records')&&values?.[1]==='npc.conversation')throw Error('Injected NPC commit failure');return result;}}))};
+ await assert.rejects(new PostgresWorldStore(failing,'test-world').dispatch(actor,next,70000),/Injected NPC commit failure/);assert.deepEqual(await reopened.snapshot(),before);
+ await reopened.dispatch(actor,next,70000);assert.equal(Object.values((await reopened.snapshot()).neighbours!.conversations)[0].count,2);assert.equal((await store.dispatch(actor,next,999999)).replayed,true);reconcile(await reopened.snapshot());
+ assert.equal((await pg.query<{count:number}>("SELECT count(*)::int count FROM simulator.domain_records WHERE domain='npc.conversation'")).rows[0].count,1);
+});
 test('furnished shelter position and nearby actions persist without changing the outdoor lease or duplicating rest',async t=>{
  const {database,store}=await setup(t);await store.dispatch('citizen-one',command,100);
  for(let i=0;i<3;i++)await store.dispatch('citizen-one',{id:'home_walk_'+i,type:'MoveCitizen',payload:{dx:-1,dy:0}},500+i*300);
@@ -378,4 +397,29 @@ test('interior construction rolls back cash and materials together; reopening re
  const bed=Object.values(saved.furnishing!.items).find(i=>i.alias==='bed')!,changed={...bed,placement:{x:1,y:2,rotation:0}};
  await assert.rejects(pg.transaction(async tx=>{await tx.query("UPDATE simulator.domain_records SET data=$2::jsonb WHERE domain='furnishing.item' AND id=$1",[bed.id,JSON.stringify(changed)]);await tx.query("UPDATE simulator.worlds SET state=jsonb_set(state,ARRAY['furnishing','items',$1],$2::jsonb) WHERE id='test-world'",[bed.id,JSON.stringify(changed)]);}),/Partitions must preserve/);assert.deepEqual((await store.snapshot()).furnishing!.items[bed.id].placement,bed.placement);
  await assert.rejects(pg.transaction(async tx=>{const home=structuredClone(saved.furnishing!.homes[homeId]);home.partitions![0].purchaseKey='forged';await tx.query("UPDATE simulator.domain_records SET data=$2::jsonb WHERE domain='furnishing.home' AND id=$1",[homeId,JSON.stringify(home)]);await tx.query("UPDATE simulator.worlds SET state=jsonb_set(state,ARRAY['furnishing','homes',$1],$2::jsonb) WHERE id='test-world'",[homeId,JSON.stringify(home)]);}),/construction evidence/);
+});
+
+test('civic petitions have immutable receipt-backed SQL mirrors, atomic support/consideration, recovery and no spending authority',async t=>{
+ const {pg,database,store}=await setup(t);const termsVersion='petitions-1';
+ for(let i=0;i<11;i++)await store.dispatch('civic-sql-'+i,{id:'civic_citizen_create',type:'CreateCitizen',payload:{name:'Citizen '+i,state:i===10?'Kano':'Lagos',adultConfirmed:true}},100);
+ const created=await store.dispatch('civic-sql-0',{id:'civic_proposal_once',type:'CreateCivicPetition',payload:{topic:'water',termsVersion,consent:true}},1000),id=String(created.receipt.detail.petitionId);
+ const payload=(s:import('../src/domain.ts').State)=>({petitionId:id,petitionVersion:s.civic!.petitions[id].version,termsVersion,consent:true});
+ const before=await store.snapshot(),c={id:'civic_sql_support_once',type:'SupportCivicPetition',payload:payload(before)};
+ await pg.exec("ALTER TABLE simulator.domain_records ADD CONSTRAINT fail_civic_support CHECK(domain<>'civic.petition' OR (data->>'version')::int<2)");await assert.rejects(store.dispatch('civic-sql-1',c,1000));assert.deepEqual(await store.snapshot(),before);await pg.exec('ALTER TABLE simulator.domain_records DROP CONSTRAINT fail_civic_support');
+ await store.dispatch('civic-sql-1',c,1000);const reopened=new PostgresWorldStore(database,'test-world');assert.equal((await reopened.dispatch('civic-sql-1',c,2000)).replayed,true);
+ for(let i=2;i<10;i++)await store.dispatch('civic-sql-'+i,{id:'civic_sql_support_once',type:'SupportCivicPetition',payload:payload(await store.snapshot())},1000);
+ const threshold=await store.snapshot();reconcile(threshold);assert.ok(threshold.civic!.petitions[id].notice);
+ await assert.rejects(pg.query("UPDATE simulator.domain_records SET data=jsonb_set(data,'{threshold}','1'::jsonb) WHERE domain='civic.petition' AND id=$1",[id]),/immutable/);
+ await assert.rejects(pg.transaction(async tx=>{await tx.query("UPDATE simulator.worlds SET state=jsonb_set(state,ARRAY['civic','petitions',$1,'members','civic-sql-9','changes','0','supported'],'false'::jsonb) WHERE id='test-world'",[id]);}),/Civic petition history/);
+ await assert.rejects(pg.transaction(async tx=>{await tx.query("UPDATE simulator.worlds SET state=jsonb_set(state,ARRAY['civic','petitions',$1,'notice','at'],'1001'::jsonb) WHERE id='test-world'",[id]);}),/Civic petition history/);
+ await assert.rejects(store.dispatch('civic-sql-10',{id:'wrong_jurisdiction_once',type:'SupportCivicPetition',payload:payload(threshold)},1000));
+ const review={id:'civic_review_once',type:'ReviewCivicPetition',payload:payload(threshold)};
+ await pg.exec("ALTER TABLE simulator.domain_records ADD CONSTRAINT fail_civic_review CHECK(domain<>'civic.petition' OR data->'review'='null'::jsonb)");await assert.rejects(store.dispatch('civic-sql-0',review,86401000));assert.deepEqual(await store.snapshot(),threshold);await pg.exec('ALTER TABLE simulator.domain_records DROP CONSTRAINT fail_civic_review');
+ await reopened.dispatch('civic-sql-0',review,86401000);assert.equal((await store.dispatch('civic-sql-0',review,86402000)).replayed,true);const considered=await store.snapshot();reconcile(considered);assert.deepEqual(considered.balances,threshold.balances);assert.deepEqual(considered.journals,threshold.journals);
+ await assert.rejects(pg.transaction(async tx=>{await tx.query("UPDATE simulator.worlds SET state=jsonb_set(state,ARRAY['civic','petitions',$1,'review','treasury'],'999999'::jsonb) WHERE id='test-world'",[id]);}),/Civic petition history/);
+ await store.dispatch('civic-sql-9',{id:'civic_withdraw_once',type:'WithdrawCivicSupport',payload:payload(considered)},86401000);const final=await new PostgresWorldStore(database,'test-world').snapshot();reconcile(final);assert.equal(final.civic!.petitions[id].version,12);assert.equal(final.civic!.petitions[id].review!.support,10);
+ await assert.rejects(pg.query("DELETE FROM simulator.domain_records WHERE domain='civic.petition' AND id=$1",[id]),/cannot be deleted/);
+ await assert.rejects(pg.transaction(async tx=>{await tx.query("UPDATE simulator.worlds SET state=state #- ARRAY['civic','petitions',$1] WHERE id='test-world'",[id]);}),/Orphan civic/);
+ const other=new PostgresWorldStore(database,'civic-other-world');await other.createWorld();assert.equal((await other.snapshot()).civic,undefined);
+ await pg.exec('CREATE ROLE anon NOLOGIN');await pg.exec('SET ROLE anon');await assert.rejects(pg.query('SELECT * FROM simulator.domain_records'),/permission denied/);await pg.exec('RESET ROLE');
 });

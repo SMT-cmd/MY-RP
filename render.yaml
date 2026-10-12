@@ -1,5 +1,5 @@
-# Main-game configuration only. Do not sync/create a second service or deploy
-# until the full build passes its release gates. Apply these settings to existing
+# Current main build: owner authorized deployment on 12 October 2026.
+# Keep it labelled build in progress; use no second service. Apply to existing
 # service srv-db378467bikc73bta2e0 in Alonge's workspace.
 services:
   - type: web

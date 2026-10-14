@@ -1,5 +1,11 @@
 # Project status
 
+## Interface release verified, 14 October 2026
+
+Published identical source to main and build/main-game-2026-10-08 as ae6c68e067111dd6480238793ce345102ac89997 (tree 08b72601dfcbf5f756cadb339db022e29d968dfd). Terminal fetch/diff verified both branches against the local committed files; the independent demo remains 28c8437c89fdedb866e1cc3bfc0630d71574246b. Existing free service srv-db378467bikc73bta2e0 deployed manually as dep-db80b1psrm7s73881eag, live at 22:43:55 UTC. Automatic deployment remains off and release stage remains build. No environment variable, schema, paid resource or service was added.
+
+Live verification: readiness 200, Supabase/build/multiplayer config, unsigned citizen access 401, untrusted origin 403 and public worker version/allowlist checks pass. The root HTML and all seven changed browser assets match local source byte for byte. Since deployment, the Render error log query returned no errors. The actual cloud browser shows the account sign-in page and the correct development label. No game-page script error was observed; one browser-extension metadata error is environment evidence only. No production player account or authenticated gameplay was created/claimed. First player signup/public SMTP, GPU/device/touch/rotation/art, direct driving and full Bible gates remain open. Source verification and deployment do not finish the complete game.
+
 ## World-first main interface, 14 October 2026
 
 The main citizen view now fills the playing viewport, with a compact needs/wallet/location/activity HUD, contextual interactions, touch/keyboard walking and selected phone drawers. Existing bank, work, study, property, furniture, visits, NPCs, business, vehicles, care, civic, privacy and recovery controls are preserved. Confirmed service entry, wardrobe use and NPC selection reveal the appropriate app. Default adult framing is larger. Low/data saver retains a graphical 2D scene without loading Three.js. Full-screen/landscape requests have explicit player gestures and fallback; orientation/menu/focus/uncertainty releases input while preserving an unsent furnishing draft. No financial or identity authority was moved into the client.

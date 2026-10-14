@@ -1,5 +1,11 @@
 # Connected infrastructure
 
+## Interface release verified, 14 October 2026
+
+Published identical source to main and build/main-game-2026-10-08 as ae6c68e067111dd6480238793ce345102ac89997 (tree 08b72601dfcbf5f756cadb339db022e29d968dfd). Terminal fetch/diff verified both branches against the local committed files; the independent demo remains 28c8437c89fdedb866e1cc3bfc0630d71574246b. Existing free service srv-db378467bikc73bta2e0 deployed manually as dep-db80b1psrm7s73881eag, live at 22:43:55 UTC. Automatic deployment remains off and release stage remains build. No environment variable, schema, paid resource or service was added.
+
+Live verification: readiness 200, Supabase/build/multiplayer config, unsigned citizen access 401, untrusted origin 403 and public worker version/allowlist checks pass. The root HTML and all seven changed browser assets match local source byte for byte. Since deployment, the Render error log query returned no errors. The actual cloud browser shows the account sign-in page and the correct development label. No game-page script error was observed; one browser-extension metadata error is environment evidence only. No production player account or authenticated gameplay was created/claimed. First player signup/public SMTP, GPU/device/touch/rotation/art, direct driving and full Bible gates remain open. Source verification and deployment do not finish the complete game.
+
 ## Current build live, 12 October 2026
 
 The owner explicitly authorised push and deployment. Verified source was merged to main as 71bb1111e3aa7baf0712bbc4899e2c3ed02d13d0, preserving both prior main and build ancestry. Existing free MY-RP service deployed successfully as dep-db6laa59fdbs73b0hpq0 at 21:46:48 UTC. Node 24.21.0 dependency installation passed with zero reported vulnerabilities; the PostgreSQL entry point authenticated over validated TLS, acquired server scope, initialised/read the hosted world and listened on port 10000. DATABASE_CA_CERT resolves the prior startup certificate failure. No extra service, paid resource or demo change was made; automatic deployment remains off.

@@ -1,5 +1,9 @@
 # Change log
 
+## Reference access and landscape direction, 14 October 2026
+
+Recorded official/legacy access routes, actual Naija Life guest home/phone/floor-plan/Cars observations, published OneState/MadOut control layouts and browser/native rendering limits. Prepared Lagos Life and EA signup without creating credentials or accepting terms. Added the owner's landscape direction to Bible 9.2, including explicit full screen, portrait fallback, separate living/driving controls and safe input release. No runtime code or completion status changed; no native play, driving physics, public account or video playback acceptance is asserted. See docs/reference-game-access-study.md.
+
 ## Current build live, 12 October 2026
 
 The owner explicitly authorised push and deployment. Verified source was merged to main as 71bb1111e3aa7baf0712bbc4899e2c3ed02d13d0, preserving both prior main and build ancestry. Existing free MY-RP service deployed successfully as dep-db6laa59fdbs73b0hpq0 at 21:46:48 UTC. Node 24.21.0 dependency installation passed with zero reported vulnerabilities; the PostgreSQL entry point authenticated over validated TLS, acquired server scope, initialised/read the hosted world and listened on port 10000. DATABASE_CA_CERT resolves the prior startup certificate failure. No extra service, paid resource or demo change was made; automatic deployment remains off.

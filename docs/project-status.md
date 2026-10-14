@@ -1,5 +1,11 @@
 # Project status
 
+## Reference access and landscape direction, 14 October 2026
+
+The owner requested direct study of the named life/city simulations and landscape mobile play. Official access routes and public controls were checked; a fictional offline Naija Life guest reached home/floor-plan/phone/Cars interfaces. Lagos Life .app still reported a 3D-start failure after one retry; new signup requires the owner's browser handoff. EA signup and official mobile download options are prepared, but native PC/mobile clients cannot be operated in this browser-only environment. No new server account, purchase, terms acceptance, CAPTCHA attempt or successful native gameplay is claimed.
+
+Read docs/reference-game-access-study.md for per-game evidence and limits. The Bible now adds landscape/full-screen/fallback behaviour, distinct living/driving controls and safe input release on orientation/focus/menu changes. These are targets awaiting implementation/device verification. R065/R066 and D24/D28 retain their existing incomplete/proposed statuses. The world-first UI correction, production artwork, driving, full Bible acceptance and hosted signup/SMTP gates remain open. This checkpoint changes documentation only; it does not change the live game or deploy a preview.
+
 ## Current build live, 12 October 2026
 
 The owner explicitly authorised push and deployment. Verified source was merged to main as 71bb1111e3aa7baf0712bbc4899e2c3ed02d13d0, preserving both prior main and build ancestry. Existing free MY-RP service deployed successfully as dep-db6laa59fdbs73b0hpq0 at 21:46:48 UTC. Node 24.21.0 dependency installation passed with zero reported vulnerabilities; the PostgreSQL entry point authenticated over validated TLS, acquired server scope, initialised/read the hosted world and listened on port 10000. DATABASE_CA_CERT resolves the prior startup certificate failure. No extra service, paid resource or demo change was made; automatic deployment remains off.

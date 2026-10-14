@@ -1,5 +1,7 @@
 # Reference games and main-build quality targets
 
+14 October access update: read [reference-game-access-study.md](reference-game-access-study.md) for current signup/install routes, actual guest UI observations and landscape direction. Native gameplay and driving remain unverified; the original dated research below remains historical evidence. The 12 October owner-authorised deployment applies to the labelled build-in-progress release, not whole-game acceptance.
+
 Research checkpoint: 8 October 2026. Owner direction: a Nigerian life simulation with the human readability, homes and everyday interaction of The Sims and My Life in New York, and the connected city/vehicle presence of OneState RP and MadOut. This is a design reference, not a claim that their graphics or features are already matched. The Bible remains the scope baseline.
 
 ## Evidence and application

@@ -745,6 +745,8 @@ Jobs, queues, transport, services and social activity remain visible. Objects ha
 
 The HUD shows needs, safe or protected status, current activity, nearby interaction and connection state. Money is visible without turning every scene into a financial dashboard. The in game phone hosts bank, jobs, school, map, messaging, NaijaFeed, organisations, events, government, emergency help, support and settings.
 
+14 October component checkpoint: the main citizen view now fills the viewport with a compact HUD, physical/contextual actions and selected phone drawers instead of a scrolling dashboard. Confirmed service entry and wardrobe/NPC selection open the corresponding controls. Low/data saver retains a graphical Canvas view; full-screen/orientation requests have guarded fallback, and menu/resize/uncertainty releases input without discarding an unsent placement draft. The existing command, consent and recovery boundaries remain authoritative. Read docs/world-first-interface-contract.md. These HTTP/DOM and API checks do not finish production graphics, real-device acceptance, direct driving or the full phone catalogue.
+
 Movement uses touch and keyboard options. Context actions show only available operations and the reason a locked action is unavailable. Sensitive actions such as debt, contract acceptance, asset sale or a ballot use a clear review step. Confirmed financial actions show a receipt. Connection loss marks a pending action and reconciles it before offering another payment.
 
 The owner's 14 October direction adds landscape play as a mobile quality target. On a narrow portrait playing screen, offer a dismissible “Rotate your phone for a wider view” prompt and an explicit full-screen control; keep essential account, settings and accessible task flows usable in portrait. Request landscape orientation only after a player gesture where supported, and fall back to the prompt if full-screen or orientation locking is unavailable. Do not claim a browser can physically rotate every phone. Resize the world and camera without losing the active citizen, interaction target or unsent placement draft. Respect display cutouts, browser bars, zoom, text scaling and reduced motion.
@@ -761,7 +763,7 @@ Proposed target is WCAG 2.2 AA for the web interface, with explicit game interac
 
 | Setting | Visual behaviour | Shared gameplay rule |
 | --- | --- | --- |
-| Low | Minimal shadows fewer ambient NPCs reduced particles and animation | Same collisions rewards visibility of essential cues and legal rules |
+| Low | Lightweight graphical 2D world; no 3D engine download; fewer effects and animation | Same collisions rewards visibility of essential cues and legal rules |
 | Medium | Moderate lighting traffic and effects | No extra economic or competitive information |
 | High | Richer lighting ambient crowds and environmental motion | No increased rewards or exclusive interaction reach |
 | Data saver | Reduced optional media compressed assets no automatic music | Essential work education bank and civic access preserved |

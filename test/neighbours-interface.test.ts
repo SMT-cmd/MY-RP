@@ -25,12 +25,16 @@ test('authenticated NPC controls recover a lost conversation, update idle walkin
  if(doc.readyState!=='complete')await new Promise<void>(resolve=>dom.window.addEventListener('load',()=>resolve(),{once:true}));(doc.getElementById('access-key') as HTMLInputElement).value='npc-ui';(doc.getElementById('access-form') as HTMLFormElement).requestSubmit();
  const card=()=>[...doc.querySelectorAll<HTMLElement>('#world-npcs article')].find(a=>a.querySelector('h3')!.textContent!.includes('Market assistant'))!;
  await waitFor(()=>!!card()&&!card().querySelectorAll<HTMLButtonElement>('button')[1].disabled);
+ doc.getElementById('game-phone')!.click();doc.querySelector<HTMLButtonElement>('[data-game-page=phone] [data-game-menu=people]')!.click();
  drop=true;card().querySelectorAll<HTMLButtonElement>('button')[1].click();await waitFor(()=>!(doc.getElementById('retry-panel') as HTMLElement).hidden);assert.equal(Object.values(store.snapshot().neighbours!.conversations)[0].count,1);
  (doc.getElementById('retry') as HTMLButtonElement).click();await waitFor(()=>(doc.getElementById('retry-panel') as HTMLElement).hidden&&card().textContent!.includes('Conversations together: 1'));assert.equal(Object.values(store.snapshot().neighbours!.conversations)[0].count,1);assert.match(doc.getElementById('notice')!.textContent!,/original receipt/);
- const button=card().querySelector<HTMLButtonElement>('button')!;button.focus();const oldPosition=card().querySelector('p')!.textContent,commands=Object.keys(store.snapshot().commands).length,outbox=store.snapshot().outbox.length;
+ let renderedX=initial.x;
+ const renderer=(dom.window as unknown as {WorldRenderer:{update:(scene:{npcs?:{id:string;x:number}[]},quality:string)=>Promise<void>}}).WorldRenderer,update=renderer.update.bind(renderer);
+ renderer.update=(scene,quality)=>{renderedX=scene.npcs?.find(n=>n.id===initial.id)?.x??renderedX;return update(scene,quality);};
+ const button=card().querySelector<HTMLButtonElement>('button')!;button.focus();const commands=Object.keys(store.snapshot().commands).length,outbox=store.snapshot().outbox.length;
  let target=clock;for(let i=1;i<180;i++){const n=neighbourAt(store.snapshot(),'Lagos',0,20000+i*1500);if(n.x!==initial.x){target=20000+i*1500;break;}}
  const fence=(dom.window as unknown as {WorldSync:{fence:()=>import('../src/sessions.ts').ClientFence}}).WorldSync.fence();
  while(clock<target){clock=Math.min(target,clock+5000);await store.renewClient('npc-ui','npc-ui-session',fence,clock);}
- await waitFor(()=>!!card()&&card().querySelector('p')!.textContent!==oldPosition);assert.equal(doc.activeElement,button);assert.equal(Object.keys(store.snapshot().commands).length,commands);assert.equal(store.snapshot().outbox.length,outbox);
+ await waitFor(()=>!!card()&&renderedX!==initial.x);assert.equal(doc.activeElement,button);assert.equal(Object.keys(store.snapshot().commands).length,commands);assert.equal(store.snapshot().outbox.length,outbox);
  await store.revokeSession('npc-ui','npc-ui-session');await waitFor(()=>doc.getElementById('world-npcs')!.childElementCount===0);assert.deepEqual(errors,[]);
 });

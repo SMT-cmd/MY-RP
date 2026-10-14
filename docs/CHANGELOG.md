@@ -1,5 +1,9 @@
 # Change log
 
+## World-first main interface, 14 October 2026
+
+Replaced the active citizen's scrolling dashboard with a viewport world, compact HUD, nearby actions, indoor/outdoor walking pad and phone apps. Preserved authoritative forms and recovery while adding confirmed service/wardrobe/NPC context, safe menu/focus/orientation release, explicit full-screen fallback and graphical low/data saver mode. Both renderers use the available world area with larger default adult framing. Removed tile/lease debug details from ordinary location/NPC text. Added integration coverage and adapted existing civic/NPC/home-visit tests to the visible phone/pad flows. Verification: all 209 tests pass, followed by final display/recovery checks; strict TypeScript, changed-script syntax and diff checks pass. real devices/GPU, production art, driving and remaining Bible requirements stay open. No competitor assets, schema/secret change, extra service, paid resource or demo modification.
+
 ## Reference access and landscape direction, 14 October 2026
 
 After owner signup, inspected authenticated Lagos Life home/phone/guide/furniture and dealership flows. Verified one game-currency chair purchase, free travel and completion of its timed test-drive activity. The scene remained unavailable, so no 3D appearance/movement/parking/steering acceptance is claimed. Honoured the owner's subsequent no-game-download direction and used public guidance for other titles; closed unused signup/install tabs. No gameplay code changed and no additional reference login is required.

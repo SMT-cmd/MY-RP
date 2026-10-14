@@ -17,7 +17,7 @@
     card={root,heading,position,remembered,walk,buttons};cards.set(n.id,card);host.append(root);
    }
    card.heading.textContent=n.name+' · '+n.role;
-   card.position.textContent=n.routine+' · tile ('+n.x+','+n.y+'). '+(n.canTalk?'Close enough to talk.':'Walk closer to talk.');
+   card.position.textContent=n.routine+'. '+(n.canTalk?'Close enough to talk.':'Walk closer to talk.');
    const memory=view.world.npcHistory?.find(r=>r.npcId===n.id);
    card.remembered.textContent=memory?'Conversations together: '+memory.count+'. Last topic: '+memory.topic+'.':'';
    card.walk.disabled=locked;card.buttons.forEach(b=>b.disabled=locked||!n.canTalk);

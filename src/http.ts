@@ -38,6 +38,7 @@ export function createApp(options: { store: CommandStore; authenticate: (req: In
   const assets = new Map([['/', ['index.html','text/html']], ['/app.js',['app.js','text/javascript']], ['/style.css',['style.css','text/css']], ['/favicon.svg',['favicon.svg','image/svg+xml']]]);
   assets.set('/auth-return.js',['auth-return.js','text/javascript']);
   assets.set('/civic-ui.js',['civic-ui.js','text/javascript']);
+  assets.set('/game-ui.js',['game-ui.js','text/javascript']);
   assets.set('/neighbours-ui.js',['neighbours-ui.js','text/javascript']);
   assets.set('/world-sync.js',['world-sync.js','text/javascript']);
   assets.set('/admin-ui.js',['admin-ui.js','text/javascript']);

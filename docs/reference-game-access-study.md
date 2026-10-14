@@ -45,7 +45,7 @@ EA's official 20:08 Sims 4 walkthrough page was selected. Its player showed a lo
 
 The owner endorses landscape play. The Bible now specifies a dismissible rotate prompt, player-initiated full screen, optional orientation locking, portrait access to essential menus and safe resize behaviour. MDN documents limited orientation-lock support and typical mobile/full-screen requirements, so physical phone rotation cannot be forced universally.
 
-Implement a full-screen world with readable adults and compact HUD/phone drawers. Retain tap-to-walk and object approach, add clear touch controls, and distinguish living from vehicle control layouts. A future vehicle milestone must verify steering, acceleration, braking, reversing, collisions, fuel, parking and ownership across actual devices and network recovery. No research result makes these implemented or changes a requirement to Complete. No proprietary game art or code was copied into MY-RP.
+The subsequent main-build interface milestone implements the viewport world, larger default adult framing, compact HUD/phone drawers, touch walking, graphical low mode and guarded full-screen behaviour. Read docs/world-first-interface-contract.md for exact evidence and open device/art gates. A future vehicle milestone must verify steering, acceleration, braking, reversing, collisions, fuel, parking and ownership across actual devices and network recovery. Reference research does not prove these vehicle systems or change a requirement to Complete. No proprietary game art or code was copied into MY-RP.
 
 ## Primary sources
 

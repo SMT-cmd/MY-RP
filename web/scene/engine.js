@@ -53,14 +53,14 @@ export function createEngine(host,onFailure){
  const camera=new THREE.OrthographicCamera(-8,8,5,-5,.05,100);let actor=adultModel(),avatarSignature='';scene.add(actor.root);
  const neighbours=new Map();
  const target=new THREE.Vector3(),raycaster=new THREE.Raycaster(),floorPlane=new THREE.Plane(new THREE.Vector3(0,1,0),0),hit=new THREE.Vector3();
- let world=null,geometry=null,signature='',frame=null,quality='medium',lastPaint=0,previousTime=0,motion=null,walkWeight=0,distance=0,yaw=0,targetYaw=0,cameraYaw=Math.PI/4,zoom=1.1,follow=true,drag=null,selection=null,ghost=null,alive=true,paused=false,raised=false,receivedAt=0,clockServerTime=0,activityStart=0,activitySignature='';
+ let world=null,geometry=null,signature='',frame=null,quality='medium',lastPaint=0,previousTime=0,motion=null,walkWeight=0,distance=0,yaw=0,targetYaw=0,cameraYaw=Math.PI/4,zoom=1.55,follow=true,drag=null,selection=null,ghost=null,alive=true,paused=false,raised=false,receivedAt=0,clockServerTime=0,activityStart=0,activitySignature='';
  const walkPosition=new THREE.Vector3();
  const controls=document.createElement('div');controls.className='world-camera-controls';const status=document.createElement('p');status.className='hint';status.textContent='Drag to pan · scroll to zoom · click a reachable object to use it';host.append(controls,status);
  const listeners=new AbortController(),options={signal:listeners.signal};
- const button=(text,action)=>{const b=document.createElement('button');b.type='button';b.textContent=text;b.addEventListener('click',action,options);controls.append(b);};
+ const button=(text,action)=>{const b=document.createElement('button');b.type='button';b.dataset.gameUi='';b.textContent=text;b.addEventListener('click',action,options);controls.append(b);};
  button('Raise / cut away walls',()=>raised=!raised);
  button('Zoom out',()=>zoom=clamp(zoom-.15,.5,2.2));button('Zoom in',()=>zoom=clamp(zoom+.15,.5,2.2));button('Rotate left',()=>cameraYaw-=Math.PI/4);button('Rotate right',()=>cameraYaw+=Math.PI/4);button('Find my character',()=>{follow=true;selection=null;setGhost(null);});
- function resize(){const width=Math.max(host.clientWidth||960,320),height=clamp(width*.625,280,600);renderer.setSize(width,height);const aspect=width/height;camera.left=-5.2*aspect;camera.right=5.2*aspect;camera.top=5.2;camera.bottom=-5.2;camera.updateProjectionMatrix();}
+ function resize(){const width=Math.max(host.clientWidth||960,320),height=Math.max(host.clientHeight||Math.min(width*.625,600),200);renderer.setSize(width,height);const aspect=width/height;camera.left=-5.2*aspect;camera.right=5.2*aspect;camera.top=5.2;camera.bottom=-5.2;camera.updateProjectionMatrix();}
  const observer=new ResizeObserver(resize);observer.observe(host);resize();
  function clearGeometry(){if(geometry){scene.remove(geometry.root);disposeModels(geometry.root);geometry=null;}}
  function syncCrowd(next){

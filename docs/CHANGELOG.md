@@ -2,7 +2,9 @@
 
 ## Reference access and landscape direction, 14 October 2026
 
-Recorded official/legacy access routes, actual Naija Life guest home/phone/floor-plan/Cars observations, published OneState/MadOut control layouts and browser/native rendering limits. Prepared Lagos Life and EA signup without creating credentials or accepting terms. Added the owner's landscape direction to Bible 9.2, including explicit full screen, portrait fallback, separate living/driving controls and safe input release. No runtime code or completion status changed; no native play, driving physics, public account or video playback acceptance is asserted. See docs/reference-game-access-study.md.
+After owner signup, inspected authenticated Lagos Life home/phone/guide/furniture and dealership flows. Verified one game-currency chair purchase, free travel and completion of its timed test-drive activity. The scene remained unavailable, so no 3D appearance/movement/parking/steering acceptance is claimed. Honoured the owner's subsequent no-game-download direction and used public guidance for other titles; closed unused signup/install tabs. No gameplay code changed and no additional reference login is required.
+
+Earlier access checkpoint: recorded official/legacy access routes, actual Naija Life guest home/phone/floor-plan/Cars observations, published OneState/MadOut control layouts and browser/native rendering limits. Prepared Lagos Life and EA signup without creating credentials or accepting terms. Added the owner's landscape direction to Bible 9.2, including explicit full screen, portrait fallback, separate living/driving controls and safe input release. No runtime code or completion status changed; no native play, driving physics, MY-RP public signup or video playback acceptance is asserted. See docs/reference-game-access-study.md.
 
 ## Current build live, 12 October 2026
 

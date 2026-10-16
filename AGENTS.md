@@ -1,5 +1,7 @@
 # Project instructions
 
+16 October publication: interaction/world-art runtime 82de2aea7d77dd531ed4cdc4a02cb07da6ca0ea5 is live on the existing free service (dep-db98ideq1p3s739jfpjg). Read latest project-status/release evidence. Twenty live assets, readiness, denial and no-cookie resume pass; no new provider login or native device/GPU acceptance is claimed. Synthetic local Canvas captures are labelled unit rendering, not live gameplay.
+
 16 October interaction update: owner reports short steps, slow responses, primitive rooms/city, account failures and an unwanted art link. Read docs/interaction-and-world-assets-contract.md. Full pointer routes, explicit object menus, HttpOnly session restoration and CC0 world/Canvas adult assets are implemented; 227 tests pass. Provider aggregate is now three registrations/one confirmed/no banned accounts. Do not infer a particular failed account, disable email verification or claim cold starts/FPS/full-game completion. Preserve existing free service, automatic deploy off, build stage and independent demo.
 
 16 October identity update: owner chooses MY RP / My Roleplay and requests cinematic entry, generated world concepts and clearer authentication. Read docs/brand-and-entry-contract.md. The observed 429 was a signup email limit; secure password sign-in subsequently reached a Ready saved citizen. Do not lump email throttling into a blocked login or bypass provider limits. Cloud browser WebGL is disabled; observed gameplay uses Canvas. Concept art is not in-engine acceptance.

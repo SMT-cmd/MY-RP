@@ -1,0 +1,213 @@
+{
+  "runtime_commit": "82de2aea7d77dd531ed4cdc4a02cb07da6ca0ea5",
+  "runtime_tree": "723cde09fa9f8807a0d495ca4e68d76a72b8773c",
+  "deployment": "dep-db98ideq1p3s739jfpjg",
+  "finished_at_utc": "2026-10-16T20:30:30.549876Z",
+  "url": "https://my-rp-8kiw.onrender.com/",
+  "service_id": "srv-db378467bikc73bta2e0",
+  "plan": "free",
+  "auto_deploy": "off",
+  "release_stage": "build",
+  "tests": {
+    "full_pass": 227,
+    "full_fail": 0,
+    "duration_seconds": 129.8032136,
+    "strict_typescript": "pass",
+    "browser_scripts_syntax": "pass",
+    "staged_whitespace": "pass"
+  },
+  "source_branches": [
+    "main",
+    "build/main-game-2026-10-08"
+  ],
+  "independent_demo_commit": "28c8437c89fdedb866e1cc3bfc0630d71574246b",
+  "live_checks": [
+    {
+      "path": "/",
+      "status": 200,
+      "bytes": 32692,
+      "sha256": "4adea4d1dfb4e109337c85409848ba6552627f88c007d79292b63df2d74db592"
+    },
+    {
+      "path": "/app.js",
+      "status": 200,
+      "bytes": 44379,
+      "sha256": "2df0045249bf51915532975d131046990a96f86a51d91a08480ed7cef242ce72"
+    },
+    {
+      "path": "/object-ui.js",
+      "status": 200,
+      "bytes": 3610,
+      "sha256": "998b0e86b84cbf3f5fd5cbf88e55f12ab4aefb53167b1c5f79390628003a8262"
+    },
+    {
+      "path": "/city-map.js",
+      "status": 200,
+      "bytes": 2588,
+      "sha256": "a4b5c085594f38a5466d782b712f6a2f01532d71734c26b53d9faacf3540c157"
+    },
+    {
+      "path": "/world-renderer.js",
+      "status": 200,
+      "bytes": 24048,
+      "sha256": "ebc1a3c711358e4df2a036a582b23b9cf7f7487f30ffdc26cf0d4b96eff060cd"
+    },
+    {
+      "path": "/world-3d-controller.js",
+      "status": 200,
+      "bytes": 1915,
+      "sha256": "d5a46589d592c73336f1c867e754fc7722a082829f8372d17041d66fa37770ec"
+    },
+    {
+      "path": "/scene/engine.js",
+      "status": 200,
+      "bytes": 24136,
+      "sha256": "61e1b148022bc0a21ce8fa0523e1cd6e277862f88e2fcaf14dc176ce7c6eca85"
+    },
+    {
+      "path": "/scene/authored-characters.js",
+      "status": 200,
+      "bytes": 8790,
+      "sha256": "e00d61ac9e8182f7a2a6a6f9fb8c1aabdfdc197b46d3d2c53c94c832a82436a8"
+    },
+    {
+      "path": "/scene/world-assets.js",
+      "status": 200,
+      "bytes": 2538,
+      "sha256": "745eb4584dd11af7bf81db1f63b4533d98b88266f126e531510dc46620949fd1"
+    },
+    {
+      "path": "/scene/asset-catalogue.js",
+      "status": 200,
+      "bytes": 2270,
+      "sha256": "56ae010de03fc1eabbb2244ec82ffec91c0ba60c4180ef50baed1b1f9280ba7a"
+    },
+    {
+      "path": "/scene/sprites.js",
+      "status": 200,
+      "bytes": 4023,
+      "sha256": "45ebea05c19b575d13dff8d49689ab179d0b48a1464876d3fa64a12135da0dd1"
+    },
+    {
+      "path": "/brand.css",
+      "status": 200,
+      "bytes": 14477,
+      "sha256": "c4f1110ee97d07a1af6199eb2b3c329736010f46ad0eb59e91c9cc055e49efb2"
+    },
+    {
+      "path": "/appearance-ui.js",
+      "status": 200,
+      "bytes": 5645,
+      "sha256": "006dd1d5581e15308fea6e74f6950f0f4d8bde8c4211f4940434a66e85b87afd"
+    },
+    {
+      "path": "/assets/world/manifest.json",
+      "status": 200,
+      "bytes": 18448,
+      "sha256": "9813591a62cf855e6e4c43dba156065bce0f984bd51d64088bbaee58c75f00d3"
+    },
+    {
+      "path": "/assets/world/sprites/manifest.json",
+      "status": 200,
+      "bytes": 22055,
+      "sha256": "8ede4abfd59c2a7b0b75ba7a49daa5f4b9ff98e33196e8c0e91e4ff76c382db9"
+    },
+    {
+      "path": "/assets/world/commercial/building-skyscraper-a.glb",
+      "status": 200,
+      "bytes": 122392,
+      "sha256": "758daca2d4eefecd8e688d08352d8e34f4ae10a2008477a01b7df4f5a35eea4a"
+    },
+    {
+      "path": "/assets/world/furniture/loungeSofaLong.glb",
+      "status": 200,
+      "bytes": 13112,
+      "sha256": "452df1c862f97781615e2c1c832913b48cf6c6f011d3260dc023ff3f117cc9d1"
+    },
+    {
+      "path": "/assets/world/sprites/suburban-building-type-e-0.webp",
+      "status": 200,
+      "bytes": 30996,
+      "sha256": "03eec7ae71a0d86f3935caa1ded0b823567da7b6bf06870841dfda42b65b0cab"
+    },
+    {
+      "path": "/assets/world/characters/male-tee.webp",
+      "status": 200,
+      "bytes": 131828,
+      "sha256": "f9461d6ad4eebb7d11143edebffa4d34e59d94f5d29c044904c506d55e77c4ff"
+    },
+    {
+      "path": "/assets/world/characters/male-tee-mask.webp",
+      "status": 200,
+      "bytes": 7070,
+      "sha256": "0a9a69c365d67e91d4115902d58aaf9baa42d78ff3e7732ad150d2e87aeb41e3"
+    },
+    {
+      "path": "/healthz",
+      "status": 200,
+      "body": {
+        "status": "ok"
+      }
+    },
+    {
+      "path": "/readyz",
+      "status": 200,
+      "body": {
+        "status": "ready"
+      }
+    },
+    {
+      "path": "/api/config",
+      "status": 200,
+      "body": {
+        "mode": "supabase",
+        "releaseStage": "build",
+        "multiplayer": true,
+        "sessionResume": true
+      }
+    },
+    {
+      "path": "/api/citizen",
+      "expected_denial": 401
+    },
+    {
+      "path": "/api/config",
+      "expected_denial": 403
+    },
+    {
+      "path": "/api/auth/resume",
+      "without_cookie": "no session returned"
+    }
+  ],
+  "post_deploy_error_logs": 0,
+  "provider_read_only_aggregate": {
+    "registrations": 3,
+    "email_confirmed": 1,
+    "currently_banned": 0
+  },
+  "local_visual_qa": {
+    "mode": "actual Canvas renderer evaluated with native Canvas adapter and synthetic unit-world state; not a browser or production account",
+    "images": [
+      "docs/qa/2026-10-16-home-canvas-unit.png",
+      "docs/qa/2026-10-16-city-canvas-unit.png"
+    ],
+    "observed": "licensed prop and adult projections render in home and city; browser image decoding is awaited by the native adapter"
+  },
+  "fresh_authenticated_browser_test": "not completed; browser control capability unavailable at publication checkpoint",
+  "changes_excluded": [
+    "schema migrations",
+    "environment secrets",
+    "paid resources",
+    "independent demo",
+    "email verification bypass",
+    "Gameloft extraction",
+    "Unity migration"
+  ],
+  "remaining_gates": [
+    "public SMTP/email delivery",
+    "fresh authenticated browser and native GPU/mobile/FPS/WAN acceptance",
+    "direct driving",
+    "national scene coverage",
+    "full Bible systems and operational recovery"
+  ]
+}

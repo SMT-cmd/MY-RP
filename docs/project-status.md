@@ -1,5 +1,13 @@
 # Project status
 
+## Interaction and world-art release live, 16 October 2026
+
+Both main and build/main-game-2026-10-08 are verified at `82de2aea7d77dd531ed4cdc4a02cb07da6ca0ea5`, tree `723cde09fa9f8807a0d495ca4e68d76a72b8773c`. GitHub API blobs/tree were hash-checked against the tested index; the exact remote commit is reconstructed locally and the checkout is clean. Existing free Render service deployed manually as `dep-db98ideq1p3s739jfpjg`, finished at 20:30:30 UTC. Automatic deployment stays off and stage remains build. No schema, environment, paid or independent-demo change occurred. A following documentation-only commit may advance source beyond this runtime.
+
+Live verification passes: twenty public assets match local bytes, health/readiness are 200, configuration is Supabase/build/multiplayer with session resume, unsigned citizen is 401, foreign Origin is 403, and resume without a cookie returns no session. The post-deployment Render error-log query is empty. Main/build refs match and the independent demo remains `28c8437c89fdedb866e1cc3bfc0630d71574246b`. Full suite 227/227 (129.80 seconds), strict types, syntax and staged whitespace checks pass.
+
+The actual Canvas rendering code was additionally run with a native Canvas adapter and a synthetic unit-world fixture; home and city projections show the licensed furniture/buildings and posed adult. Captures are explicitly local renderer checks in docs/qa, not production-account screenshots. The earlier browser observation established the free-host wake screen and public entry only. Browser controls were no longer callable for a fresh signed-in check at publication; live password/cookie restoration, phone and GPU appearance/FPS/WAN acceptance are not claimed. Provider aggregate remains three registrations, one confirmed account and none banned. Public SMTP, direct driving and the whole Bible remain unfinished. See docs/releases/2026-10-16-interactions-and-world-assets.json.
+
 ## Destination walking, interactive objects and licensed world art, 16 October 2026
 
 The main build now preserves a full tap route after the pointer release, safely replaces a destination after its current confirmed step, uses the displayed Canvas camera for picking and shows a destination ring. Client step pacing is 300 ms; server collision/lease/rate checks remain unchanged. Returning the exact committed snapshot removes a second database transaction per command, and pending UI/sync work avoids unnecessary form/snapshot rebuilding. This is an implementation improvement, not a measured WAN/FPS claim; the cloud browser also observed the existing free Render instance waking before MY RP loaded.

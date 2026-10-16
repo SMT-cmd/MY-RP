@@ -29,7 +29,7 @@ async function fixture(t:{after:(fn:()=>Promise<void>)=>void}){
 
 test('live snapshots use authenticated first-frame credentials, privacy, monotonic sequencing and fenced takeover with recoverable receipts',async t=>{
  const f=await fixture(t),viewer=await f.connect('viewer-one'),peer=await f.connect('peer-one');
- const html=await f.request('viewer-one','/');assert.match(html.headers.get('content-security-policy')!,/connect-src 'self' ws:\/\/127\.0\.0\.1:\d+;/);
+ const html=await f.request('viewer-one','/');assert.match(html.headers.get('content-security-policy')!,/connect-src 'self' blob: ws:\/\/127\.0\.0\.1:\d+;/);
  const command=(actor:string,fence:ClientFence,id:string,type:string,payload={})=>f.request(actor,'/api/commands',{id,type,payload,clientLease:fence});
  for(const [actor,fence,name] of [['viewer-one',viewer,'Ada'],['peer-one',peer,'Bola']] as const)assert.equal((await command(actor,fence,'create_live_'+actor,'CreateCitizen',{name,state:'Lagos',adultConfirmed:true})).status,200);
  const live=f.socket(),initial=await live.hello('viewer-one',viewer);assert.deepEqual(initial.people,[]);assert.equal(initial.sequence,1);

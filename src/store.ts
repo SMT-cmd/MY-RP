@@ -41,7 +41,7 @@ export class WorldStore {
       const result = execute(this.#state, actorId, command, now,context?.administration);
       if(!result.replayed&&!isAdminCommand(command.type)&&(this.#requireConnection||context?.requireConnection))assertClientLease(this.#state,actorId,sessionId,context?.clientLease,now);
       if(!result.replayed)await this.#save(result.state);
-      return { receipt: result.receipt, replayed: result.replayed };
+      return { receipt: result.receipt, replayed: result.replayed,...(context?.includeState?{state:structuredClone(result.state)}:{}) };
     });
     this.#tail = run.catch(() => undefined);
     return run;

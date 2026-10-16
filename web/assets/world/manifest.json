@@ -1,0 +1,373 @@
+{
+  "licence": "CC0-1.0",
+  "packs": {
+    "furniture": {
+      "source": "https://kenney.nl/assets/furniture-kit",
+      "archiveSha256": "e67652d0932cee41683f74711c03d3e192a2af9979ef8e6b237711f5482d46b0"
+    },
+    "suburban": {
+      "source": "https://kenney.nl/assets/city-kit-suburban",
+      "archiveSha256": "5869c35cf30b1c87bdb2d197b6d325eebadd2ef08ea27f04797e8e08d77a9a39"
+    },
+    "commercial": {
+      "source": "https://kenney.nl/assets/city-kit-commercial",
+      "archiveSha256": "f8b09b081c2bb88bcc126e2dec1cb40fd0dad7e7e591b6c26aaefe96fb35276b"
+    },
+    "cars": {
+      "source": "https://kenney.nl/assets/car-kit",
+      "archiveSha256": "fac7dacac5c7874348cf19729af3ef205f3d366493edaf0a827d93f4fdf3d0c4"
+    }
+  },
+  "assets": {
+    "furniture/bedDouble": {
+      "url": "/assets/world/furniture/bedDouble.glb",
+      "bytes": 23368,
+      "sha256": "d86dd6d0b85b57609932b3f420841183f1ac0b22e60ef4fcacb3164c80166f2d",
+      "sourceMember": "Models/GLTF format/bedDouble.glb",
+      "sourceSha256": "c49b33e7d797d2ba1111895587dba7ff63b17a712eb9b4ceeb40a598f73e476c"
+    },
+    "furniture/bedSingle": {
+      "url": "/assets/world/furniture/bedSingle.glb",
+      "bytes": 18636,
+      "sha256": "41128adeda31527ea90dfbb8229059461149c5a8304de2d47c098d0e43210cc2",
+      "sourceMember": "Models/GLTF format/bedSingle.glb",
+      "sourceSha256": "ca00c63f9a12da3138d902b2f5f18e0360fb6e8a5ac42ccb4bc3f185724b65d1"
+    },
+    "furniture/kitchenCabinet": {
+      "url": "/assets/world/furniture/kitchenCabinet.glb",
+      "bytes": 10444,
+      "sha256": "7238c57778935ae25db5e57e9f7af3ba7068c71b005ff7cfbff3b6f3b1a13200",
+      "sourceMember": "Models/GLTF format/kitchenCabinet.glb",
+      "sourceSha256": "7238c57778935ae25db5e57e9f7af3ba7068c71b005ff7cfbff3b6f3b1a13200"
+    },
+    "furniture/kitchenSink": {
+      "url": "/assets/world/furniture/kitchenSink.glb",
+      "bytes": 23480,
+      "sha256": "7b9610277d71f00dcf1bba49cf4d98d77ce5177e84bf76c7da2f8893e542f743",
+      "sourceMember": "Models/GLTF format/kitchenSink.glb",
+      "sourceSha256": "7b9610277d71f00dcf1bba49cf4d98d77ce5177e84bf76c7da2f8893e542f743"
+    },
+    "furniture/kitchenFridge": {
+      "url": "/assets/world/furniture/kitchenFridge.glb",
+      "bytes": 20116,
+      "sha256": "8af4f4bbb1b5525ad8226e97926a5af60fa8fb20a3cb74dbda5328a9d320dbab",
+      "sourceMember": "Models/GLTF format/kitchenFridge.glb",
+      "sourceSha256": "8af4f4bbb1b5525ad8226e97926a5af60fa8fb20a3cb74dbda5328a9d320dbab"
+    },
+    "furniture/loungeDesignSofa": {
+      "url": "/assets/world/furniture/loungeDesignSofa.glb",
+      "bytes": 9128,
+      "sha256": "b4f4e6850118e409da301df678228c703b6ac02e94fbb9dbde61543af817fa53",
+      "sourceMember": "Models/GLTF format/loungeDesignSofa.glb",
+      "sourceSha256": "b4f4e6850118e409da301df678228c703b6ac02e94fbb9dbde61543af817fa53"
+    },
+    "furniture/loungeSofaLong": {
+      "url": "/assets/world/furniture/loungeSofaLong.glb",
+      "bytes": 13112,
+      "sha256": "452df1c862f97781615e2c1c832913b48cf6c6f011d3260dc023ff3f117cc9d1",
+      "sourceMember": "Models/GLTF format/loungeSofaLong.glb",
+      "sourceSha256": "452df1c862f97781615e2c1c832913b48cf6c6f011d3260dc023ff3f117cc9d1"
+    },
+    "furniture/loungeDesignChair": {
+      "url": "/assets/world/furniture/loungeDesignChair.glb",
+      "bytes": 9136,
+      "sha256": "f0766a7d5698974b711adac18a2108f0e74e3a036fa4e4e0ccf91195b0ee5abf",
+      "sourceMember": "Models/GLTF format/loungeDesignChair.glb",
+      "sourceSha256": "f0766a7d5698974b711adac18a2108f0e74e3a036fa4e4e0ccf91195b0ee5abf"
+    },
+    "furniture/loungeChairRelax": {
+      "url": "/assets/world/furniture/loungeChairRelax.glb",
+      "bytes": 13904,
+      "sha256": "def698179e44de6cd17f4cfc2730273da54dd25458a29b079fbf4468abe5d98e",
+      "sourceMember": "Models/GLTF format/loungeChairRelax.glb",
+      "sourceSha256": "def698179e44de6cd17f4cfc2730273da54dd25458a29b079fbf4468abe5d98e"
+    },
+    "furniture/loungeSofaOttoman": {
+      "url": "/assets/world/furniture/loungeSofaOttoman.glb",
+      "bytes": 6960,
+      "sha256": "79087654136d7d69653fdc3b52a02d7833fe13e6a0a56b8dcdf652c611dbd959",
+      "sourceMember": "Models/GLTF format/loungeSofaOttoman.glb",
+      "sourceSha256": "79087654136d7d69653fdc3b52a02d7833fe13e6a0a56b8dcdf652c611dbd959"
+    },
+    "furniture/chairModernCushion": {
+      "url": "/assets/world/furniture/chairModernCushion.glb",
+      "bytes": 7376,
+      "sha256": "a181e3b48b4a79f55a851fa3f7f5ee2b0c6a11abd77a46e80c0c378140b503e4",
+      "sourceMember": "Models/GLTF format/chairModernCushion.glb",
+      "sourceSha256": "245132697e633e907e2b48c86d56f6c8543604a3440a055d1c71c06ce11d2858"
+    },
+    "furniture/benchCushion": {
+      "url": "/assets/world/furniture/benchCushion.glb",
+      "bytes": 12500,
+      "sha256": "5186ad938f8b9eff255361fd1fdc48a81f08c318161cde27c93753ab95a2d354",
+      "sourceMember": "Models/GLTF format/benchCushion.glb",
+      "sourceSha256": "5186ad938f8b9eff255361fd1fdc48a81f08c318161cde27c93753ab95a2d354"
+    },
+    "furniture/desk": {
+      "url": "/assets/world/furniture/desk.glb",
+      "bytes": 15048,
+      "sha256": "c824a727eb44967b803714902ff4aa094eaecf0702c566a8d9e49828b7724348",
+      "sourceMember": "Models/GLTF format/desk.glb",
+      "sourceSha256": "0164fe828f028b321730fb8c74502e353583f751be74da1682d42fff7d3c5a42"
+    },
+    "furniture/tableRound": {
+      "url": "/assets/world/furniture/tableRound.glb",
+      "bytes": 6444,
+      "sha256": "f8daea9124a542a00b7bdacfddac82dc468573d43e44d7b54dd6316e9695754b",
+      "sourceMember": "Models/GLTF format/tableRound.glb",
+      "sourceSha256": "f8daea9124a542a00b7bdacfddac82dc468573d43e44d7b54dd6316e9695754b"
+    },
+    "furniture/tableCoffeeGlass": {
+      "url": "/assets/world/furniture/tableCoffeeGlass.glb",
+      "bytes": 9428,
+      "sha256": "682133be46a14c241ad53bf3495fb3686c74188f3ffef93eecd94e2a08b12576",
+      "sourceMember": "Models/GLTF format/tableCoffeeGlass.glb",
+      "sourceSha256": "05bf257a086a540b3b79b0c1c7dae35b036ed4d520686aed74ea94ea701c447e"
+    },
+    "furniture/sideTable": {
+      "url": "/assets/world/furniture/sideTable.glb",
+      "bytes": 8800,
+      "sha256": "8227810584f7d37582e4e9ec821c56f1dc54b99c88a8dc74242ea3b7402bc472",
+      "sourceMember": "Models/GLTF format/sideTable.glb",
+      "sourceSha256": "8227810584f7d37582e4e9ec821c56f1dc54b99c88a8dc74242ea3b7402bc472"
+    },
+    "furniture/bookcaseOpen": {
+      "url": "/assets/world/furniture/bookcaseOpen.glb",
+      "bytes": 18020,
+      "sha256": "750702218d68c062b15dfef6ab06a4014d1cfa8bd05f02e57c53b7e13bec157c",
+      "sourceMember": "Models/GLTF format/bookcaseOpen.glb",
+      "sourceSha256": "750702218d68c062b15dfef6ab06a4014d1cfa8bd05f02e57c53b7e13bec157c"
+    },
+    "furniture/bookcaseClosedDoors": {
+      "url": "/assets/world/furniture/bookcaseClosedDoors.glb",
+      "bytes": 22644,
+      "sha256": "ff33f535acdb1825c0e958a293642b39665adcae0b1317b650e83d2bb687f4e2",
+      "sourceMember": "Models/GLTF format/bookcaseClosedDoors.glb",
+      "sourceSha256": "ff33f535acdb1825c0e958a293642b39665adcae0b1317b650e83d2bb687f4e2"
+    },
+    "furniture/cabinetTelevisionDoors": {
+      "url": "/assets/world/furniture/cabinetTelevisionDoors.glb",
+      "bytes": 16876,
+      "sha256": "8959347bfe26b1ac7e44c476f05789466bb84bcd2ad8b0fb40286005399bfcfc",
+      "sourceMember": "Models/GLTF format/cabinetTelevisionDoors.glb",
+      "sourceSha256": "8959347bfe26b1ac7e44c476f05789466bb84bcd2ad8b0fb40286005399bfcfc"
+    },
+    "furniture/bathroomSink": {
+      "url": "/assets/world/furniture/bathroomSink.glb",
+      "bytes": 22536,
+      "sha256": "39d4f19608cab7e0fed52303b2c689f5f51fae1bad9b6913cb53d838875e797e",
+      "sourceMember": "Models/GLTF format/bathroomSink.glb",
+      "sourceSha256": "39d4f19608cab7e0fed52303b2c689f5f51fae1bad9b6913cb53d838875e797e"
+    },
+    "furniture/pottedPlant": {
+      "url": "/assets/world/furniture/pottedPlant.glb",
+      "bytes": 7576,
+      "sha256": "5b760eda2766f75fda36b2c5df652a1662f82981ef64cd8fa7fe7bcd386b3a15",
+      "sourceMember": "Models/GLTF format/pottedPlant.glb",
+      "sourceSha256": "5b760eda2766f75fda36b2c5df652a1662f82981ef64cd8fa7fe7bcd386b3a15"
+    },
+    "furniture/lampRoundFloor": {
+      "url": "/assets/world/furniture/lampRoundFloor.glb",
+      "bytes": 6600,
+      "sha256": "50fe1b5b588edf15bfa9cc880f71a02a4fda6036350b24733d0ef4de5cc5e908",
+      "sourceMember": "Models/GLTF format/lampRoundFloor.glb",
+      "sourceSha256": "50fe1b5b588edf15bfa9cc880f71a02a4fda6036350b24733d0ef4de5cc5e908"
+    },
+    "furniture/lampRoundTable": {
+      "url": "/assets/world/furniture/lampRoundTable.glb",
+      "bytes": 6604,
+      "sha256": "75bb644caaa3da003b4fcad7a931722dd61cd2858aab70cf660021d5061fa1b2",
+      "sourceMember": "Models/GLTF format/lampRoundTable.glb",
+      "sourceSha256": "75bb644caaa3da003b4fcad7a931722dd61cd2858aab70cf660021d5061fa1b2"
+    },
+    "furniture/computerScreen": {
+      "url": "/assets/world/furniture/computerScreen.glb",
+      "bytes": 6404,
+      "sha256": "8ce76ad8be6c60246bea093251b06261fafe9e2ccc94d788a6843c813312f269",
+      "sourceMember": "Models/GLTF format/computerScreen.glb",
+      "sourceSha256": "5942cbad29a2d2b956619569926e81d50a4174403d592fece6556e57632dc643"
+    },
+    "furniture/computerKeyboard": {
+      "url": "/assets/world/furniture/computerKeyboard.glb",
+      "bytes": 3476,
+      "sha256": "6325a2f333ee12ed92f2534f0cf3c9f710db789e763d09add426fc7badf2014c",
+      "sourceMember": "Models/GLTF format/computerKeyboard.glb",
+      "sourceSha256": "9d9135789de2120e9f41ce3f0a56dd1b15f40adcc7888739bb842a2d820da322"
+    },
+    "furniture/rugRectangle": {
+      "url": "/assets/world/furniture/rugRectangle.glb",
+      "bytes": 3188,
+      "sha256": "a989d2d59c04e3071e0c90388b113a9a8f339ce1814ef984c51cb6dcd7c8e0eb",
+      "sourceMember": "Models/GLTF format/rugRectangle.glb",
+      "sourceSha256": "a989d2d59c04e3071e0c90388b113a9a8f339ce1814ef984c51cb6dcd7c8e0eb"
+    },
+    "furniture/pillowBlueLong": {
+      "url": "/assets/world/furniture/pillowBlueLong.glb",
+      "bytes": 5088,
+      "sha256": "dd1e9958569defea74f91083639d22a13478afbb3d074855ba78345a978873a5",
+      "sourceMember": "Models/GLTF format/pillowBlueLong.glb",
+      "sourceSha256": "b643f81a863595071b7907d3d0dcf5b1b0e3bb6ad8521db37778b2242ba46bbc"
+    },
+    "suburban/building-type-a": {
+      "url": "/assets/world/suburban/building-type-a.glb",
+      "bytes": 110440,
+      "sha256": "c9a2751a753d178577580f5ccc62944ad8f9252564e758e31e3fb9e5ed15c72b",
+      "sourceMember": "Models/GLB format/building-type-a.glb",
+      "sourceSha256": "49f32e20b9dcd24b1c8f6d6488807b8c8cb684cbb595bfb0bb36ad903e470faa"
+    },
+    "suburban/building-type-c": {
+      "url": "/assets/world/suburban/building-type-c.glb",
+      "bytes": 111428,
+      "sha256": "554f82156171a20eb17703b5507e9d37c6120d0aa13aa32be1ceb341180b213b",
+      "sourceMember": "Models/GLB format/building-type-c.glb",
+      "sourceSha256": "86a69f30f1a09461283e158514945ae5cc9d56357b0ddc83a9a3f0eecd113591"
+    },
+    "suburban/building-type-e": {
+      "url": "/assets/world/suburban/building-type-e.glb",
+      "bytes": 157344,
+      "sha256": "31e6a3c89998e0f4b6f9cacd305cf97b40b8bd68e19adfe07c032306081b64ca",
+      "sourceMember": "Models/GLB format/building-type-e.glb",
+      "sourceSha256": "9ec43994c8c332b1ae5b058d8b9646255831fd91047c1a35b1fc1ecae4c082fc"
+    },
+    "suburban/building-type-g": {
+      "url": "/assets/world/suburban/building-type-g.glb",
+      "bytes": 105432,
+      "sha256": "030ac7d0992a172f97cb831fb7895f624b2b1cf7307b51962917e901f7fa18b5",
+      "sourceMember": "Models/GLB format/building-type-g.glb",
+      "sourceSha256": "f497a7bc3a8e6b6273ba99f090042d1cfb3141da57d3c51998c57a479a0ece11"
+    },
+    "suburban/building-type-i": {
+      "url": "/assets/world/suburban/building-type-i.glb",
+      "bytes": 81608,
+      "sha256": "31df9b255d10094a45df26c601f53c6cf77154bbc63d330d0a956cf09d13461c",
+      "sourceMember": "Models/GLB format/building-type-i.glb",
+      "sourceSha256": "798bb0f1eb644b64a19584e6765da23750f04a86c3703704ce56bc63e5512b39"
+    },
+    "suburban/building-type-k": {
+      "url": "/assets/world/suburban/building-type-k.glb",
+      "bytes": 100992,
+      "sha256": "a6f7e201bb91351b0928cc6e103d21220804ff36f077726b214f1f49c82edaaf",
+      "sourceMember": "Models/GLB format/building-type-k.glb",
+      "sourceSha256": "c1b819a526bbcf9663bc40c98e22337cded7fff7c50c14679132d5d98d75f583"
+    },
+    "suburban/building-type-m": {
+      "url": "/assets/world/suburban/building-type-m.glb",
+      "bytes": 108832,
+      "sha256": "f75d75024794ffbddcc997708e575c7fdab9efe00edf3900de978dfe01cbb52c",
+      "sourceMember": "Models/GLB format/building-type-m.glb",
+      "sourceSha256": "36d31f4e45498f6229805b6a7a1577ef00230daeea4c6a4469481e9d5a0fdb7c"
+    },
+    "suburban/building-type-o": {
+      "url": "/assets/world/suburban/building-type-o.glb",
+      "bytes": 126260,
+      "sha256": "1850c754a3ae23484542056436c6bc13a007b7467b11547a6f27cbc76e24ec44",
+      "sourceMember": "Models/GLB format/building-type-o.glb",
+      "sourceSha256": "aa256fa55613bb4c5fbdf379123454e4f98cde4d07a68bc826bb143d287ae0c1"
+    },
+    "suburban/tree-large": {
+      "url": "/assets/world/suburban/tree-large.glb",
+      "bytes": 17644,
+      "sha256": "79a3571badd86d9fdc60d77e1be5162c9b6aea285217851e16d7048d0a62f082",
+      "sourceMember": "Models/GLB format/tree-large.glb",
+      "sourceSha256": "16d1f95c149bc727a953a473cf20bf21de9bf1a88747c4f9d2eeb4ac7d43e291"
+    },
+    "suburban/tree-small": {
+      "url": "/assets/world/suburban/tree-small.glb",
+      "bytes": 17644,
+      "sha256": "7693c25b69980f9ecaa959bddd57e12aea85e7b705bdad29d18fc969b4a2f969",
+      "sourceMember": "Models/GLB format/tree-small.glb",
+      "sourceSha256": "5f63359e5f392609d7617cc98070855ca1ffd4f4b4bc3978a5ff56ece88a58d6"
+    },
+    "commercial/building-a": {
+      "url": "/assets/world/commercial/building-a.glb",
+      "bytes": 119996,
+      "sha256": "155b8f243633ed482493da0f29b805a6c7748e43f121ef5d3ee7c743016f2e58",
+      "sourceMember": "Models/GLB format/building-a.glb",
+      "sourceSha256": "5cf220f90ee3f21e7abe38055ca409a48aa8ef1d5ffab6e2deb99e5a5e1ed5e0"
+    },
+    "commercial/building-c": {
+      "url": "/assets/world/commercial/building-c.glb",
+      "bytes": 113848,
+      "sha256": "35ec81c361067c932eb0437e40a3d7ab528b66a84d51dd5a581acf2b5615ced0",
+      "sourceMember": "Models/GLB format/building-c.glb",
+      "sourceSha256": "f6887608a95a165503561730252c30506938803731c6546efca12bd47b1666bd"
+    },
+    "commercial/building-f": {
+      "url": "/assets/world/commercial/building-f.glb",
+      "bytes": 160008,
+      "sha256": "4d410982e08b0e17d89b7cb467df39e93541b7fb8a2619388c3902a2107875d1",
+      "sourceMember": "Models/GLB format/building-f.glb",
+      "sourceSha256": "633a25f7fb3ccf98e304a885a36ed900aecee5bde7ecd554729dec753cceea78"
+    },
+    "commercial/building-h": {
+      "url": "/assets/world/commercial/building-h.glb",
+      "bytes": 138444,
+      "sha256": "11442a83c08ad9370e0a5c9ff13f85ca1adcef3d40636badd8b008a93965c898",
+      "sourceMember": "Models/GLB format/building-h.glb",
+      "sourceSha256": "6881613ce218bb33a0f56137d4d33b00d307c47e518fbb21ccba1083efbea896"
+    },
+    "commercial/building-k": {
+      "url": "/assets/world/commercial/building-k.glb",
+      "bytes": 258036,
+      "sha256": "9307de56ff08628967fcace766570e1ac77b4485ab335f925b8601d51ffc187c",
+      "sourceMember": "Models/GLB format/building-k.glb",
+      "sourceSha256": "afd36f573b9d6a6a890675aa0fbe762b29efb6258f322990752d79d9f0da42c6"
+    },
+    "commercial/building-n": {
+      "url": "/assets/world/commercial/building-n.glb",
+      "bytes": 352292,
+      "sha256": "69c7c1781fa23833a71ecff279fe6320ca6e60ac17800a64aa045b3334c6434c",
+      "sourceMember": "Models/GLB format/building-n.glb",
+      "sourceSha256": "35dc225d48516ead483a49e90dd164f1bc62b1ad75d3095488bd404cad1848b0"
+    },
+    "commercial/building-skyscraper-a": {
+      "url": "/assets/world/commercial/building-skyscraper-a.glb",
+      "bytes": 122392,
+      "sha256": "758daca2d4eefecd8e688d08352d8e34f4ae10a2008477a01b7df4f5a35eea4a",
+      "sourceMember": "Models/GLB format/building-skyscraper-a.glb",
+      "sourceSha256": "d8339bbb75944ff91d1ec9a70ec6dead71bd98b94a42d3dd0fc1f3b107ddbe85"
+    },
+    "commercial/building-skyscraper-c": {
+      "url": "/assets/world/commercial/building-skyscraper-c.glb",
+      "bytes": 160580,
+      "sha256": "5e72e945c2395849c87cce168b3de8d2c51b4a4c84e2ceaa6bf1e084d1778bf5",
+      "sourceMember": "Models/GLB format/building-skyscraper-c.glb",
+      "sourceSha256": "e73c357554f7561fedb8c1cbecf9d7163ba09ada264d661c59a0f0a180e0185f"
+    },
+    "commercial/building-skyscraper-e": {
+      "url": "/assets/world/commercial/building-skyscraper-e.glb",
+      "bytes": 112936,
+      "sha256": "c1c6515bfe03e4508696036100ef5318eb2e3fbd39517649ee6f2db9bd4bbc47",
+      "sourceMember": "Models/GLB format/building-skyscraper-e.glb",
+      "sourceSha256": "21b58a2f2b18d6a7cf8915e8b947bdb6a6a0706da6cffb5a01677c29f03b5935"
+    },
+    "cars/sedan": {
+      "url": "/assets/world/cars/sedan.glb",
+      "bytes": 184600,
+      "sha256": "df2ffacd38e02e3053d1ccafc4dc48d044de3ae762920a3815edbfe7ed455be5",
+      "sourceMember": "Models/GLB format/sedan.glb",
+      "sourceSha256": "b532ea7d2c59f7f6b22b138cf1955218a2c1898f1cea932af4d3fd563c3959b7"
+    },
+    "cars/suv-luxury": {
+      "url": "/assets/world/cars/suv-luxury.glb",
+      "bytes": 188296,
+      "sha256": "ac1c702a205bf58ad98479cedffc2ccadca056934815bc87ad36763cca440585",
+      "sourceMember": "Models/GLB format/suv-luxury.glb",
+      "sourceSha256": "9e2a79dc050189d4555a88d2e9da0f30ff946ba74f1d43b5b3bda3c193d1f7d7"
+    },
+    "cars/van": {
+      "url": "/assets/world/cars/van.glb",
+      "bytes": 188048,
+      "sha256": "b59efddda6c689408fb9b27c5d621d0458e0a24b03706049bd398b8de0527343",
+      "sourceMember": "Models/GLB format/van.glb",
+      "sourceSha256": "ed4ed56e8e5ed98db050af09ed2062b3b6bb7b93eab1e563cb6774b387b233a1"
+    },
+    "cars/taxi": {
+      "url": "/assets/world/cars/taxi.glb",
+      "bytes": 187996,
+      "sha256": "300c2bec9414752bd0f8ceadbe71bab90a3ed885e088aa0e752ec6f4249b8434",
+      "sourceMember": "Models/GLB format/taxi.glb",
+      "sourceSha256": "3803539718ffd3b84b515dbce8ed6b489f1ff5be58edb1903d2c5db5c584bdc7"
+    }
+  }
+}

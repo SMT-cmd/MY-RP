@@ -1,5 +1,6 @@
 const $ = id => document.getElementById(id);
 let accountMode = false, refreshToken = '', expiresAt = 0;
+let refreshFlight=null;
 let key = '', view = null, pending = null, busy = false, nearbyScene = null;
 let dataSaver=!!navigator.connection?.saveData,preferredGraphics='medium';
 try{const saved=localStorage.getItem('simulator-data-saver');if(saved!==null)dataSaver=saved==='1';const graphics=localStorage.getItem('simulator-graphics');if(['low','medium','high'].includes(graphics))preferredGraphics=graphics;}catch{/* Preferences also work without browser storage. */}
@@ -72,10 +73,10 @@ function renderEducation(){
  $('licence-records').replaceChildren();ed.licences.forEach(l=>{const c=ed.courses.find(c=>c.track===l.track),box=document.createElement('div');box.append(paragraph(`${l.track}: ${l.current?'current':'expired'} · expires ${new Date(l.expiresAt).toLocaleString()}`));if(view.serverTime>=l.expiresAt-86400000)box.append(actionButton('Confirm continuing practice and renew for '+money(Math.ceil(c.fee*.05)),'RenewLicence',{licenceId:l.id,choice:0,acceptedFee:Math.ceil(c.fee*.05)}));$('licence-records').append(box);});
  $('scholarship-records').replaceChildren();ed.scholarships.forEach(a=>{const box=document.createElement('div');box.append(paragraph(`${a.course} award · ${a.status} · reserved ${money(a.amount)} · expires ${new Date(a.expiresAt).toLocaleDateString()}`));if(a.donor===view.citizen.id&&a.status==='offered'&&a.expiresAt<=view.serverTime)box.append(actionButton('Refund unused award','RefundScholarship',{scholarshipId:a.id}));$('scholarship-records').append(box);});
 }
-function lock() {
+function lock(skipRender=false) {
   const disconnected=window.WorldSync?.ready()===false;
   document.querySelectorAll('button:not(#staff-panel button):not([data-game-ui])').forEach(button => { button.disabled = busy || (pending && !['retry', 'access-submit'].includes(button.id)) || disconnected&&!['account-logout','account-login','account-signup','access-submit','connection-takeover'].includes(button.id); });
-  if (view?.citizen) render();
+  if (view?.citizen){if(skipRender){window.GameUI?.render(view,true);window.ObjectUI?.observe(view,perform,true);}else render();}
   $('retry').disabled = disconnected || busy || !key || accountMode && pending?.accountId!==view?.accountId;
   $('account-logout').disabled=busy||!!pending&&pending.accountId===view?.accountId;
   if(disconnected)document.querySelectorAll('button:not(#staff-panel button):not([data-game-ui])').forEach(b=>{if(!['account-logout','account-login','account-signup','access-submit','connection-takeover'].includes(b.id))b.disabled=true;});
@@ -86,7 +87,7 @@ async function request(path, command, retried=false, extraHeaders={}) {
   const response = await fetch(path, { method: command ? 'POST' : 'GET', headers: { ...(accountMode ? {Authorization:'Bearer '+key} : {'x-development-key':key}), ...extraHeaders,...(command ? { 'Content-Type': 'application/json' } : {}) }, body: command ? JSON.stringify(path==='/api/commands'?{...command,clientLease:window.WorldSync?.fence()}:command) : undefined, signal: AbortSignal.timeout(10000) });
   const data = await response.json();
   if(accountMode&&response.status===401&&refreshToken&&!retried){await refreshAccount();return request(path,command,true,extraHeaders);}
-  if (!response.ok) { const error = new Error(data.message || 'The request failed.'); error.code=data.error;error.auth = response.status === 401; error.confirmed = [400, 409, 413, 415].includes(response.status); throw error; }
+  if (!response.ok) { const error = new Error(data.message || 'The request failed.'); error.code=data.error;error.auth = response.status === 401; error.confirmed = [400, 403, 404, 409, 413, 415, 422, 429].includes(response.status); throw error; }
   return data;
 }
 async function perform(type, payload = {}) {
@@ -99,10 +100,10 @@ async function perform(type, payload = {}) {
 async function sendPending() {
   if (!pending || busy) return;
   if(accountMode&&pending.accountId!==view?.accountId){notice('Sign in to the account that created your unconfirmed action.',true);return;}
-  busy = true; lock();let openWardrobe=false,openLight=null;
+  busy = true; lock(true);let openWardrobe=false,openLight=null,confirmed=false;
   try {
     const result = await request('/api/commands', pending);
-    pending = null; rememberPending(); view = result.view;
+    pending = null; rememberPending(); view = result.view;confirmed=true;
     const detail = result.receipt.detail;
     openWardrobe=result.receipt.type==='InteractHomeFixture'&&view.world?.home?.fixtures.some(f=>f.id===detail.fixtureId&&f.action==='Dress');
     if(result.receipt.type==='InteractHomeFixture'){const lamp=view.world?.home?.fixtures.find(f=>f.id===detail.fixtureId&&f.action==='Light');if(lamp)openLight=lamp.instanceId;}
@@ -113,12 +114,12 @@ async function sendPending() {
     if (error.auth) {key='';window.WorldSync?.stop();}
     if (error.confirmed) { pending = null; rememberPending(); }
     notice(error.message + (pending ? ' Your action identifier has been kept for a safe retry.' : ''), true);
-  } finally { busy = false; $('retry-panel').hidden = !pending; lock();if(openWardrobe){window.GameUI?.open('appearance');$('appearance-panel').scrollIntoView?.({block:'nearest',behavior:'auto'});$('appearance-hair').focus();}if(openLight){window.GameUI?.open('furnish');const control=$('lamp-'+openLight);control?.scrollIntoView?.({block:'nearest',behavior:'auto'});control?.querySelector('select')?.focus();} }
+  } finally { busy = false; $('retry-panel').hidden = !pending; lock();if(openWardrobe){window.GameUI?.open('appearance');$('appearance-panel').scrollIntoView?.({block:'nearest',behavior:'auto'});$('appearance-hair').focus();}if(openLight){window.GameUI?.open('furnish');const control=$('lamp-'+openLight);control?.scrollIntoView?.({block:'nearest',behavior:'auto'});control?.querySelector('select')?.focus();}if(confirmed)drainDestination(); }
 }
 function render() {
-  const citizen = view.citizen;window.EntryUI?.stage(!!key,!!citizen);
+  const citizen = view.citizen;window.CityMapUI?.observe(key?view:null);window.ObjectUI?.observe(key?view:null,perform,busy||!!pending||window.WorldSync?.ready()===false);window.EntryUI?.stage(!!key,!!citizen);
   window.AdminUI?.observe(accountMode&&key&&view.accountId?{actor:view.accountId,request,acceptSession:data=>{useSession(data);stopWalking();void window.WorldSync?.reconnect();}}:null);
-  window.WorldSync?.observe(key?view:null,{request,authFailed:error=>{key='';refreshToken='';stopWalking();nearbyScene=null;render();notice(error.message,true);},credentials:()=>accountMode?{authorization:'Bearer '+key}:{developmentKey:key},status:connected=>{stopWalking();if(!connected&&view?.world){nearbyScene=null;view.world.people=[];view.world.npcs=[];window.NeighboursUI?.render(view,perform,true);$('world-neighbours')?.replaceChildren();window.WorldRenderer?.update(view.world,renderQuality());}lock();},snapshot:next=>{view=next;render();},frame:data=>{if(!view?.world)return;nearbyScene=data;const p=view.world.position;if(data.scope?.region!==p.region||data.scope?.leaseVersion!==p.leaseVersion||data.scope?.interior!==p.interior||(data.scope?.homeId??null)!==(p.homeId??null))return;if(data.serverTime<view.world.serverTime)return;view.world.people=data.people;view.world.npcs=data.npcs??[];view.world.serverTime=data.serverTime;window.NeighboursUI?.render(view,perform,busy||!!pending);const list=$('world-neighbours');if(list)list.replaceChildren(...data.people.map(c=>{const row=document.createElement('li');row.textContent=c.name+' · nearby';return row;}));window.WorldRenderer?.update(view.world,renderQuality());}});
+  window.WorldSync?.observe(key?view:null,{request,commandPending:()=>busy||!!pending,authFailed:error=>{key='';refreshToken='';stopWalking();nearbyScene=null;render();notice(error.message,true);},credentials:()=>accountMode?{authorization:'Bearer '+key}:{developmentKey:key},status:connected=>{stopWalking();if(!connected&&view?.world){nearbyScene=null;view.world.people=[];view.world.npcs=[];window.NeighboursUI?.render(view,perform,true);$('world-neighbours')?.replaceChildren();window.WorldRenderer?.update(view.world,renderQuality());}lock();},snapshot:next=>{view=next;render();},frame:data=>{if(!view?.world)return;nearbyScene=data;const p=view.world.position;if(data.scope?.region!==p.region||data.scope?.leaseVersion!==p.leaseVersion||data.scope?.interior!==p.interior||(data.scope?.homeId??null)!==(p.homeId??null))return;if(data.serverTime<view.world.serverTime)return;view.world.people=data.people;view.world.npcs=data.npcs??[];view.world.serverTime=data.serverTime;window.NeighboursUI?.render(view,perform,busy||!!pending);const list=$('world-neighbours');if(list)list.replaceChildren(...data.people.map(c=>{const row=document.createElement('li');row.textContent=c.name+' · nearby';return row;}));window.WorldRenderer?.update(view.world,renderQuality());}});
   window.NeighboursUI?.render(key?view:null,perform,busy||!!pending||window.WorldSync?.ready()===false);
   window.AppearanceUI?.render(view,perform,busy||!!pending||window.WorldSync?.ready()===false);
   if(view.regions && !$('citizen-state').dataset.complete){$('citizen-state').replaceChildren(...view.regions.map(region=>{const option=document.createElement('option');option.value=region.name;option.textContent=region.name+' · '+region.capital;return option;}));$('citizen-state').value='Lagos';$('citizen-state').dataset.complete='true';}
@@ -224,47 +225,66 @@ $('exam-form').addEventListener('submit', event => { event.preventDefault(); con
 
 async function accountRequest(action,payload={}){
  const response=await fetch('/api/auth/'+action,{method:'POST',headers:{'Content-Type':'application/json',...(action==='logout'?{Authorization:'Bearer '+key}:{})},body:JSON.stringify(payload),signal:AbortSignal.timeout(10000)});
- const data=await response.json();if(!response.ok){const error=new Error(data.message||'Account request failed.');error.code=data.error;if(response.status===429){const seconds=Number(data.retryAfterSeconds)||Number(response.headers.get('Retry-After'))||60;window.EntryUI?.rateLimit(action,seconds);}throw error;}return data;
+ const data=await response.json();if(!response.ok){const error=new Error(data.message||'Account request failed.');error.code=data.error;error.auth=response.status===401;if(response.status===429){const seconds=Number(data.retryAfterSeconds)||Number(response.headers.get('Retry-After'))||60;window.EntryUI?.rateLimit(action==='resume'?'refresh':action,seconds);}throw error;}return data;
 }
 function useSession(data){key=data.access_token;refreshToken=data.refresh_token;expiresAt=Date.now()+data.expires_in*1000;}
-async function refreshAccount(){try{useSession(await accountRequest('refresh',{refresh_token:refreshToken}));}catch(error){key='';refreshToken='';stopWalking();render();throw error;}}
+async function refreshAccount(){
+ if(refreshFlight)return refreshFlight;
+ refreshFlight=(async()=>{try{useSession(await accountRequest('refresh',{refresh_token:refreshToken}));}catch(error){if(error.auth){key='';refreshToken='';stopWalking();render();}throw error;}finally{refreshFlight=null;}})();return refreshFlight;
+}
+async function resumeAccount(){
+ if(busy||!accountMode)return;busy=true;lock();window.EntryUI?.begin('auth','Restoring your saved session…');
+ try{if(!key){const data=await accountRequest('resume');if(!data.access_token)return;useSession(data);}view=await request('/api/citizen');$('account-recover-session').hidden=true;render();notice('Welcome back. Your saved citizen is ready.');}
+ catch(error){if(error.auth){key='';refreshToken='';}else{$('account-recover-session').hidden=false;notice('Your connection was interrupted. Retry loading your saved session.',true);}}
+ finally{busy=false;lock();window.EntryUI?.end('auth');}
+}
+$('account-recover-session').addEventListener('click',resumeAccount);
 $('account-form').addEventListener('submit',async event=>{
  if(window.AuthReturn?.cleanupFailed){event.preventDefault();$('account-password').value='';notice('Close this account link and open the game from its main address to sign in.',true);return;}
  event.preventDefault();const action=event.submitter?.id==='account-signup'?'signup':'login';if(busy||!accountMode||window.EntryUI?.remaining(action)>0)return;busy=true;lock();window.EntryUI?.begin('auth',action==='signup'?'Creating your account…':'Returning to your world…');
  const payload={email:$('account-email').value.trim(),password:$('account-password').value};$('account-password').value='';
  try{const data=await accountRequest(action,payload);if(data.confirmationRequired){window.EntryUI?.confirmation();notice(data.message);return;}useSession(data);view=await request('/api/citizen');render();notice(pending?'Signed in. Resolve your unconfirmed action before continuing.':'Signed in. Your saved citizen is ready.');}
- catch(error){key='';refreshToken='';notice(error.message,true);}finally{busy=false;lock();window.EntryUI?.end('auth');}
+ catch(error){if(!key||error.auth){key='';refreshToken='';}else $('account-recover-session').hidden=false;notice(error.message,true);}finally{busy=false;lock();window.EntryUI?.end('auth');}
 });
 $('account-logout').addEventListener('click',async()=>{
  if(busy||pending&&pending.accountId===view?.accountId)return;stopWalking();busy=true;lock();try{await accountRequest('logout');window.WorldSync?.stop();window.AdminUI?.reset();key='';refreshToken='';view=null;window.CivicUI?.render(null,perform,true);window.RelationshipsUI?.render(null,perform,true);window.NeighboursUI?.render(null,perform,true);window.WorldRenderer?.destroy();window.GameUI?.reset();$('citizen-panel').hidden=true;$('creation-panel').hidden=true;$('access-panel').hidden=true;$('account-panel').hidden=false;$('account-logout').hidden=true;window.EntryUI?.stage(false,false);notice('Signed out.');}catch(error){notice(error.message,true);}finally{busy=false;lock();}
 });
 let configLoading=false;
-async function loadConfiguration(){if(configLoading)return;configLoading=true;try{const response=await fetch('/api/config',{signal:AbortSignal.timeout(10000)});if(!response.ok)throw Error();const config=await response.json();accountMode=config.mode==='supabase';window.EntryUI?.configure(accountMode);if(accountMode&&window.AuthReturn)notice(window.AuthReturn.cleanupFailed?'Close this account link and open the game from its main address to sign in.':window.AuthReturn.failed?'The account link could not be completed. Try signing in or request a new link.':'Account link opened. Sign in with your email and password to continue.',window.AuthReturn.failed||window.AuthReturn.cleanupFailed);}catch{window.EntryUI?.configure(false,true);notice('The account connection could not be loaded. Try connecting again.',true);}finally{configLoading=false;}}
+async function loadConfiguration(){if(configLoading)return;configLoading=true;try{const response=await fetch('/api/config',{signal:AbortSignal.timeout(10000)});if(!response.ok)throw Error();const config=await response.json();accountMode=config.mode==='supabase';if(accountMode&&config.sessionResume&&!window.AuthReturn)await resumeAccount();window.EntryUI?.configure(accountMode,false,!!key);if(accountMode&&window.AuthReturn)notice(window.AuthReturn.cleanupFailed?'Close this account link and open the game from its main address to sign in.':window.AuthReturn.failed?'The account link could not be completed. Try signing in or request a new link.':'Account link opened. Sign in with your email and password to continue.',window.AuthReturn.failed||window.AuthReturn.cleanupFailed);}catch{window.EntryUI?.configure(false,true);notice('The account connection could not be loaded. Try connecting again.',true);}finally{configLoading=false;}}
 window.addEventListener('myrp-config-retry',loadConfiguration);loadConfiguration();
 const movementKeys={ArrowUp:[0,-1],ArrowDown:[0,1],ArrowLeft:[-1,0],ArrowRight:[1,0],w:[0,-1],s:[0,1],a:[-1,0],d:[1,0]};
-let heldDirection=null,stepTimer=null,lastStep=0,walkRun=0;
-function cancelRoute(){walkRun++;}
+let heldDirection=null,stepTimer=null,lastStep=0,walkRun=0,queuedDestination=null;
+const WALK_INTERVAL=300;
+function cancelRoute(){walkRun++;queuedDestination=null;window.dispatchEvent(new CustomEvent('walk-target',{detail:null}));}
 function stopWalking(){cancelRoute();heldDirection=null;if(stepTimer)clearInterval(stepTimer);stepTimer=null;}
-function step(){if(!heldDirection||busy||pending||window.WorldSync?.ready()===false||!view?.citizen||!key||document.hidden)return;const world=view.world;if(!world||world.trip||world.position.interior&&!world.home)return;if(Date.now()-lastStep<650)return;lastStep=Date.now();const [dx,dy]=movementKeys[heldDirection];perform(world.home?'MoveInterior':'MoveCitizen',{dx,dy,leaseVersion:world.position.leaseVersion});}
+function step(){if(!heldDirection||busy||pending||window.WorldSync?.ready()===false||!view?.citizen||!key||document.hidden)return;const world=view.world;if(!world||world.trip||world.position.interior&&!world.home)return;if(Date.now()-lastStep<WALK_INTERVAL)return;lastStep=Date.now();const [dx,dy]=movementKeys[heldDirection];perform(world.home?'MoveInterior':'MoveCitizen',{dx,dy,leaseVersion:world.position.leaseVersion});}
 document.addEventListener('keydown',event=>{if(window.GameUI?.blocksMovement()||!movementKeys[event.key]||event.ctrlKey||event.altKey||event.metaKey||event.target.closest?.('input,textarea,select,[contenteditable="true"],dialog')||!key)return;event.preventDefault();cancelRoute();heldDirection=event.key;if(!stepTimer)stepTimer=setInterval(step,50);step();});
 document.addEventListener('keyup',event=>{if(event.key===heldDirection)stopWalking();});
-window.addEventListener('pointerup',stopWalking);window.addEventListener('pointercancel',stopWalking);window.addEventListener('game-input-release',stopWalking);window.addEventListener('blur',stopWalking);document.addEventListener('visibilitychange',()=>{if(document.hidden)stopWalking();});
+// A canvas tap dispatches its destination during pointerup. Bubbling that same
+// event must release held controls without cancelling the newly selected route.
+window.addEventListener('pointerup',()=>{if(heldDirection)stopWalking();});window.addEventListener('pointercancel',stopWalking);window.addEventListener('game-input-release',stopWalking);window.addEventListener('blur',stopWalking);document.addEventListener('visibilitychange',()=>{if(document.hidden)stopWalking();});
 
 async function followRoute(world,route,action){
  stopWalking();if(!route){notice('There is no clear route to that object or tile.');return;}
  const run=++walkRun,lease=world.position.leaseVersion,homeId=world.home?.id,homeVersion=world.home?.version,region=world.position.region,actor=view.accountId,credential=key;
+ const start=world.home??world.position,destination=route.reduce((point,step)=>({x:point.x+step.dx,y:point.y+step.dy}),{x:start.x,y:start.y});window.dispatchEvent(new CustomEvent('walk-target',{detail:{...destination,homeId:homeId??null,leaseVersion:lease}}));
  const current=()=>run===walkRun&&!pending&&!busy&&window.WorldSync?.ready()!==false&&key===credential&&view?.accountId===actor&&view?.world?.position.leaseVersion===lease&&view.world.position.region===region&&view.world.home?.id===homeId&&view.world.home?.version===homeVersion&&!view.world.trip;
  for(const direction of route){
-  if(!current())return;const wait=Math.max(0,650-(Date.now()-lastStep));if(wait)await new Promise(resolve=>setTimeout(resolve,wait));if(!current())return;
+  if(!current())return;const wait=Math.max(0,WALK_INTERVAL-(Date.now()-lastStep));if(wait)await new Promise(resolve=>setTimeout(resolve,wait));if(!current())return;
   const before=view.world.home??view.world.position;lastStep=Date.now();await perform(homeId?'MoveInterior':'MoveCitizen',{...direction,leaseVersion:lease});
   const after=view?.world?.home??view?.world?.position;if(!current()||after.x!==before.x+direction.dx||after.y!==before.y+direction.dy)return;
  }
+ if(current())window.dispatchEvent(new CustomEvent('walk-target',{detail:null}));
  if(action&&current())await perform(action.type,{...action.payload,leaseVersion:lease});
 }
-window.addEventListener('home-fixture-select',event=>{const d=event.detail,w=view?.world;if(!key||!w?.home||w.home.id!==d.homeId||w.position.leaseVersion!==d.leaseVersion||busy||pending)return;const f=w.home.fixtures.find(f=>f.id===d.fixtureId);if(f&&f.allowed!==false&&!(f.use?.capacity>0&&!f.use.availableSlots.length))followRoute(w,window.Walking?.approach(w,f),{type:'InteractHomeFixture',payload:{fixtureId:f.id}});});
+window.addEventListener('home-fixture-select',event=>{const w=view?.world,d=event.detail;if(w?.home&&w.home.id===d.homeId&&w.position.leaseVersion===d.leaseVersion)window.ObjectUI?.open(d);});
+window.addEventListener('home-fixture-use',event=>{const d=event.detail,w=view?.world;if(!key||!w?.home||w.home.id!==d.homeId||w.position.leaseVersion!==d.leaseVersion||busy||pending)return;const f=w.home.fixtures.find(f=>f.id===d.fixtureId);if(f&&f.allowed!==false&&!(f.use?.capacity>0&&!f.use.availableSlots.length))followRoute(w,window.Walking?.approach(w,f),{type:'InteractHomeFixture',payload:{fixtureId:f.id}});});
 window.addEventListener('building-select',event=>{const d=event.detail,w=view?.world;if(!key||!w||w.position.interior||w.trip||w.position.leaseVersion!==d.leaseVersion||busy||pending)return;const b=[...w.map.buildings.filter(b=>b.id!=='shelter'),w.residence,...(w.guestEntrances??[])].find(b=>b.id===d.buildingId);if(b)followRoute(w,window.Walking?.approach(w,b),{type:'EnterBuilding',payload:{buildingId:b.id}});});
 window.addEventListener('street-object-select',event=>{const d=event.detail,w=view?.world;if(!key||!w||w.position.interior||w.trip||w.position.leaseVersion!==d.leaseVersion||busy||pending)return;const o=w.map.streetObjects?.find(o=>o.id===d.objectId);if(o)followRoute(w,window.Walking?.approach(w,o),{type:'InteractStreetObject',payload:{objectId:o.id}});});
 window.addEventListener('world-tile-select',event=>{
- const d=event.detail,w=view?.world;if(!key||busy||pending||!w||w.trip||w.position.interior&&!w.home||w.home?.id!==d.homeId&&!(d.homeId===null&&!w.home)||w.position.leaseVersion!==d.leaseVersion)return;
+ const d=event.detail,w=view?.world;if(!key||!w||w.trip||w.position.interior&&!w.home||w.home?.id!==d.homeId&&!(d.homeId===null&&!w.home)||w.position.leaseVersion!==d.leaseVersion)return;
+ window.ObjectUI?.close();
+ if(busy||pending){if(pending&&['MoveCitizen','MoveInterior'].includes(pending.type)){stopWalking();queuedDestination={...d,actor:view.accountId};}return;}
  followRoute(w,window.Walking?.path(w,d.x,d.y));
 });
+function drainDestination(){const next=queuedDestination;queuedDestination=null;if(next&&next.actor===view?.accountId)queueMicrotask(()=>window.dispatchEvent(new CustomEvent('world-tile-select',{detail:next})));}

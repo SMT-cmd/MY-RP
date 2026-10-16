@@ -1,5 +1,11 @@
 # Change log
 
+## Destination movement and playable licensed art, 16 October 2026
+
+Fixed bubbling pointer release cancelling a tap route; added safe retargeting, current-camera picking, destination rings and 300 ms client pacing. Removed the post-command database read by returning an internal committed snapshot, and reduced pending form/sync rebuilding. Furniture now opens explicit use/move/rotate/finish/storage controls. Added 50 CC0 Kenney models, 200 Canvas projections, actual adult mesh atlases/creation view, imported-head hair attachment, detailed room shells, a connected five-district 110 × 70 map and an interactive phone map. Login loses the gallery link/art caption and gains HttpOnly session restoration plus distinct confirmation/outage errors. No identity/rate-limit bypass, schema/environment/paid/demo change or direct driving claim.
+
+All 227 tests pass, strict TypeScript and script/diff checks pass. Read docs/interaction-and-world-assets-contract.md for source licences, lifecycle, authority, privacy and remaining device/full-game/SMTP gates. Live publication is recorded after verification.
+
 ## MY RP entry release verified, 16 October 2026
 
 MY RP / My Roleplay is live at https://my-rp-8kiw.onrender.com/. Both main and build/main-game-2026-10-08 carry the tested runtime `9521f04c224b2c85f3477184fa991536bc57fa81`, tree `ece10604d256c2cef4415583c5d7e5cd0f2637d8`. Existing free service deployed manually as `dep-db9432ui0phs73c7cqag`, live at 15:24:36 UTC. Automatic deployment remains off and stage remains build. No schema, environment variable, paid resource or independent demo change occurred. The following documentation-only record may advance source beyond the running commit.

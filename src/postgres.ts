@@ -84,7 +84,7 @@ export class PostgresWorldStore {
       if (!row.rows[0]) throw new DomainError('WORLD_UNAVAILABLE', 'This world is unavailable.', 503);
       const original = row.rows[0].state, time = now ?? Number(row.rows[0].now);
       const result = execute(original, actorId, command, time,context?.administration);
-      if (result.replayed) return { receipt: result.receipt, replayed: true, revision: row.rows[0].revision };
+      if (result.replayed) return { receipt: result.receipt, replayed: true, revision: row.rows[0].revision,...(context?.includeState?{state:original}:{}) };
       if(!isAdminCommand(command.type)&&(this.#requireConnection||context?.requireConnection))assertClientLease(original,actorId,sessionId,context?.clientLease,time);
       if (command.expectedVersion !== undefined && (!Number.isSafeInteger(command.expectedVersion) || command.expectedVersion !== row.rows[0].revision)) throw new DomainError('STALE_VERSION', 'This record changed. Refresh and review the action again.', 409);
       const revision = row.rows[0].revision + 1;
@@ -159,7 +159,7 @@ export class PostgresWorldStore {
       await sql.query('INSERT INTO simulator.commands(world_id,actor_id,id,fingerprint,receipt,revision) VALUES ($1,$2,$3,$4,$5::jsonb,$6)', [this.#world, actorId, command.id, stored.fingerprint, JSON.stringify(result.receipt), revision]);
       for (const event of result.state.outbox.slice(original.outbox.length)) await sql.query('INSERT INTO simulator.outbox(world_id,id,actor_id,type,occurred_at,payload,aggregate_version) VALUES ($1,$2,$3,$4,$5,$6::jsonb,$7)', [this.#world, event.id, event.actorId, event.type, new Date(event.at), JSON.stringify(event.payload), revision]);
       await sql.query('UPDATE simulator.worlds SET state=$2::jsonb, revision=$3, updated_at=clock_timestamp() WHERE id=$1', [this.#world, JSON.stringify(result.state), revision]);
-      return { receipt: result.receipt, replayed: false, revision };
+      return { receipt: result.receipt, replayed: false, revision,...(context?.includeState?{state:result.state}:{}) };
     });
   }
   async events(after: number, limit = 100) {

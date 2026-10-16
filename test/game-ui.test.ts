@@ -62,6 +62,7 @@ test('confirmed school entry opens its app; home walking and wardrobe remain phy
  // Walk to the wardrobe through the same scene event used by a graphical selection.
  const view=await (await fetch(origin+'/api/citizen')).json();const fixture=view.world.home.fixtures.find((f:{action:string})=>f.action==='Dress');
  w.dispatchEvent(new w.CustomEvent('home-fixture-select',{detail:{fixtureId:fixture.id,homeId:view.world.home.id,leaseVersion:view.world.position.leaseVersion}}));
+ assert.equal(el('object-menu').hidden,false);([...el('object-menu').querySelectorAll<HTMLButtonElement>('button')].find(b=>b.textContent!.includes('Change outfit'))!).click();
  await waitFor(()=>el('game-drawer-title').textContent==='Your wardrobe'&&d.activeElement?.id==='appearance-hair');assert.ok(wardrobe);
  ui.open('furnish');const choose=[...d.querySelectorAll<HTMLButtonElement>('#furnishing-records button')].find(b=>b.textContent==='Choose position on the floor')!;choose.click();
  const selected=d.querySelector<HTMLFormElement>('.furniture-selected')!,inputs=selected.querySelectorAll<HTMLInputElement>('input');inputs[0].value='5';inputs[0].dispatchEvent(new w.Event('change'));

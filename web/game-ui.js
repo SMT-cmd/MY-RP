@@ -51,6 +51,7 @@
     if (!page) returnFocus=trigger;
     page=next;drawer.hidden=false;$('game-drawer-title').textContent=titles[next];
     for(const [id,node] of pages) node.hidden=id!==next;
+    if(next==='map')window.CityMapUI?.paint();
     for(const b of document.querySelectorAll('[data-game-menu]')) b.setAttribute('aria-expanded',String(b.dataset.gameMenu===next));
     stage.classList.add('game-menu-open');
     $('game-back').hidden=next==='phone';
@@ -95,7 +96,7 @@
     }
     location=nextLocation;
     // UI-only navigation remains usable while commands await confirmation or reconnect.
-    for(const b of stage.querySelectorAll('[data-game-ui]'))b.disabled=b.id==='game-fullscreen'&&fullscreenBusy;
+    for(const b of stage.querySelectorAll('[data-game-ui]:not(#object-menu button)'))b.disabled=b.id==='game-fullscreen'&&fullscreenBusy;
   }
   document.addEventListener('click',event=>{
     const b=event.target.closest?.('[data-game-menu]');if(b)open(b.dataset.gameMenu,b);
@@ -127,5 +128,5 @@
     }catch{if(version===generation&&active)$('game-display-status').textContent='Full screen is unavailable here. You can still play and rotate your phone manually.';}
     finally{fullscreenBusy=false;$('game-fullscreen').disabled=false;}
   });
-  window.GameUI={render,reset,open,close,blocksMovement:()=>!!page};
+  window.GameUI={render,reset,open,close,blocksMovement:()=>!!page||!!window.ObjectUI?.active()};
 })();

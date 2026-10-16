@@ -4,7 +4,7 @@ import type {AdminContext} from './admin.ts';
 
 export const SESSION_RULES={version:'connection-1.0',ttl:60000,heartbeat:20000,maxActive:64};
 export type ClientFence={clientId:string;epoch:number};
-export type DispatchContext={clientLease?:ClientFence;requireConnection?:boolean;administration?:AdminContext};
+export type DispatchContext={includeState?:boolean;clientLease?:ClientFence;requireConnection?:boolean;administration?:AdminContext};
 export type ClientLease=ClientFence&{actor:string;sessionId:string;claimId:string;lastSeenAt:number;expiresAt:number;status:'active'|'released'};
 export type SessionsState={leases:Record<string,ClientLease>;revoked:Record<string,{actor:string;at:number}>};
 const uuid=/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i;

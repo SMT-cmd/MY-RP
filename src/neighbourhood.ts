@@ -10,16 +10,16 @@ export const BUILDINGS=[
 ];
 export const CORE_MAP={width:22,height:14,buildings:BUILDINGS,guide:{x:7,y:7,name:'Aunty Bisi',role:'Citizen welcome guide'}};
 const facades:{id:string;kind:string;name:string;x:number;y:number;w:number;h:number;colour:number}[]=[];
-for(let row=0;row<3;row++)for(let column=0;column<3;column++){
+for(let row=0;row<5;row++)for(let column=0;column<5;column++){
  if(row===0&&column===0)continue;
  for(const [index,offset] of [[0,3],[1,12]])facades.push({id:`facade-${column}-${row}-${index}`,kind:'facade',name:'Neighbourhood residence',x:column*22+offset,y:row*14+2,w:5,h:4,colour:[0xc6b397,0xb19e82,0xa5b49d][(row+column+index)%3]});
 }
 const trees=[];
-for(let row=0;row<3;row++)for(let column=0;column<3;column++)for(const offset of [3,17]){if(row===0&&column===0)continue;trees.push({id:`tree-${column}-${row}-${offset}`,kind:'tree',name:'Street shade tree',x:column*22+offset,y:row*14+11,w:1,h:1,colour:0x779064});}
+for(let row=0;row<5;row++)for(let column=0;column<5;column++)for(const offset of [3,17]){if(row===0&&column===0)continue;trees.push({id:`tree-${column}-${row}-${offset}`,kind:'tree',name:'Street shade tree',x:column*22+offset,y:row*14+11,w:1,h:1,colour:0x779064});}
 export const STREET_OBJECTS=Array.from({length:9},(_,index)=>{const column=index%3,row=Math.floor(index/3);return{id:'bench-'+index,name:'Courtyard bench',model:'bench',x:column*22+9,y:index===0?15:row*14+11,w:2,h:1,rotation:0,action:'Sit',copy:'Sit in the public courtyard.'};});
-export const MAP={...CORE_MAP,id:'neighbourhood-2',width:66,height:42,obstacles:[...facades,...trees],streetObjects:STREET_OBJECTS,
- districts:['Centre','Market quarter','Residential quarter'].map((name,index)=>({name,x:index*22,y:0,w:22,h:42,landmark:{x:index*22+10,y:21}})),
- roads:[...Array.from({length:3},(_,i)=>({x:0,y:i*14+6,w:66,h:3,name:['Welcome road','Neighbourhood road','Courtyard road'][i]})),...Array.from({length:3},(_,i)=>({x:i*22+20,y:0,w:2,h:42,name:['Centre lane','Market lane','Residential lane'][i]}))]
+export const MAP={...CORE_MAP,id:'neighbourhood-3',width:110,height:70,obstacles:[...facades,...trees],streetObjects:STREET_OBJECTS,
+ districts:['Centre','Market quarter','Residential quarter','Marina district','Garden district'].map((name,index)=>({name,x:index*22,y:0,w:22,h:70,landmark:{x:index*22+10,y:21}})),
+ roads:[...Array.from({length:5},(_,i)=>({x:0,y:i*14+6,w:110,h:3,name:['Welcome road','Neighbourhood road','Courtyard road','Marina avenue','Garden avenue'][i]})),...Array.from({length:5},(_,i)=>({x:i*22+20,y:0,w:2,h:70,name:['Centre lane','Market lane','Residential lane','Marina lane','Garden lane'][i]}))]
 };
 // Stable authored plots for the finite regional property catalogue. The land
 // plot keeps its address when construction changes its kind to a home.

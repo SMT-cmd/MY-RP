@@ -29,7 +29,12 @@ export function supabaseAccounts(projectUrl:string,publishableKey:string,fetcher
   let response:Response;
   try{response=await fetcher(new URL(path,origin),{method:'POST',headers:{apikey:publishableKey,'Content-Type':'application/json',...(action==='logout'?{Authorization:authorization!}:{})},body:JSON.stringify(payload),redirect:'error',signal:AbortSignal.timeout(5000)});}catch{throw new DomainError('AUTH_UNAVAILABLE','Account service is unavailable. Try again shortly.',503);}
   if(response.status===429){let code:unknown;try{const failure=await response.json();code=failure?.code??failure?.error_code;}catch{/* Never show raw provider errors. */}throw new AccountRateLimitError(action,action==='signup'&&code==='over_email_send_rate_limit',accountRetryAfter(response.headers.get('Retry-After')));}
-  if(!response.ok)throw new DomainError(action==='signup'?'ACCOUNT_SIGNUP_FAILED':'AUTH_REQUIRED',action==='signup'?'Registration could not be completed. Check your details or try signing in.':'Sign-in failed. Check your credentials and email confirmation.',action==='signup'?400:401);
+  if(!response.ok){
+   if(response.status>=500)throw new DomainError('AUTH_UNAVAILABLE','The account service is temporarily unavailable. Your saved citizen is safe. Try again shortly.',503);
+   let code:unknown;try{const failure=await response.json();code=failure?.code??failure?.error_code;}catch{}
+   if(action==='login'&&code==='email_not_confirmed')throw new DomainError('EMAIL_CONFIRMATION_REQUIRED','Confirm your email before signing in. Open the confirmation message in your inbox or spam folder.',403);
+   throw new DomainError(action==='signup'?'ACCOUNT_SIGNUP_FAILED':'AUTH_REQUIRED',action==='signup'?'Registration could not be completed. Check your details or try signing in.':'Sign-in failed. Check your email and password.',action==='signup'?400:401);
+  }
   if(action==='logout')return {signedOut:true};
   let data:Record<string,unknown>;try{data=await response.json();}catch{throw new DomainError('AUTH_UNAVAILABLE','Account service returned an invalid response.',503);}
   if(action==='signup'&&!data.access_token)return {confirmationRequired:true,message:'Check your email to confirm your account, then sign in.'};

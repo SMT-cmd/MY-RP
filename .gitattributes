@@ -6,3 +6,4 @@
 
 # Preserve the publisher licence verbatim, including original line endings.
 web/assets/characters/LICENSE-Quaternius.txt -text -whitespace
+web/assets/world/LICENSE-*.txt -text -whitespace

@@ -22,6 +22,7 @@ self.addEventListener('fetch',event=>{
  if(!PUBLIC.has(url.pathname))return;
  event.respondWith((async()=>{
   const cache=await caches.open(CACHE);
+  if(url.pathname.startsWith('/assets/world/')){const saved=await cache.match(url.pathname);if(saved)return saved;}
   try{const response=await fetch(publicRequest(url.pathname));if(acceptable(response)){try{await cache.put(url.pathname,response.clone());}catch{/* Storage limits must not block the live public asset. */}}return response;}
   catch{const saved=await cache.match(url.pathname);if(saved)return saved;return new Response('Public asset unavailable.',{status:503,headers:{'Cache-Control':'no-store'}});}
  })());

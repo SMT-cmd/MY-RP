@@ -1,5 +1,5 @@
 // Presentation only: metre-scale joints and contact targets never alter authority.
-export const WALK_STEP_MS=650;
+export const WALK_STEP_MS=300;
 export const STRIDE_METRES=1.2;
 const clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
 export function footTarget(distance,side,weight=1){

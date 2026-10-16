@@ -1,7 +1,9 @@
 import {AccountRateLimitError} from './account.ts';
+import {readRefreshCookie,refreshCookie} from './account-cookie.ts';
 import { createHash } from 'node:crypto';
 import { createServer } from 'node:http';
 import { readFile } from 'node:fs/promises';
+import {readFileSync} from 'node:fs';
 import { DomainError, citizenView } from './domain.ts';
 import type { Command, Receipt, State } from './domain.ts';
 import type { Identity } from './auth.ts';
@@ -18,7 +20,7 @@ import {publicCitizenReceipt} from './public-receipts.ts';
 export interface CommandStore {
   revokeSession?(actorId:string,sessionId:string):Promise<void>;
   snapshot(actorId?: string, sessionId?: string): State | Promise<State>;
-  dispatch(actorId: string, command: Command, now?: number, sessionId?: string,context?:DispatchContext): Promise<{ receipt: Receipt; replayed: boolean }>;
+  dispatch(actorId: string, command: Command, now?: number, sessionId?: string,context?:DispatchContext): Promise<{ receipt: Receipt; replayed: boolean; state?:State }>;
   claimClient?(actorId:string,sessionId:string,clientId:unknown,takeover:unknown,now?:number):Promise<{clientLease:ClientFence;expiresAt:number;heartbeat:number}>;
   renewClient?(actorId:string,sessionId:string,fence:ClientFence,now?:number):Promise<{clientLease:ClientFence;expiresAt:number}>;
   releaseClient?(actorId:string,sessionId:string,fence:ClientFence,now?:number):Promise<{released:boolean}>;
@@ -40,6 +42,8 @@ export function createApp(options: { store: CommandStore; authenticate: (req: In
   assets.set('/auth-return.js',['auth-return.js','text/javascript']);
   assets.set('/civic-ui.js',['civic-ui.js','text/javascript']);
   assets.set('/game-ui.js',['game-ui.js','text/javascript']);
+  assets.set('/object-ui.js',['object-ui.js','text/javascript']);
+  assets.set('/city-map.js',['city-map.js','text/javascript']);
   assets.set('/neighbours-ui.js',['neighbours-ui.js','text/javascript']);
   assets.set('/world-sync.js',['world-sync.js','text/javascript']);
   assets.set('/admin-ui.js',['admin-ui.js','text/javascript']);
@@ -48,7 +52,15 @@ export function createApp(options: { store: CommandStore; authenticate: (req: In
   assets.set('/walking.js',['walking.js','text/javascript']);
   assets.set('/world-renderer.js',['world-renderer.js','text/javascript']);
   for(const [url,file] of [['/world-3d-controller.js','world-3d-controller.js'],['/scene/engine.js','scene/engine.js'],['/scene/models.js','scene/models.js'],['/scene/motion.js','scene/motion.js'],['/engine/three.module.js','../node_modules/three/build/three.module.js'],['/engine/three.core.js','../node_modules/three/build/three.core.js'],['/engine/rounded-box.js','../node_modules/three/examples/jsm/geometries/RoundedBoxGeometry.js']])assets.set(url,[file,'text/javascript']);
-  for(const file of ['authored-characters.js','lighting.js'])assets.set('/scene/'+file,['scene/'+file,'text/javascript']);
+  for(const file of ['authored-characters.js','lighting.js','world-assets.js','asset-catalogue.js','sprites.js'])assets.set('/scene/'+file,['scene/'+file,'text/javascript']);
+  const artManifest=JSON.parse(readFileSync(new URL('../web/assets/world/manifest.json',import.meta.url),'utf8'));
+  for(const item of Object.values(artManifest.assets) as {url:string}[]){if(!/^\/assets\/world\/[a-z]+\/[A-Za-z0-9-]+\.glb$/.test(item.url))throw Error('Invalid local art manifest.');assets.set(item.url,[item.url.slice(1),'model/gltf-binary']);}
+  assets.set('/assets/world/manifest.json',['assets/world/manifest.json','application/json']);
+  for(const pack of ['furniture','suburban','commercial','cars'])assets.set('/assets/world/LICENSE-'+pack+'.txt',['assets/world/LICENSE-'+pack+'.txt','text/plain']);
+  const sprites=JSON.parse(readFileSync(new URL('../web/assets/world/sprites/manifest.json',import.meta.url),'utf8'));
+  assets.set('/assets/world/sprites/manifest.json',['assets/world/sprites/manifest.json','application/json']);
+  for(const item of Object.values(sprites) as {views:{file:string}[]}[])for(const view of item.views){if(!/^[A-Za-z0-9-]+\.webp$/.test(view.file))throw Error('Invalid sprite manifest.');assets.set('/assets/world/sprites/'+view.file,['assets/world/sprites/'+view.file,'image/webp']);}
+  for(const body of ['male','female'])for(const outfit of ['tee','linen','tunic','jacket'])for(const suffix of ['', '-mask']){const file=body+'-'+outfit+suffix+'.webp';assets.set('/assets/world/characters/'+file,['assets/world/characters/'+file,'image/webp']);}
   for(const file of ['loaders/GLTFLoader.js','utils/BufferGeometryUtils.js','utils/SkeletonUtils.js'])assets.set('/engine/addons/'+file,['../node_modules/three/examples/jsm/'+file,'text/javascript']);
   for(const file of ['adult-male.glb','adult-female.glb'])assets.set('/assets/characters/'+file,['assets/characters/'+file,'model/gltf-binary']);
   for(const [file,type] of [['eyes-brown.png','image/png'],['LICENSE-Quaternius.txt','text/plain']])assets.set('/assets/characters/'+file,['assets/characters/'+file,type]);
@@ -78,7 +90,7 @@ export function createApp(options: { store: CommandStore; authenticate: (req: In
   }
   const server = createServer(async (req,res)=>{
     res.setHeader('X-Content-Type-Options','nosniff');
-    res.setHeader('Content-Security-Policy',`default-src 'self'; script-src 'self' 'sha256-${mapHash}'; style-src 'self'; connect-src 'self'${options.multiplayer?' '+origin.replace(/^http/,'ws'):''}; frame-ancestors 'none'; form-action 'self'`);
+    res.setHeader('Content-Security-Policy',`default-src 'self'; script-src 'self' 'sha256-${mapHash}'; style-src 'self'; img-src 'self' blob:; connect-src 'self' blob:${options.multiplayer?' '+origin.replace(/^http/,'ws'):''}; frame-ancestors 'none'; form-action 'self'`);
     res.setHeader('Referrer-Policy','no-referrer'); res.setHeader('Cache-Control','no-store');
     const json = (status: number,data: unknown)=>{res.writeHead(status,{'Content-Type':'application/json'});res.end(JSON.stringify(data));};
     try {
@@ -89,12 +101,23 @@ export function createApp(options: { store: CommandStore; authenticate: (req: In
         const [name,type]=assets.get(url.pathname)!;const content=await readFile(new URL('../web/'+name,import.meta.url));res.writeHead(200,{'Content-Type':type+(type.startsWith('text/')||type.includes('json')?'; charset=utf-8':'')});res.end(content);return;
       }
       if(req.method==='GET' && url.pathname==='/healthz')return json(200,{status:'ok'});
-      if(req.method==='GET' && url.pathname==='/api/config')return json(200,{...(options.config??{mode:'development'}),multiplayer:options.multiplayer===true});
+      if(req.method==='GET' && url.pathname==='/api/config')return json(200,{...(options.config??{mode:'development'}),multiplayer:options.multiplayer===true,...(options.accounts?{sessionResume:true}:{} )});
       if(req.method==='GET'&&url.pathname==='/readyz'){await store.snapshot();return json(200,{status:'ready'});}
-      if(req.method==='POST'&&['/api/auth/login','/api/auth/signup','/api/auth/refresh','/api/auth/logout'].includes(url.pathname)){
+      if(req.method==='POST'&&['/api/auth/login','/api/auth/signup','/api/auth/refresh','/api/auth/logout','/api/auth/resume'].includes(url.pathname)){
         if(!options.accounts)return json(404,{error:'NOT_FOUND',message:'Unknown route.'});
-        if(url.pathname==='/api/auth/logout'&&store.revokeSession){const identity=await authenticate(req);await store.revokeSession(identity.actorId,identity.sessionId);}
-        return json(200,await options.accounts(url.pathname.slice(10) as AccountAction,await body(req),req.headers.authorization));
+        const secure=origin.startsWith('https:'),action=url.pathname.slice(10),input=await body(req);
+        if(action==='resume'){
+          const token=readRefreshCookie(req.headers.cookie,secure);
+          if(!token)return json(200,{sessionAvailable:false});
+          if(req.headers.origin!==origin)throw new DomainError('ORIGIN_FORBIDDEN','Open the game to resume your session.',403);
+          try{const session=await options.accounts('refresh',{refresh_token:token});res.setHeader('Set-Cookie',refreshCookie(String(session.refresh_token),secure));return json(200,session);}
+          catch(error){if(error instanceof DomainError&&error.status===401)res.setHeader('Set-Cookie',refreshCookie(null,secure));throw error;}
+        }
+        if(action==='logout'&&store.revokeSession){const identity=await authenticate(req);await store.revokeSession(identity.actorId,identity.sessionId);}
+        const session=await options.accounts(action as AccountAction,input,req.headers.authorization);
+        if(action==='logout')res.setHeader('Set-Cookie',refreshCookie(null,secure));
+        else if(session.refresh_token)res.setHeader('Set-Cookie',refreshCookie(String(session.refresh_token),secure));
+        return json(200,session);
       }
       const identity=await authenticate(req);
       if(req.method==='POST'&&['/api/mfa/list','/api/mfa/enroll','/api/mfa/challenge','/api/mfa/verify','/api/mfa/discard'].includes(url.pathname)){
@@ -125,9 +148,11 @@ export function createApp(options: { store: CommandStore; authenticate: (req: In
         const command:Command & {accountId?:unknown;clientLease?:ClientFence}=await body(req);
         if(isAdminCommand(command.type))throw new DomainError('STAFF_COMMAND','Use the separately authenticated staff controls.',403);
         if(options.accounts&&command.accountId!==identity.actorId)throw new DomainError('ACCOUNT_CHANGED','Sign in to the account that created this action.',401);
-        const result=await store.dispatch(identity.actorId,command,clock(),identity.sessionId,{requireConnection:options.multiplayer===true,clientLease:command.clientLease});
+        const result=await store.dispatch(identity.actorId,command,clock(),identity.sessionId,{requireConnection:options.multiplayer===true,clientLease:command.clientLease,includeState:true});
         void realtime?.publish();
-        const state=await store.snapshot(identity.actorId,identity.sessionId);return json(200,{...result,receipt:publicCitizenReceipt(state,result.receipt),view:currentView(state)});
+        // Stores can return the exact committed state. This removes a second
+        // database transaction from every step; private world data stays here.
+        const state=result.state??await store.snapshot(identity.actorId,identity.sessionId);return json(200,{replayed:result.replayed,receipt:publicCitizenReceipt(state,result.receipt),view:currentView(state)});
       }
       return json(404,{error:'NOT_FOUND',message:'Unknown route.'});
     }catch(error){

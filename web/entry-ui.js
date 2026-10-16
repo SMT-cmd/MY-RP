@@ -2,7 +2,7 @@
 window.EntryUI=(()=>{
  const $=id=>document.getElementById(id),work=new Map(),deadlines={login:0,signup:0,refresh:0};let mode='login',busy=false,timer=null;
  try{const stored=JSON.parse(sessionStorage.getItem('myrp-account-cooldowns')??'{}');for(const key of Object.keys(deadlines))if(Number.isFinite(stored[key])&&stored[key]>Date.now()&&stored[key]<=Date.now()+86400000)deadlines[key]=stored[key];}catch{/* A local countdown is optional; the provider still enforces its limit. */}
- let saver=!!navigator.connection?.saveData;try{saver=saver||localStorage.getItem('simulator-data-saver')==='1';}catch{}if(!saver)document.body.classList.add('entry-art');
+ let saver=!!navigator.connection?.saveData;try{saver=saver||localStorage.getItem('simulator-data-saver')==='1';}catch{}if(!saver)document.body.classList.add('entry-art');$('entry-show-art').hidden=!saver;$('entry-show-art').onclick=()=>{document.body.classList.add('entry-art');$('entry-show-art').hidden=true;};
  const remaining=action=>Math.max(0,Math.ceil(((deadlines[action]??0)-Date.now())/1000));
  function paint(){
   for(const action of ['login','signup']){const b=$('account-'+action),seconds=remaining(action);b.disabled=busy||seconds>0||action!==mode;b.textContent=seconds?`Try again in ${Math.floor(seconds/60)}:${String(seconds%60).padStart(2,'0')}`:busy?(action==='signup'?'Creating account…':'Signing in…'):action==='signup'?'Create my account':'Enter MY RP';}

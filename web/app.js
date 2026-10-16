@@ -79,7 +79,7 @@ function lock() {
   $('retry').disabled = disconnected || busy || !key || accountMode && pending?.accountId!==view?.accountId;
   $('account-logout').disabled=busy||!!pending&&pending.accountId===view?.accountId;
   if(disconnected)document.querySelectorAll('button:not(#staff-panel button):not([data-game-ui])').forEach(b=>{if(!['account-logout','account-login','account-signup','access-submit','connection-takeover'].includes(b.id))b.disabled=true;});
-  $('connection-takeover').disabled=busy;
+  $('connection-takeover').disabled=busy;window.EntryUI?.setBusy(busy);
 }
 async function request(path, command, retried=false, extraHeaders={}) {
   if(accountMode&&refreshToken&&!retried&&Date.now()>expiresAt-30000)await refreshAccount();
@@ -116,7 +116,7 @@ async function sendPending() {
   } finally { busy = false; $('retry-panel').hidden = !pending; lock();if(openWardrobe){window.GameUI?.open('appearance');$('appearance-panel').scrollIntoView?.({block:'nearest',behavior:'auto'});$('appearance-hair').focus();}if(openLight){window.GameUI?.open('furnish');const control=$('lamp-'+openLight);control?.scrollIntoView?.({block:'nearest',behavior:'auto'});control?.querySelector('select')?.focus();} }
 }
 function render() {
-  const citizen = view.citizen;
+  const citizen = view.citizen;window.EntryUI?.stage(!!key,!!citizen);
   window.AdminUI?.observe(accountMode&&key&&view.accountId?{actor:view.accountId,request,acceptSession:data=>{useSession(data);stopWalking();void window.WorldSync?.reconnect();}}:null);
   window.WorldSync?.observe(key?view:null,{request,authFailed:error=>{key='';refreshToken='';stopWalking();nearbyScene=null;render();notice(error.message,true);},credentials:()=>accountMode?{authorization:'Bearer '+key}:{developmentKey:key},status:connected=>{stopWalking();if(!connected&&view?.world){nearbyScene=null;view.world.people=[];view.world.npcs=[];window.NeighboursUI?.render(view,perform,true);$('world-neighbours')?.replaceChildren();window.WorldRenderer?.update(view.world,renderQuality());}lock();},snapshot:next=>{view=next;render();},frame:data=>{if(!view?.world)return;nearbyScene=data;const p=view.world.position;if(data.scope?.region!==p.region||data.scope?.leaseVersion!==p.leaseVersion||data.scope?.interior!==p.interior||(data.scope?.homeId??null)!==(p.homeId??null))return;if(data.serverTime<view.world.serverTime)return;view.world.people=data.people;view.world.npcs=data.npcs??[];view.world.serverTime=data.serverTime;window.NeighboursUI?.render(view,perform,busy||!!pending);const list=$('world-neighbours');if(list)list.replaceChildren(...data.people.map(c=>{const row=document.createElement('li');row.textContent=c.name+' · nearby';return row;}));window.WorldRenderer?.update(view.world,renderQuality());}});
   window.NeighboursUI?.render(key?view:null,perform,busy||!!pending||window.WorldSync?.ready()===false);
@@ -224,21 +224,23 @@ $('exam-form').addEventListener('submit', event => { event.preventDefault(); con
 
 async function accountRequest(action,payload={}){
  const response=await fetch('/api/auth/'+action,{method:'POST',headers:{'Content-Type':'application/json',...(action==='logout'?{Authorization:'Bearer '+key}:{})},body:JSON.stringify(payload),signal:AbortSignal.timeout(10000)});
- const data=await response.json();if(!response.ok)throw new Error(data.message||'Account request failed.');return data;
+ const data=await response.json();if(!response.ok){const error=new Error(data.message||'Account request failed.');error.code=data.error;if(response.status===429){const seconds=Number(data.retryAfterSeconds)||Number(response.headers.get('Retry-After'))||60;window.EntryUI?.rateLimit(action,seconds);}throw error;}return data;
 }
 function useSession(data){key=data.access_token;refreshToken=data.refresh_token;expiresAt=Date.now()+data.expires_in*1000;}
 async function refreshAccount(){try{useSession(await accountRequest('refresh',{refresh_token:refreshToken}));}catch(error){key='';refreshToken='';stopWalking();render();throw error;}}
 $('account-form').addEventListener('submit',async event=>{
  if(window.AuthReturn?.cleanupFailed){event.preventDefault();$('account-password').value='';notice('Close this account link and open the game from its main address to sign in.',true);return;}
- event.preventDefault();if(busy||!accountMode)return;busy=true;lock();
+ event.preventDefault();const action=event.submitter?.id==='account-signup'?'signup':'login';if(busy||!accountMode||window.EntryUI?.remaining(action)>0)return;busy=true;lock();window.EntryUI?.begin('auth',action==='signup'?'Creating your account…':'Returning to your world…');
  const payload={email:$('account-email').value.trim(),password:$('account-password').value};$('account-password').value='';
- try{const data=await accountRequest(event.submitter?.id==='account-signup'?'signup':'login',payload);if(data.confirmationRequired){notice(data.message);return;}useSession(data);view=await request('/api/citizen');render();notice(pending?'Signed in. Resolve your unconfirmed action before continuing.':'Signed in. Your saved citizen is ready.');}
- catch(error){key='';refreshToken='';notice(error.message,true);}finally{busy=false;lock();}
+ try{const data=await accountRequest(action,payload);if(data.confirmationRequired){window.EntryUI?.confirmation();notice(data.message);return;}useSession(data);view=await request('/api/citizen');render();notice(pending?'Signed in. Resolve your unconfirmed action before continuing.':'Signed in. Your saved citizen is ready.');}
+ catch(error){key='';refreshToken='';notice(error.message,true);}finally{busy=false;lock();window.EntryUI?.end('auth');}
 });
 $('account-logout').addEventListener('click',async()=>{
- if(busy||pending&&pending.accountId===view?.accountId)return;stopWalking();busy=true;lock();try{await accountRequest('logout');window.WorldSync?.stop();window.AdminUI?.reset();key='';refreshToken='';view=null;window.CivicUI?.render(null,perform,true);window.RelationshipsUI?.render(null,perform,true);window.NeighboursUI?.render(null,perform,true);window.WorldRenderer?.destroy();window.GameUI?.reset();$('citizen-panel').hidden=true;$('creation-panel').hidden=true;$('access-panel').hidden=true;$('account-panel').hidden=false;$('account-logout').hidden=true;notice('Signed out.');}catch(error){notice(error.message,true);}finally{busy=false;lock();}
+ if(busy||pending&&pending.accountId===view?.accountId)return;stopWalking();busy=true;lock();try{await accountRequest('logout');window.WorldSync?.stop();window.AdminUI?.reset();key='';refreshToken='';view=null;window.CivicUI?.render(null,perform,true);window.RelationshipsUI?.render(null,perform,true);window.NeighboursUI?.render(null,perform,true);window.WorldRenderer?.destroy();window.GameUI?.reset();$('citizen-panel').hidden=true;$('creation-panel').hidden=true;$('access-panel').hidden=true;$('account-panel').hidden=false;$('account-logout').hidden=true;window.EntryUI?.stage(false,false);notice('Signed out.');}catch(error){notice(error.message,true);}finally{busy=false;lock();}
 });
-fetch('/api/config').then(r=>{if(!r.ok)throw Error();return r.json();}).then(config=>{accountMode=config.mode==='supabase';$('access-panel').hidden=accountMode;$('account-panel').hidden=!accountMode;if(accountMode&&window.AuthReturn){notice(window.AuthReturn.cleanupFailed?'Close this account link and open the game from its main address to sign in.':window.AuthReturn.failed?'The account link could not be completed. Try signing in or request a new link.':'Account link opened. Sign in with your email and password to continue.',window.AuthReturn.failed||window.AuthReturn.cleanupFailed);}}).catch(()=>notice('The account configuration could not be loaded. Refresh to try again.',true));
+let configLoading=false;
+async function loadConfiguration(){if(configLoading)return;configLoading=true;try{const response=await fetch('/api/config',{signal:AbortSignal.timeout(10000)});if(!response.ok)throw Error();const config=await response.json();accountMode=config.mode==='supabase';window.EntryUI?.configure(accountMode);if(accountMode&&window.AuthReturn)notice(window.AuthReturn.cleanupFailed?'Close this account link and open the game from its main address to sign in.':window.AuthReturn.failed?'The account link could not be completed. Try signing in or request a new link.':'Account link opened. Sign in with your email and password to continue.',window.AuthReturn.failed||window.AuthReturn.cleanupFailed);}catch{window.EntryUI?.configure(false,true);notice('The account connection could not be loaded. Try connecting again.',true);}finally{configLoading=false;}}
+window.addEventListener('myrp-config-retry',loadConfiguration);loadConfiguration();
 const movementKeys={ArrowUp:[0,-1],ArrowDown:[0,1],ArrowLeft:[-1,0],ArrowRight:[1,0],w:[0,-1],s:[0,1],a:[-1,0],d:[1,0]};
 let heldDirection=null,stepTimer=null,lastStep=0,walkRun=0;
 function cancelRoute(){walkRun++;}

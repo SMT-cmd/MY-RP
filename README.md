@@ -1,4 +1,4 @@
-# Nigerian Life and Political Simulator
+# MY RP · My Roleplay
 
 Project repository: SMT-cmd/MY-RP. The former Holden RPG is preserved on `archive/holden-rpg-2026-10-07`; see [docs/legacy-migration.md](docs/legacy-migration.md).
 

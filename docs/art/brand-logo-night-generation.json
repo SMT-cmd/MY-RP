@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "created_date": "2026-10-16",
+  "project": "MY RP / My Roleplay",
+  "generator": {
+    "mode": "built-in",
+    "tool": "image_gen.imagegen",
+    "model": "tool-managed; model identifier not reported"
+  },
+  "asset": {
+    "id": "my-rp-logo-night",
+    "role": "Additional distinct opaque logo direction; preferred over the alpha exploration for prominent use",
+    "use_case": "logo-brand",
+    "intent": "generate",
+    "final_path": "/workspace/scratch/1e604b11e2c4/MY-RP/web/assets/brand/my-rp-logo-night.png",
+    "project_path": "web/assets/brand/my-rp-logo-night.png",
+    "generation_source_path": "/workspace/scratch/1e604b11e2c4/generated_images/exec-dd195f55-1a48-4340-85a0-4446c705c54f.png",
+    "dimensions": {
+      "width": 2172,
+      "height": 724
+    },
+    "format": "PNG",
+    "color_mode": "RGB",
+    "transparent_background_requested": false,
+    "sha256": "34d24e71c0c61e661fd48ca21ae3f919a3ac584d4f334aa47fe139822b4106f9",
+    "prompt": "Use case: logo-brand\nAsset type: original premium game brand lockup for a midnight website masthead and sign-in card. A NEW DISTINCT logo direction, not an edit or recreation of any previous logo.\nPrimary request: Design a refined, exceptionally clean typographic identity reading exactly \"MY RP\". Use highly legible bespoke geometric sans-serif uppercase lettering with strong simple shapes and an understated contemporary editorial/game identity. A small simple angular road/route monogram sits immediately to the left, made from only two or three decisive clean strokes, with a single route turn suggesting movement through a city. Make this mark restrained and smaller than the wordmark height. The overall design is quiet, confident, luxurious and contemporary, immediately readable at a small website header size.\nComposition/framing: A tightly composed horizontal centered logo lockup in a wide landscape canvas, approximately 3:1. Main text occupies most of the horizontal lockup. Clear intentional spacing between MY and RP, compact moderate margins around all sides. Straight-on flat graphic artwork, no perspective or scene.\nColor palette: A completely solid uniform opaque background in exact midnight navy #0a0e17 across the full canvas. Lettering solid ivory #f5f3ec. Small route monogram uses restrained warm amber #ffb052 and at most one cobalt #5d8cff accent stroke. Crisp flat fills and immaculate smooth vector-like edges.\nText (verbatim): \"MY RP\". Spell M Y, space, R P. This is the only text.\nConstraints: NOT transparent; opaque RGB-style background, uniform edge to edge. This is flat graphic brand artwork, not photography, not 3D. Use a distinct typographic family with clean conventional R and P counters and simple readable Y geometry. No distress, no texture, no grit, no stray pixels, no rough edges, no gradients, no metallic finish, no bevels, no shadows, no glow. No shields, crowns, badges, slogans, extra letters, mockups, watermarks or copied franchise identity.",
+    "qa": {
+      "inspection": "Local view_image plus Pillow metadata read; unmodified copy of the generator output",
+      "text": "Exact MY RP text, legible clean geometric letters, no additional slogan",
+      "composition": "Centered horizontal wordmark with a small amber route turn and cobalt diagonal on the left; a distinct typographic family from the earlier monogram exploration",
+      "edge_quality": "Clean solid opaque image with no alpha extraction debris; sharp smooth letter edges",
+      "background": "Opaque near-midnight background. Requested #0a0e17; observed corners vary subtly around RGB [10..11,15..16,24..26] rather than a mathematically uniform fill.",
+      "corner_pixels": [
+        [
+          11,
+          15,
+          25
+        ],
+        [
+          11,
+          16,
+          26
+        ],
+        [
+          10,
+          15,
+          24
+        ],
+        [
+          10,
+          16,
+          26
+        ]
+      ],
+      "center_top": [
+        9,
+        14,
+        24
+      ],
+      "color_and_finish": "Ivory lettering, amber/cobalt mark, mostly flat visual finish with subtle generated tonal variation",
+      "limitations": "Logo occupies the central portion of the canvas with generous internal margins. Inspect header sizing in context. Raster asset, not a vector master.",
+      "retries": 0
+    },
+    "preservation": "Earlier transparent asset remains unchanged as an exploration; no alpha asset editing was performed for this direction"
+  }
+}

@@ -1,7 +1,7 @@
 /* The server injects a content-derived version and exact public asset allowlist. */
 const CACHE='myrp-public-__STATIC_VERSION__';
 const PUBLIC=new Set(__PUBLIC_ASSETS__);
-const SHELL=['/offline.html','/style.css','/favicon.svg','/app-icon-192.png','/app-icon-512.png'];
+const SHELL=['/offline.html','/style.css','/brand.css','/favicon.svg','/app-icon-192.png','/app-icon-512.png'];
 const publicRequest=path=>new Request(new URL(path,self.location.origin),{credentials:'omit',cache:'no-store'});
 const acceptable=response=>response.status===200&&!response.redirected&&['basic','default'].includes(response.type)&&!/(?:^|,)\s*private\b/i.test(response.headers.get('cache-control')??'');
 self.addEventListener('install',event=>event.waitUntil((async()=>{

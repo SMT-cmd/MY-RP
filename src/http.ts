@@ -1,3 +1,4 @@
+import {AccountRateLimitError} from './account.ts';
 import { createHash } from 'node:crypto';
 import { createServer } from 'node:http';
 import { readFile } from 'node:fs/promises';
@@ -62,6 +63,11 @@ export function createApp(options: { store: CommandStore; authenticate: (req: In
   assets.set('/relationships-ui.js',['relationships-ui.js','text/javascript']);
   assets.set('/home-visits-ui.js',['home-visits-ui.js','text/javascript']);
   assets.set('/teaching-ui.js',['teaching-ui.js','text/javascript']);
+  assets.set('/entry-ui.js',['entry-ui.js','text/javascript']);
+  assets.set('/brand.css',['brand.css','text/css']);
+  assets.set('/world-art.html',['world-art.html','text/html']);
+  for(const file of ['my-rp-logo-night.webp','my-rp-city-keyart.webp'])assets.set('/assets/brand/'+file,['assets/brand/'+file,'image/webp']);
+  for(const file of ['home-interior.webp','workspace-office.webp','city-district.webp','vehicle-sedan.webp'])assets.set('/assets/concepts/'+file,['assets/concepts/'+file,'image/webp']);
   const publicAssets=[...assets.keys()].filter(path=>path!=='/');let worker:Promise<string>|null=null;
   async function serviceWorker(){
     if(!worker)worker=(async()=>{const template=await readFile(new URL('../web/sw.js',import.meta.url),'utf8'),hash=createHash('sha256').update(template);
@@ -125,6 +131,7 @@ export function createApp(options: { store: CommandStore; authenticate: (req: In
       }
       return json(404,{error:'NOT_FOUND',message:'Unknown route.'});
     }catch(error){
+      if(error instanceof AccountRateLimitError){res.setHeader('Retry-After',String(error.retryAfterSeconds));return json(429,{error:error.code,message:error.message,retryAfterSeconds:error.retryAfterSeconds,rateLimitScope:error.action});}
       if(error instanceof DomainError)return json(error.status,{error:error.code,message:error.message});
       return json(req.url==='/readyz'?503:500,{error:'SERVER_ERROR',message:'The action was not confirmed. Retry with the same request identifier.'});
     }

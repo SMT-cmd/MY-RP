@@ -1,0 +1,33 @@
+{
+  "generated_at": "2026-10-16",
+  "tool": "image_gen.imagegen",
+  "mode": "built-in generate",
+  "classification": "stylized-concept",
+  "representation": "Original art direction concepts; not screenshots of rendered gameplay.",
+  "assets": [
+    {
+      "name": "home-interior",
+      "prompt": "Use case: stylized-concept\nAsset type: Original art direction concept image for MY RP (My Roleplay), a Nigerian browser life RPG. A clean environment artwork only, never a current gameplay screenshot.\nPrimary request: A sophisticated, lived-in contemporary Nigerian apartment interior with a generous, highly readable living room, dining area, and practical home-office nook in one coherent floor plan.\nScene/backdrop: Elevated three-quarter architectural cutaway view into a modern Lagos-inspired apartment. One open balcony gives a beautiful glimpse of a believable modern Nigerian city at blue hour. Furnish the space at realistic adult scale with generous circulation. A soft low cobalt sofa, warm walnut sideboard and dining table, textured ivory plaster walls, lightly worn woven rug, elegant floor lamps, shelves, restrained plants and personal domestic details make it feel inhabited.\nStyle/medium: Cinematic detailed stylized-realistic 3D game environment concept, sophisticated materials and physically believable light, original design. Attractive craftsmanship and natural small imperfections.\nComposition/framing: One unified wide landscape image, approximately 16:9. Elevated three-quarter cutaway with near walls removed to show the living/dining/home-office layout. The apartment fills the composition at a useful readable scale; wide enough to see connected spaces and balcony, no distant miniature house model, no collage.\nLighting/mood: Soft amber lamps and warm interior pools of light balance subtle cool city light, restful and aspirational, rich but legible shadows.\nColor palette: Warm walnut, textured ivory, muted stone, cobalt upholstery accents, restrained midnight-blue shadows and amber light.\nConstraints: No readable text, no interface, no logos, no watermark, no people necessary. Original concept art; no copied Sims assets or recognizable copied game scenes. Furniture and architecture must be usable and grounded, believable doors and circulation, no fantasy geometry. No captions or borders.",
+      "transparent_background": false,
+      "original_path": "/workspace/scratch/1e604b11e2c4/generated_images/exec-6f4d2317-096c-4dd2-a527-0c6b1a807b86.png",
+      "output_path": "web/assets/concepts/home-interior.png",
+      "dimensions": {
+        "width": 1672,
+        "height": 941
+      },
+      "visual_qa": "Passed: unified elevated cutaway with clear adult-scale living, dining and desk areas; contemporary Lagos-inspired balcony/city setting, warm walnut/ivory/cobalt/amber palette; no people, UI, readable text or logos."
+    },
+    {
+      "name": "workspace-office",
+      "prompt": "Use case: stylized-concept\nAsset type: Original art direction concept image for MY RP (My Roleplay), a Nigerian browser life RPG. A clean environment artwork only, never a current gameplay screenshot.\nPrimary request: An aspirational contemporary Nigerian creative and business office interior with functional workstations, a glass-partitioned meeting room, welcoming reception and a believable wide circulation route connecting every zone.\nScene/backdrop: A sophisticated Lagos-inspired urban office on an upper floor with large windows to a modern Nigerian city. Six attractive practical workstations with monitors, laptops, task chairs, organized desk accessories and subtle plants occupy the main studio. A glazed meeting room has a generous table and usable chairs, and a compact reception desk with comfortable guest seating makes the entrance zone obvious. No people are necessary.\nStyle/medium: Cinematic, richly detailed stylized-realistic 3D game environment concept, original contemporary architecture, physically believable light, appealing material variation and realistic adult proportions. Warm walnut, ivory acoustic wall panels, softly textured neutral furniture, ribbed glass, brushed metal, restrained woven elements and carefully integrated acoustic lighting.\nComposition/framing: One unified wide landscape image, approximately 16:9. Elevated three-quarter architectural cutaway composition, near walls removed to show connected zones clearly. The office fills the frame at a useful readable scale; attractive cinematic arrangement with clearly usable movement space, no distant miniature building model, no collage.\nLighting/mood: Cool city dusk outside balances warm amber pendant and workstation lighting inside. Aspirational, active but calm, detailed light without crushed dark areas.\nColor palette: Midnight and cobalt architectural accents, warm amber light, walnut and pale stone, balanced neutral workstation furniture.\nConstraints: No readable text, no interface, no logos, no watermark, no captions or borders. No people necessary. Original concept art; no copied Sims assets or recognizable copied game scenes. Believable architecture, doors, meeting room access and circulation. No fantasy geometry, no furniture blocking passageways.",
+      "transparent_background": false,
+      "original_path": "/workspace/scratch/1e604b11e2c4/generated_images/exec-c3be9121-c7bd-4adb-b3d0-a6ddc2073c25.png",
+      "output_path": "web/assets/concepts/workspace-office.png",
+      "dimensions": {
+        "width": 1672,
+        "height": 941
+      },
+      "visual_qa": "Passed: coherent wide office with workstations, glass meeting room, reception and generous circulation; city windows and complementary dusk/amber palette; no people, UI, readable text or logos."
+    }
+  ]
+}

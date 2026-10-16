@@ -1,0 +1,36 @@
+{
+  "project": "MY RP / My Roleplay",
+  "created_at": "2026-10-16",
+  "mode": "built-in image_gen.imagegen",
+  "intent": "generate",
+  "use_case": "stylized-concept",
+  "scope": "Original concept art only; not delivered driving gameplay, geographic maps, or collision geometry.",
+  "assets": [
+    {
+      "output_path": "web/assets/concepts/city-district.png",
+      "source_path": "/workspace/scratch/1e604b11e2c4/generated_images/exec-a66e4729-06e7-47ce-8fda-aa090890c6f4.png",
+      "prompt": "Use case: stylized-concept\nAsset type: original environment concept art for MY RP / My Roleplay, a fictional Nigerian browser roleplay game; this is artistic planning art, not an accurate geographic or collision map.\nPrimary request: create one beautiful coherent Lagos-inspired coastal city district planning scene, elevated aerial oblique 3D view, wide landscape composition.\nScene and subject: a believable continuous network of paved streets and connecting intersections around mixed apartment and home blocks, visible driveways and parking access, civic buildings, small commercial frontages and office streets, planted courtyards, mature palms and tropical planting, a bridge crossing an inlet to the water edge. Nigerian coastal urban character through architecture, vegetation, road surfaces and streetscape, all arranged in an original fictional plan. Thoughtful urban hierarchy with a few larger connector roads, quieter residential streets and walkable shopfront blocks. The same physical scale across the scene.\nStyle and medium: grounded high-detail stylized-realistic game environment art, premium 3D art direction, sophisticated architectural materials and a rich but readable city silhouette.\nComposition: elevated oblique aerial camera reveals the connected roads and several neighbourhood blocks, warm occupied windows and small correctly scaled everyday vehicles. A single continuous scene with the waterfront and bridge readable.\nLighting and palette: blue-hour dusk, midnight navy shadows, rich cobalt water and sky, warm amber windows and street lights, calm cinematic atmosphere.\nConstraints: no text, words, street labels, pins, legend, UI, map frame, logos, watermarks or brand marks; no copied game layout; no weapons; no collage; no cutaway panels. This is an original fictional district visual concept, not functional driving gameplay.",
+      "dimensions": {
+        "width": 1672,
+        "height": 941
+      },
+      "visual_qa": {
+        "status": "passed",
+        "notes": "Coherent blue-hour coastal district with continuous streets, mixed home/apartment/civic/commercial blocks, driveways/parking, planted spaces, waterfront and bridge; no visible UI, map labels, legend, pins, or text."
+      }
+    },
+    {
+      "output_path": "web/assets/concepts/vehicle-sedan.png",
+      "source_path": "/workspace/scratch/1e604b11e2c4/generated_images/exec-52a676a9-2d96-4747-92f3-762de9d40b51.png",
+      "prompt": "Use case: stylized-concept\nAsset type: original vehicle hero concept art for MY RP / My Roleplay, a fictional Nigerian browser roleplay game; a concept scene, not delivered driving gameplay.\nPrimary request: one pearl-silver sporty everyday sedan parked along a credible modern Nigerian city street at dusk, beautifully resolved and mature in scale, elegant original unbranded body design.\nScene and subject: a clean road-going four-door sedan in a close front three-quarter view, fully visible with generous margins, parked beside a curb near a warm modern Nigerian commercial/residential building with a visible driveway. The road has believable lane markings, curb, drainage and subtle everyday wear. Palm planting, warm windows and a restrained contemporary streetscape place the scene in a Nigerian coastal city. The sedan has a cohesive original silhouette, understated clean grille, no brand badge, realistic glazing, practical mirrors, aligned wheels, crisp tyres, quality paint and glass materials. Grounded everyday attainable car character with subtle athletic proportions; do not copy any real manufacturer vehicle or another game's vehicle.\nStyle and medium: premium grounded stylized-realistic 3D game concept rendering, material fidelity, editorial automotive composition, single coherent scene.\nComposition: wide landscape cinematic shot, camera close at car height, whole sedan dominant in the foreground, front and near side visible, warm architecture and driveway softly receding behind it. Keep wheels and all car body extremities within frame, believable perspective and contact shadows.\nLighting and palette: dusk cobalt sky and midnight-blue shadows with amber building light and subtle amber reflections across pearl-silver paint; polished but natural lighting.\nConstraints: no readable number plates, no text, no logos or badges, no watermarks, no people as hero subjects, no weapons, no racing game UI, no collage, no multi-view sheet; no copied OneState design or recognizable real manufacturer design.",
+      "dimensions": {
+        "width": 1672,
+        "height": 941
+      },
+      "visual_qa": {
+        "status": "passed",
+        "notes": "Single fully framed pearl-silver sedan in front three-quarter view, clean tyres/mirrors/glass, credible road markings, driveway and warm modern architecture; cobalt/amber dusk; no readable plate, brand badge, UI, or weapons."
+      }
+    }
+  ]
+}

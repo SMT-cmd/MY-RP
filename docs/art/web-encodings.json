@@ -1,0 +1,62 @@
+[
+  {
+    "source": "web/assets/brand/my-rp-logo-night.png",
+    "deployed": "web/assets/brand/my-rp-logo-night.webp",
+    "width": 2172,
+    "height": 724,
+    "source_bytes": 1134849,
+    "web_bytes": 618400,
+    "sha256": "40bbd4cc62276ca3d44e510d1ee30979031620a0f31b9ca7f1bb8e977d696930",
+    "decoded_pixels_identical": true
+  },
+  {
+    "source": "web/assets/brand/my-rp-city-keyart.png",
+    "deployed": "web/assets/brand/my-rp-city-keyart.webp",
+    "width": 1983,
+    "height": 793,
+    "source_bytes": 2541764,
+    "web_bytes": 1883112,
+    "sha256": "82b4cf66e981c159899663cdc785f6d4fa0c413cdccfabd6ab824824fdbd1e48",
+    "decoded_pixels_identical": true
+  },
+  {
+    "source": "web/assets/concepts/city-district.png",
+    "deployed": "web/assets/concepts/city-district.webp",
+    "width": 1672,
+    "height": 941,
+    "source_bytes": 3389440,
+    "web_bytes": 2569016,
+    "sha256": "ceccfe2005ede81da9e540017a4840b4fe91713181707ea893d96d33b47e1dbf",
+    "decoded_pixels_identical": true
+  },
+  {
+    "source": "web/assets/concepts/home-interior.png",
+    "deployed": "web/assets/concepts/home-interior.webp",
+    "width": 1672,
+    "height": 941,
+    "source_bytes": 2671742,
+    "web_bytes": 1920498,
+    "sha256": "bc4c0a17dbba7be6de73a39427b7740a7ad5fcad66fa2e733b3d5751d21677a7",
+    "decoded_pixels_identical": true
+  },
+  {
+    "source": "web/assets/concepts/vehicle-sedan.png",
+    "deployed": "web/assets/concepts/vehicle-sedan.webp",
+    "width": 1672,
+    "height": 941,
+    "source_bytes": 2487255,
+    "web_bytes": 1788884,
+    "sha256": "7d3a3e22ed00056cc8f5a71023bd430f6cfae2f3eef27b2a07ab94f0691d48d1",
+    "decoded_pixels_identical": true
+  },
+  {
+    "source": "web/assets/concepts/workspace-office.png",
+    "deployed": "web/assets/concepts/workspace-office.webp",
+    "width": 1672,
+    "height": 941,
+    "source_bytes": 2891452,
+    "web_bytes": 2116366,
+    "sha256": "9fdfe6ca97ae37cc88ce79bd353f872ff13cf36e474f90b8523c582db89dd985",
+    "decoded_pixels_identical": true
+  }
+]

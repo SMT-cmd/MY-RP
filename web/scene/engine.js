@@ -44,10 +44,11 @@ export function sceneGeometry(world){
  }
  return{root,walls,fixtures,places,partitions,lights};
 }
-export function createEngine(host,onFailure){
+export function createEngine(host,onFailure,onReady=()=>{}){
+ let firstPaint=true;
  const renderer=new THREE.WebGLRenderer({antialias:true,powerPreference:'low-power'});renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,1.5));renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.toneMapping=THREE.ACESFilmicToneMapping;
  const canvas=renderer.domElement;canvas.setAttribute('role','img');canvas.setAttribute('aria-label','Your city and furnished home in 3D');canvas.className='world-3d-canvas';host.replaceChildren(canvas);
- const scene=new THREE.Scene();scene.background=new THREE.Color(0xe5e9df);scene.add(new THREE.HemisphereLight(0xfff5e2,0x73836b,2));
+ const scene=new THREE.Scene();scene.background=new THREE.Color(0xcbd2dc);scene.add(new THREE.HemisphereLight(0xfff5e2,0x73836b,2));
  const sun=new THREE.DirectionalLight(0xfff1d7,2.5);sun.position.set(8,15,9);sun.castShadow=true;sun.shadow.mapSize.set(1024,1024);sun.shadow.camera.left=-18;sun.shadow.camera.right=18;sun.shadow.camera.top=18;sun.shadow.camera.bottom=-18;sun.shadow.normalBias=.035;scene.add(sun);scene.add(sun.target);
  const library=createCharacterLibrary(),makeAdult=appearance=>adultModel(appearance,library.get(appearance?.body??'male'),library.eyeTexture);
  const camera=new THREE.OrthographicCamera(-8,8,5,-5,.05,100);let actor=makeAdult(),avatarSignature='';scene.add(actor.root);
@@ -124,7 +125,7 @@ export function createEngine(host,onFailure){
   }
   if(geometry?.walls.length){geometry.walls[0].visible=Math.cos(cameraYaw)>0;geometry.walls[1].visible=Math.sin(cameraYaw)>0;}
   for(const p of geometry?.partitions??[])p.scale.y=raised?1:.45;
-  updateHomeLights(geometry,world?.home?.fixtures??[],time,reduced,quality);renderer.render(scene,camera);
+  updateHomeLights(geometry,world?.home?.fixtures??[],time,reduced,quality);renderer.render(scene,camera);if(firstPaint){firstPaint=false;onReady();}
  }
  function update(next,mode){if(!alive)return;quality=mode;paused=mode==='low';if(paused){if(frame)cancelAnimationFrame(frame);frame=null;return;}const old=world,room=next.home??next.position,oldRoom=old?.home??old?.position,nextSignature=JSON.stringify([next.map.id,next.position.region,next.position.interior,next.home?.id,next.home?.version,next.residence,next.guestEntrances,next.parking]);
   const nextAvatar=JSON.stringify([next.avatar??{},library.revision]);if(nextAvatar!==avatarSignature){const previous=actor;actor=makeAdult(next.avatar??{});actor.root.position.copy(previous.root.position);actor.root.rotation.copy(previous.root.rotation);scene.remove(previous.root);disposeModels(previous.root);scene.add(actor.root);avatarSignature=nextAvatar;}

@@ -1,5 +1,15 @@
 # Change log
 
+## MY RP identity and account retry, 16 October 2026
+
+The owner chooses MY RP / My Roleplay as the visible name and requests a cinematic entry. Generated original city key art, a selected clean logo, home interior, office, district layout and sedan concepts are saved with exact prompts/provenance. Midnight/cobalt/amber UI replaces the green/white entry and phone chrome. The header, title, HUD, app manifest, offline page and icons use the new identity. The public world-art gallery clearly labels visual concepts and the non-navigable district illustration. Large entry art is skipped in data saver; lossless WebP copies preserve all original pixels. Read docs/brand-and-entry-contract.md.
+
+Provider log aggregation identifies the observed 429 as a signup-email send limit, with successful password/token requests in the same window. A fresh secure password login subsequently reached the existing saved citizen and Ready cloud-browser gameplay. No account was created or verification bypassed. The cloud browser reports WebGL disabled and displays the real Canvas home fallback; production-device GPU and art acceptance remain open.
+
+The gateway now separates signup-email throttling from general account limits, returns bounded Retry-After and suppresses raw provider errors. Separate signup/sign-in tabs, correct Enter-key submit order, confirmation guidance, operation-scoped countdowns and duplicate prevention preserve password sign-in during an email cooldown. Only bounded cooldown timestamps are stored; credentials/tokens remain out of browser storage. Real configuration/authentication/scene work drives loading indicators with explicit failure recovery. Provider email quotas/public SMTP remain separate constraints; they were not disabled or raised.
+
+Validation: all 220 tests pass (134.44 seconds), strict TypeScript, browser-script syntax and whitespace checks pass. Existing domain/SQL/receipt/privacy regression coverage is retained. No migration, environment secret, paid resource or independent demo change is included. Publication/deployment verification is recorded after the live checks. Full Bible, direct driving, nationwide scenes, native GPU/device/load and operational recovery gates remain open. Unity is not being added; the existing Three.js client consumes the new branding and artwork.
+
 ## Character and lighting release verified, 16 October 2026
 
 Published identical tested source to main and build/main-game-2026-10-08 as `2c83974c6107daed8c4854dd0b9686cfc2a90a7c`, tree `20eab50ee10c37e623319f18314e1acef46a6772`. Terminal fetch/index comparisons match both branches. Existing free MY-RP service deployed manually as `dep-db93avbrjlhs73e2l7g0`, live at 14:33:02 UTC. Automatic deployment remains off and release stage remains build. The independent demo branch remains `28c8437c89fdedb866e1cc3bfc0630d71574246b`.

@@ -1,6 +1,14 @@
 import { DomainError } from './domain.ts';
 export type AccountAction = 'login'|'signup'|'refresh'|'logout';
 export type AccountGateway = (action: AccountAction, body: Record<string,unknown>, authorization?:string)=>Promise<Record<string,unknown>>;
+export class AccountRateLimitError extends DomainError {
+ readonly retryAfterSeconds:number;readonly action:AccountAction;
+ constructor(action:AccountAction,emailLimited:boolean,retryAfterSeconds:number){super(emailLimited?'ACCOUNT_EMAIL_RATE_LIMIT':'ACCOUNT_RATE_LIMIT',emailLimited?'Confirmation emails are temporarily limited. If you already have an account, use Sign in. Otherwise wait before requesting another email.':'Account requests are temporarily limited. Wait for the retry countdown, then try once more.',429);this.action=action;this.retryAfterSeconds=retryAfterSeconds;}
+}
+export function accountRetryAfter(value:string|null,now=Date.now()){
+ const seconds=value&&/^\d+$/.test(value)?Number(value):value?Math.ceil((Date.parse(value)-now)/1000):NaN;
+ return Number.isFinite(seconds)&&seconds>0?Math.min(86400,Math.ceil(seconds)):60;
+}
 // Credentials are forwarded only to this configured project. Provider responses are
 // reduced to session fields; editable metadata never grants game permissions.
 export function supabaseAccounts(projectUrl:string,publishableKey:string,fetcher:typeof fetch=fetch):AccountGateway {
@@ -20,7 +28,7 @@ export function supabaseAccounts(projectUrl:string,publishableKey:string,fetcher
   }
   let response:Response;
   try{response=await fetcher(new URL(path,origin),{method:'POST',headers:{apikey:publishableKey,'Content-Type':'application/json',...(action==='logout'?{Authorization:authorization!}:{})},body:JSON.stringify(payload),redirect:'error',signal:AbortSignal.timeout(5000)});}catch{throw new DomainError('AUTH_UNAVAILABLE','Account service is unavailable. Try again shortly.',503);}
-  if(response.status===429)throw new DomainError('ACCOUNT_RATE_LIMIT','Too many account attempts. Wait before trying again.',429);
+  if(response.status===429){let code:unknown;try{const failure=await response.json();code=failure?.code??failure?.error_code;}catch{/* Never show raw provider errors. */}throw new AccountRateLimitError(action,action==='signup'&&code==='over_email_send_rate_limit',accountRetryAfter(response.headers.get('Retry-After')));}
   if(!response.ok)throw new DomainError(action==='signup'?'ACCOUNT_SIGNUP_FAILED':'AUTH_REQUIRED',action==='signup'?'Registration could not be completed. Check your details or try signing in.':'Sign-in failed. Check your credentials and email confirmation.',action==='signup'?400:401);
   if(action==='logout')return {signedOut:true};
   let data:Record<string,unknown>;try{data=await response.json();}catch{throw new DomainError('AUTH_UNAVAILABLE','Account service returned an invalid response.',503);}

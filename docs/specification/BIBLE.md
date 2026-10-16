@@ -1,6 +1,6 @@
-# Nationwide Nigerian Life and Political Simulator
+# MY RP · My Roleplay
 
-## Master specification bible
+## Nationwide Nigerian life and political simulation · Master specification bible
 
 Version 1.1 | 8 October 2026 | Product owner edition
 
@@ -742,6 +742,8 @@ The main-build residence component now ties owned/rented home entry and parking 
 Jobs, queues, transport, services and social activity remain visible. Objects have consistent labels and accessible focus. Buildings show purpose, opening state and service; a closed clinic directs citizens to an alternative or NPC fallback.
 
 ## 9.2 HUD phone and interaction model
+
+16 October brand component: the visible identity is MY RP / My Roleplay, with midnight, amber and cobalt UI, original cinematic entry art, separated sign-in/signup, scoped retry countdowns and real loading states. Homes, office, district and vehicle concept images are art direction, not gameplay screenshots or an implemented map. See docs/brand-and-entry-contract.md. The current Three.js client remains; Unity adoption would require a separately evaluated migration.
 
 The HUD shows needs, safe or protected status, current activity, nearby interaction and connection state. Money is visible without turning every scene into a financial dashboard. The in game phone hosts bank, jobs, school, map, messaging, NaijaFeed, organisations, events, government, emergency help, support and settings.
 

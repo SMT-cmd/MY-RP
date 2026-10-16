@@ -12,3 +12,5 @@
 .myrp-theme .entry-backdrop{z-index:0}.myrp-theme .masthead{position:relative;z-index:2}.myrp-theme:not(.is-playing) main{z-index:1}.myrp-theme.entry-art .entry-backdrop{background-position:75% center}.myrp-theme:not(.is-playing) #connection-panel{display:none}.myrp-theme .art-toggle{font-size:.65rem;background:#0a111fb3;color:#d5dfef;border:1px solid #ffffff30;padding:8px 12px;margin-top:15px;min-height:36px}.myrp-theme .art-toggle:hover{background:#25334b}
 
 .myrp-theme .hero>p.art-credit{font-size:.6rem}@media(max-width:760px){.myrp-theme.entry-art .entry-backdrop{background-position:60% top}}
+
+.myrp-theme.offline-page main{display:block;max-width:760px;min-height:100dvh;padding-top:12vh}.myrp-theme.offline-page h1{font-size:clamp(2rem,7vw,3.5rem);line-height:1.1;overflow-wrap:break-word}.myrp-theme.offline-page .card{max-width:none}

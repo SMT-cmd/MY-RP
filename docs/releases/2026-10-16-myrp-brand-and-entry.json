@@ -1,0 +1,159 @@
+{
+  "date": "2026-10-16",
+  "product": "MY RP / My Roleplay",
+  "runtime_commit": "9521f04c224b2c85f3477184fa991536bc57fa81",
+  "runtime_tree": "ece10604d256c2cef4415583c5d7e5cd0f2637d8",
+  "render_deploy": "dep-db9432ui0phs73c7cqag",
+  "render_service": "srv-db378467bikc73bta2e0",
+  "live_at_utc": "2026-10-16T15:24:36.011876Z",
+  "plan": "free",
+  "auto_deploy": "off",
+  "stage": "build",
+  "schema_changed": false,
+  "environment_changed": false,
+  "tests": {
+    "full_passed": 220,
+    "full_failed": 0,
+    "full_seconds": 134.442742678,
+    "final_focused_passed": 9,
+    "final_pwa_passed": 2,
+    "typecheck": "passed",
+    "syntax_and_diff": "passed"
+  },
+  "live": {
+    "exactPublicAssets": 19,
+    "config": {
+      "mode": "supabase",
+      "releaseStage": "build",
+      "multiplayer": true
+    },
+    "workerVersion": "myrp-public-ab818e2d8017a00a65dcb969055066258b3ae880893f4c503dba44bfc6b4ea79",
+    "checks": [
+      {
+        "path": "/",
+        "status": 200,
+        "bytes": 32635
+      },
+      {
+        "path": "/brand.css",
+        "status": 200,
+        "bytes": 13058
+      },
+      {
+        "path": "/entry-ui.js",
+        "status": 200,
+        "bytes": 5091
+      },
+      {
+        "path": "/world-art.html",
+        "status": 200,
+        "bytes": 3321
+      },
+      {
+        "path": "/app.js",
+        "status": 200,
+        "bytes": 41659
+      },
+      {
+        "path": "/favicon.svg",
+        "status": 200,
+        "bytes": 289
+      },
+      {
+        "path": "/app-icon-192.png",
+        "status": 200,
+        "bytes": 1020
+      },
+      {
+        "path": "/app-icon-512.png",
+        "status": 200,
+        "bytes": 3434
+      },
+      {
+        "path": "/manifest.webmanifest",
+        "status": 200,
+        "bytes": 478
+      },
+      {
+        "path": "/offline.html",
+        "status": 200,
+        "bytes": 935
+      },
+      {
+        "path": "/scene/engine.js",
+        "status": 200,
+        "bytes": 21554
+      },
+      {
+        "path": "/world-3d-controller.js",
+        "status": 200,
+        "bytes": 1761
+      },
+      {
+        "path": "/world-renderer.js",
+        "status": 200,
+        "bytes": 20725
+      },
+      {
+        "path": "/assets/brand/my-rp-city-keyart.webp",
+        "status": 200,
+        "bytes": 1883112
+      },
+      {
+        "path": "/assets/brand/my-rp-logo-night.webp",
+        "status": 200,
+        "bytes": 618400
+      },
+      {
+        "path": "/assets/concepts/home-interior.webp",
+        "status": 200,
+        "bytes": 1920498
+      },
+      {
+        "path": "/assets/concepts/workspace-office.webp",
+        "status": 200,
+        "bytes": 2116366
+      },
+      {
+        "path": "/assets/concepts/city-district.webp",
+        "status": 200,
+        "bytes": 2569016
+      },
+      {
+        "path": "/assets/concepts/vehicle-sedan.webp",
+        "status": 200,
+        "bytes": 1788884
+      },
+      {
+        "path": "/readyz",
+        "status": 200
+      },
+      {
+        "path": "/api/citizen",
+        "status": 401
+      },
+      {
+        "path": "/api/citizen",
+        "status": 403
+      }
+    ]
+  },
+  "browser": {
+    "secure_password_signin": "succeeded with existing saved citizen and Ready state",
+    "post_deploy_authenticated_progress_refresh": "succeeded; Ready",
+    "entry_and_signup_tabs": "verified without creating an account",
+    "desktop_horizontal_overflow": false,
+    "gallery": "verified city/home/office/district/sedan images and concept labels",
+    "gpu": "WebGL disabled by cloud browser; actual gameplay observed through Canvas",
+    "screenshot": "docs/qa/2026-10-16-myrp-entry.jpg"
+  },
+  "demo_head": "28c8437c89fdedb866e1cc3bfc0630d71574246b",
+  "full_game_complete": false,
+  "remaining": [
+    "public SMTP / email quota and delivery",
+    "full Bible systems",
+    "direct driving",
+    "production-device GPU/mobile/landscape/load acceptance",
+    "operational backup/restore acceptance"
+  ]
+}

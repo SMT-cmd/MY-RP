@@ -11,6 +11,7 @@ const root=new URL('../demo/',import.meta.url);
 const html=await readFile(new URL('preview.html',root),'utf8');
 const layout=JSON.parse(await readFile(new URL('world-layout.json',root),'utf8'));
 const wait=(ms=10)=>new Promise(resolve=>setTimeout(resolve,ms));
+async function until(check:()=>boolean){for(let i=0;i<1000;i++){if(check())return;await wait(2);}assert.fail('Preview did not finish its route');}
 function browser(saved?:string){
  const errors:unknown[]=[];
  const console=new VirtualConsole();console.on('jsdomError',error=>errors.push(error));
@@ -25,7 +26,8 @@ function browser(saved?:string){
  const click=(selector:string)=>{const node=dom.window.document.querySelector<HTMLElement>(selector);assert.ok(node,selector);node.dispatchEvent(new dom.window.MouseEvent('click',{bubbles:true}));};
  const key=(key:string)=>dom.window.document.dispatchEvent(new dom.window.KeyboardEvent('keydown',{key,bubbles:true}));
  const text=()=>dom.window.document.body.textContent??'';
- const travel=async(id:string)=>{click(`[data-place="${id}"]`);for(let i=0;i<100;i++){await wait(2);if(!dom.window.document.getElementById('interact-button')!.hasAttribute('disabled'))break;}key('e');};
+ const arrived=()=>!dom.window.document.getElementById('interact-button')!.hasAttribute('disabled');
+ const travel=async(id:string)=>{click(`[data-place="${id}"]`);await until(arrived);key('e');};
  return {dom,errors,click,key,text,travel};
 }
 test('frozen visual preview preserves original service entrances and all region labels',()=>{
@@ -39,7 +41,7 @@ test('preview completes its local first-day flow once, retries tasks, and reload
  const b=browser();
  try {
   b.key('e');assert.match(b.text(),/Welcome, Timi/);b.click('[data-action="go-home"]');
-  await wait(40);b.key('e');assert.equal(b.dom.window.document.getElementById('home-layer')!.hasAttribute('hidden'),false);b.click('[data-furniture="bed"]');await wait(30);b.key('e');assert.match(b.text(),/Your bed/);b.click('[data-action="rest"]');
+  await until(()=>!b.dom.window.document.getElementById('interact-button')!.hasAttribute('disabled'));b.key('e');assert.equal(b.dom.window.document.getElementById('home-layer')!.hasAttribute('hidden'),false);b.click('[data-furniture="bed"]');await until(()=>!b.dom.window.document.getElementById('interact-button')!.hasAttribute('disabled')&&b.dom.window.document.getElementById('status')!.textContent!.startsWith('Beside Your bed'));b.key('e');assert.match(b.text(),/Your bed/);b.click('[data-action="rest"]');
   b.click('#wallet-button');assert.match(b.text(),/DEMO-START-001/);b.click('#close-phone');
   await b.travel('school');b.click('[data-action="lesson"]');b.click('[data-action="lesson-retry"]');
   assert.match(b.text(),/Basic starter work does not require/);b.click('[data-action="lesson-correct"]');b.click('#close-dialog');
@@ -109,7 +111,7 @@ test('preview enters a collision-aware furnished home, faces movement and reload
   b.key('ArrowUp');assert.equal(b.dom.window.document.getElementById('player')!.getAttribute('data-facing'),'back');
   b.key('ArrowRight');assert.equal(b.dom.window.document.getElementById('player')!.getAttribute('data-facing'),'right');
   b.key('ArrowDown');b.key('ArrowLeft');assert.equal(b.dom.window.document.getElementById('player')!.getAttribute('data-facing'),'left');
-  b.click('[data-furniture="desk"]');await wait(40);b.key('e');assert.match(b.text(),/Your book is open/);b.click('#close-dialog');
+  b.click('[data-furniture="desk"]');await until(()=>!b.dom.window.document.getElementById('interact-button')!.hasAttribute('disabled'));b.key('e');assert.match(b.text(),/Your book is open/);b.click('#close-dialog');
   const saved=b.dom.window.localStorage.getItem('my-rp-visual-preview-v1')!,reloaded=browser(saved);
   try{assert.equal(reloaded.dom.window.document.getElementById('city-layer')!.hasAttribute('hidden'),true);assert.equal(reloaded.dom.window.document.getElementById('home-exit')!.hidden,false);reloaded.click('#home-exit');const outside=JSON.parse(reloaded.dom.window.localStorage.getItem('my-rp-visual-preview-v1')!);assert.equal(outside.interior,null);assert.deepEqual([outside.x,outside.y],[street.x,street.y]);assert.deepEqual(reloaded.errors,[]);}finally{reloaded.dom.window.close();}
   assert.deepEqual(b.errors,[]);
@@ -120,6 +122,6 @@ test('preview camera pans and zooms independently of player motion; connected st
   const svg=b.dom.window.document.getElementById('world-scene')!,initial=svg.getAttribute('viewBox'),position=b.dom.window.document.getElementById('player')!.getAttribute('transform');
   svg.dispatchEvent(new b.dom.window.WheelEvent('wheel',{deltaY:90,bubbles:true,cancelable:true}));assert.notEqual(svg.getAttribute('viewBox'),initial);assert.equal(b.dom.window.document.getElementById('player')!.getAttribute('transform'),position);assert.equal(b.dom.window.document.getElementById('follow-camera')!.getAttribute('aria-pressed'),'false');
   b.click('#zoom-in');assert.equal(b.dom.window.document.getElementById('zoom-label')!.textContent,'120%');b.click('#follow-camera');assert.equal(b.dom.window.document.getElementById('follow-camera')!.getAttribute('aria-pressed'),'true');
-  b.click('#map-button');b.click('[data-walk="west"]');await wait(150);const s=JSON.parse(b.dom.window.localStorage.getItem('my-rp-visual-preview-v1')!);assert.equal(s.x,-7);assert.equal(s.y,7);assert.deepEqual(b.errors,[]);
+  b.click('#map-button');b.click('[data-walk="west"]');await until(()=>JSON.parse(b.dom.window.localStorage.getItem('my-rp-visual-preview-v1')!).x===-7);const s=JSON.parse(b.dom.window.localStorage.getItem('my-rp-visual-preview-v1')!);assert.equal(s.x,-7);assert.equal(s.y,7);assert.deepEqual(b.errors,[]);
  }finally{b.dom.window.close();}
 });

@@ -3,10 +3,10 @@ import type {State,Command} from './domain.ts';
 import {homeFor,usableHome,homeFixtures} from './furnishing.ts';
 import {fixtureAccessible} from './home-layout.ts';
 
-// Free authored cosmetics. No external images, user-provided URLs or gameplay modifiers.
+// Free curated cosmetics; locally served, licensed CC0 character meshes.
 export const APPEARANCE={
  skin:[{id:'umber',name:'Deep umber',color:'#543528'},{id:'cocoa',name:'Cocoa',color:'#70462f'},{id:'bronze',name:'Bronze',color:'#895c40'},{id:'copper',name:'Copper',color:'#a77551'},{id:'warm',name:'Warm beige',color:'#c39872'},{id:'light',name:'Light beige',color:'#dfba97'}],
- frame:[{id:'slender',name:'Slender',scale:.91},{id:'balanced',name:'Balanced',scale:1},{id:'broad',name:'Broad',scale:1.13}],
+ frame:[{id:'slender',name:'Slender',scale:.91,body:'male'},{id:'balanced',name:'Balanced',scale:1,body:'male'},{id:'broad',name:'Broad',scale:1.13,body:'male'},{id:'curved',name:'Curved',scale:1,body:'female'},{id:'curved-broad',name:'Curved and broad',scale:1.13,body:'female'}],
  hair:[{id:'crop',name:'Close crop'},{id:'afro',name:'Rounded afro'},{id:'locs',name:'Shoulder-length locs'},{id:'braids',name:'Braids with a tied bun'},{id:'shaved',name:'Shaved head'}],
  hairColour:[{id:'black',name:'Soft black',color:'#282521'},{id:'brown',name:'Dark brown',color:'#493125'},{id:'silver',name:'Silver grey',color:'#a4a49c'}],
  outfit:[{id:'tee',name:'Everyday T-shirt'},{id:'linen',name:'Collared linen shirt'},{id:'tunic',name:'Long tunic'},{id:'jacket',name:'Casual jacket'}],
@@ -23,7 +23,7 @@ export function validateAppearance(value:unknown):AppearanceChoices{
 }
 export function initialAppearance(value:unknown):Appearance{return value===undefined?{...DEFAULT_APPEARANCE}:{...validateAppearance(value),version:1};}
 export function appearanceRender(profile:Appearance){
- return{skin:APPEARANCE.skin.find(o=>o.id===profile.skin)!.color,frame:APPEARANCE.frame.find(o=>o.id===profile.frame)!.scale,hair:profile.hair,hairColour:APPEARANCE.hairColour.find(o=>o.id===profile.hairColour)!.color,outfit:profile.outfit,shirt:APPEARANCE.top.find(o=>o.id===profile.top)!.color,trousers:APPEARANCE.bottom.find(o=>o.id===profile.bottom)!.color};
+ return{skin:APPEARANCE.skin.find(o=>o.id===profile.skin)!.color,frame:APPEARANCE.frame.find(o=>o.id===profile.frame)!.scale,body:APPEARANCE.frame.find(o=>o.id===profile.frame)!.body,hair:profile.hair,hairColour:APPEARANCE.hairColour.find(o=>o.id===profile.hairColour)!.color,outfit:profile.outfit,shirt:APPEARANCE.top.find(o=>o.id===profile.top)!.color,trousers:APPEARANCE.bottom.find(o=>o.id===profile.bottom)!.color};
 }
 export function appearanceCommand(s:State,actor:string,c:Command,now:number):Record<string,unknown>|undefined{
  if(c.type!=='ChangeAppearance')return;

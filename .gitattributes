@@ -3,3 +3,6 @@
 *.md text eol=lf
 *.ts text eol=lf
 *.js text eol=lf
+
+# Preserve the publisher licence verbatim, including original line endings.
+web/assets/characters/LICENSE-Quaternius.txt -text -whitespace

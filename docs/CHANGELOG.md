@@ -1,5 +1,15 @@
 # Change log
 
+## Adult characters, visual furniture shop and lighting, 16 October 2026
+
+The main build now loads two licensed CC0 adult base meshes locally, with five body frames, the existing fitted wardrobe/palettes, independent skeletons and confirmed-movement retargeting. The visual shop contains 152 furniture SKUs, seven finishes, original illustrations, search/filter/sort and bounded paging. Working placed lamps have five scenes, brightness and saved on/off state. Owner/proximity/lease/version checks, immutable receipts and SQL/backup recovery remain authoritative. Medium/high point lights are capped and reduced motion stops colour changes. Car meshes and bays now have human-scale dimensions. Read docs/character-assets.md, docs/furniture-lighting-contract.md and docs/reference-playthrough-2026-10-16.md.
+
+Verification: all 216 tests pass (120.23 seconds), strict TypeScript and changed-script syntax/diff checks pass. Regression coverage includes imported foot/seat contact across all frames/outfits, async disposal, every furniture footprint/rotation, purchase terms, floor-draft preservation, light settings/permissions/replay/backup, SQL mirror failure/rollback/reopen/forgery and two-seat use. The independent demo source is unchanged; its test now waits for route completion rather than a fixed delay.
+
+Hosted migration 20261016142754_authored_characters_furniture_lighting corresponds exactly to local 20261016142134_authored_characters_furniture_lighting.sql. History has fourteen entries. Catalogue parity, invoker permissions and a rolled-back PostgreSQL 17 unchanged-world/invalid-light rejection probe pass. Eighteen forced-RLS tables remain; aggregate account evidence is now one Auth account and one citizen, replacing historical zero-account statements. No account/session was fabricated. The existing password-protection advisor warning is recorded in hosted-schema-verification; no paid resource was enabled.
+
+Source publication and manual release verification follow below. Automatic deployment stays off and GAME_RELEASE_STAGE stays build. These are component improvements: full Bible status, real driving, mobile/GPU/art/cultural review, capacity, public SMTP and operational backup/restore gates remain open. No full-game/AAA parity or earnings claim is made.
+
 ## Interface release verified, 14 October 2026
 
 Published identical source to main and build/main-game-2026-10-08 as ae6c68e067111dd6480238793ce345102ac89997 (tree 08b72601dfcbf5f756cadb339db022e29d968dfd). Terminal fetch/diff verified both branches against the local committed files; the independent demo remains 28c8437c89fdedb866e1cc3bfc0630d71574246b. Existing free service srv-db378467bikc73bta2e0 deployed manually as dep-db80b1psrm7s73881eag, live at 22:43:55 UTC. Automatic deployment remains off and release stage remains build. No environment variable, schema, paid resource or service was added.

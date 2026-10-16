@@ -31,7 +31,7 @@ function renderWorld(){
  $('world-interactions').replaceChildren();if(pos.interior)$('world-interactions').append(actionButton('Exit to the city','ExitBuilding',{leaseVersion:pos.leaseVersion},!!world.trip));else world.nearby.forEach(b=>$('world-interactions').append(actionButton('Enter '+b.name,'EnterBuilding',{buildingId:b.id,leaseVersion:pos.leaseVersion},!!world.trip)));
  if(world.home){
   $('world-interactions').append(paragraph(`${world.home.guest?'Visiting '+world.home.name:'Your home'}. Walk around the furniture or tap an object to approach it.`));
-  for(const f of world.home.fixtures){if(f.use?.capacity)$('world-interactions').append(paragraph(`${f.name}: ${f.use.free} of ${f.use.capacity} positions free${f.use.currentSlot!==null?' · you are using position '+(f.use.currentSlot+1):''}.`));$('world-interactions').append(actionButton(f.name+' · '+(f.action==='Rest'?'Rest':f.action==='RequestFoodAssistance'?'Request protective meal':f.action==='Sit'?'Sit':f.action==='Read'?'Read':f.action==='Wash'?'Wash hands':f.action==='Dress'?'Use wardrobe':'Inspect'),'InteractHomeFixture',{fixtureId:f.id,leaseVersion:pos.leaseVersion},!f.nearby||f.allowed===false||f.use?.capacity>0&&!f.use.availableSlots.length));}
+  for(const f of world.home.fixtures){if(f.use?.capacity)$('world-interactions').append(paragraph(`${f.name}: ${f.use.free} of ${f.use.capacity} positions free${f.use.currentSlot!==null?' · you are using position '+(f.use.currentSlot+1):''}.`));$('world-interactions').append(actionButton(f.name+' · '+(f.action==='Rest'?'Rest':f.action==='RequestFoodAssistance'?'Request protective meal':f.action==='Sit'?'Sit':f.action==='Read'?'Read':f.action==='Wash'?'Wash hands':f.action==='Dress'?'Use wardrobe':f.action==='Light'?'Use light':'Inspect'),'InteractHomeFixture',{fixtureId:f.id,leaseVersion:pos.leaseVersion},!f.nearby||f.allowed===false||f.use?.capacity>0&&!f.use.availableSlots.length));}
  }
  const navigation=$('world-navigation');navigation.replaceChildren();navigation.hidden=!!pos.interior||!!world.trip;
  if(!navigation.hidden){
@@ -99,12 +99,13 @@ async function perform(type, payload = {}) {
 async function sendPending() {
   if (!pending || busy) return;
   if(accountMode&&pending.accountId!==view?.accountId){notice('Sign in to the account that created your unconfirmed action.',true);return;}
-  busy = true; lock();let openWardrobe=false;
+  busy = true; lock();let openWardrobe=false,openLight=null;
   try {
     const result = await request('/api/commands', pending);
     pending = null; rememberPending(); view = result.view;
     const detail = result.receipt.detail;
     openWardrobe=result.receipt.type==='InteractHomeFixture'&&view.world?.home?.fixtures.some(f=>f.id===detail.fixtureId&&f.action==='Dress');
+    if(result.receipt.type==='InteractHomeFixture'){const lamp=view.world?.home?.fixtures.find(f=>f.id===detail.fixtureId&&f.action==='Light');if(lamp)openLight=lamp.instanceId;}
     const messages = { CreateCitizen: 'Your citizen is ready. Welcome to your first day.', CompleteShift: `Shift settled. You earned ${money(detail.amount)}.`, BuyBasicMeal: `Meal purchased for ${money(detail.amount)}.`, CompleteLesson: `Module ${detail.day} is complete.`, SubmitExam: detail.passed ? `You passed with ${detail.score}%. Your certificate is recorded.` : `You scored ${detail.score}%. Review module five, then try again.` };
     notice((messages[result.receipt.type] || detail.message || 'Action confirmed.') + (result.replayed ? ' The original receipt was recovered.' : ''));
   } catch (error) {
@@ -112,7 +113,7 @@ async function sendPending() {
     if (error.auth) {key='';window.WorldSync?.stop();}
     if (error.confirmed) { pending = null; rememberPending(); }
     notice(error.message + (pending ? ' Your action identifier has been kept for a safe retry.' : ''), true);
-  } finally { busy = false; $('retry-panel').hidden = !pending; lock();if(openWardrobe){window.GameUI?.open('appearance');$('appearance-panel').scrollIntoView?.({block:'nearest',behavior:'auto'});$('appearance-hair').focus();} }
+  } finally { busy = false; $('retry-panel').hidden = !pending; lock();if(openWardrobe){window.GameUI?.open('appearance');$('appearance-panel').scrollIntoView?.({block:'nearest',behavior:'auto'});$('appearance-hair').focus();}if(openLight){window.GameUI?.open('furnish');const control=$('lamp-'+openLight);control?.scrollIntoView?.({block:'nearest',behavior:'auto'});control?.querySelector('select')?.focus();} }
 }
 function render() {
   const citizen = view.citizen;

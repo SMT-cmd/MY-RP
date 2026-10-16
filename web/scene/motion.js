@@ -19,8 +19,8 @@ export function activityAnchor(fixture,kind,position,slot){
  if(kind==='Rest')return{x:fixture.x+fixture.w/2,z:fixture.y+fixture.h/2,yaw:rotation,seatHeight:0};
  if(kind==='Sit'){
   // Cushion centre, with room for knees toward the front of the furnishing.
-  const depth=(fixture.rotation??0)%180?fixture.w:fixture.h,offset=depth*.06,capacity=fixture.model==='sofa'?3:1,lateral=(slot??(capacity-1)/2)-(capacity-1)/2;
-  return{x:fixture.x+fixture.w/2+Math.cos(rotation)*lateral+Math.sin(rotation)*offset,z:fixture.y+fixture.h/2-Math.sin(rotation)*lateral+Math.cos(rotation)*offset,yaw:rotation,seatHeight:fixture.model==='bench'?.50:.575};
+  const depth=(fixture.rotation??0)%180?fixture.w:fixture.h,offset=depth*.06,capacity=fixture.seats||(fixture.model==='sofa'?3:1),lateral=(slot??(capacity-1)/2)-(capacity-1)/2;
+  return{x:fixture.x+fixture.w/2+Math.cos(rotation)*lateral+Math.sin(rotation)*offset,z:fixture.y+fixture.h/2-Math.sin(rotation)*lateral+Math.cos(rotation)*offset,yaw:rotation,seatHeight:(fixture.kind??fixture.model)==='bench'?.50:.575};
  }
  return{x:position.x,z:position.z,yaw:Math.atan2(fixture.x+fixture.w/2-position.x,fixture.y+fixture.h/2-position.z),seatHeight:0};
 }

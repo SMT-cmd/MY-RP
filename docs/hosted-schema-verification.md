@@ -1,5 +1,25 @@
 # Hosted schema verification, 9 October 2026
 
+## Adult profiles, catalogue and lights, 16 October 2026
+
+Applied the exact reviewed local migration `20261016142134_authored_characters_furniture_lighting.sql` as hosted `20261016142754_authored_characters_furniture_lighting` to MY-RP Development (`ogkuirfuwxqwstyjijln`). Hosted history now has fourteen entries. No table, public API permission, paid plan, identity record or runtime credential was created.
+
+| Check | Observed result |
+|---|---|
+| PostgreSQL | 17.11 |
+| Furniture catalogue | 152 entries, matching local dimensions, prices, actions, capacities and lightable flags |
+| Four affected helpers | Invoker functions; anon/authenticated execute denied; simulator_server execute allowed |
+| Existing world | Scoped runtime unchanged-state validation succeeds |
+| Invalid light | Rolled-back paired world/mirror edit on an existing non-light fixture is rejected by the new light trigger |
+| Restoration | Probe checks state equality and rolls back the entire transaction; no test world/citizen retained |
+| Forced RLS | 18 simulator tables retained |
+| Aggregate identity | 1 Auth account, 1 citizen; no personal fields retrieved |
+| Security advisor | No new schema findings; existing leaked-password-protection warning remains |
+
+The existing Auth warning is separate from this migration. Its provider remediation is [password strength and leaked password protection](https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection). No plan upgrade or email-verification bypass was performed. Aggregate identity does not establish an authenticated browser gameplay acceptance result. Earlier zero-account and migration counts below are historical.
+
+Local verification includes all 216 regression tests, TypeScript and SQL rollback/reopen/receipt-forgery checks. Full phone/GPU/load and public email delivery remain separate gates.
+
 ## Civic petitions, 12 October 2026
 
 The petition component now integrates explicit same-state publication/support consent, private signer evidence, withdrawals, one threshold notice and delayed NPC consideration against journal-backed treasury snapshots. It grants no office, policy or spending authority. The main client preserves pending-request recovery and keyboard focus, refreshes idle expiry at an unchanged business cursor and clears civic data after session revocation. File/backup restoration and private SQL mirrors enforce exact receipt history, including same-clock actions and immutable consideration evidence. Read docs/civic-petitions-contract.md. R043 advances to In progress; D33 limits are proposed. Lobbying, organisations, protests, actual government budgets and the whole-game acceptance gates remain open.

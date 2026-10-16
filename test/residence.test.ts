@@ -41,7 +41,7 @@ test('changing from starter housing stores paid furnishings, releases parking an
  const old=homeFor(s,'home-person').id;s=buy(s);assert.equal(s.world!.positions['home-person'].interior,null);assert.equal(s.furnishing!.items[String(furniture.receipt.detail.furnitureId)].placement,null);assert.ok(!Object.values(s.furnishing!.items).some(i=>i.homeId===old));
  const car=run(s,'home-person','BuyNPCVehicle',{modelId:'compact',acceptedPrice:300000,acceptTerms:true},11000);s=car.state;const vehicleId=car.receipt.detail.vehicleId;
  assert.throws(()=>run(s,'home-person','ParkVehicle',{vehicleId,slot:1},12000),code('PARKING_DISTANCE'));s=walkTo(s,'home-person',27,7,13000);s=run(s,'home-person','ParkVehicle',{vehicleId,slot:2},30000).state;
- const view=citizenView(s,'home-person',31000).world!;assert.equal(view.parking.vehicles.length,1);assert.deepEqual(view.parking.origin,{x:30,y:5});s=restoreBackup(exportBackup(s));assert.equal(Object.values(s.furnishing!.parking)[0].slot,2);reconcile(s);
+ const view=citizenView(s,'home-person',31000).world!;assert.equal(view.parking.vehicles.length,1);assert.deepEqual(view.parking.origin,{x:30,y:2});s=restoreBackup(exportBackup(s));assert.equal(Object.values(s.furnishing!.parking)[0].slot,2);reconcile(s);
 });
 test('constructed land keeps its separate stable plot and every plot has a reachable front door',()=>{
  let s=buy(setup(),'land');for(const [goodsId,quantity,acceptedUnitPrice] of [['materials',5,2000],['energy',2,200]] as const)s=run(s,'home-person','BuyNPCSupply',{goodsId,quantity,acceptedUnitPrice},11000).state;

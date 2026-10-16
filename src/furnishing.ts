@@ -9,25 +9,12 @@ import {DAY} from './rules.ts';
 import {BUILDINGS,RESIDENTIAL_PLOTS} from './neighbourhood.ts';
 import type {HomeVisit} from './home-visits.ts';
 
-export const FURNITURE=[
- {id:'bed',name:'Upholstered double bed',category:'bedroom',w:2,h:2,price:85000,action:'Rest'},
- {id:'pantry',name:'Kitchen cabinet',category:'kitchen',w:1,h:1,price:32000,action:'RequestFoodAssistance'},
- {id:'sofa',name:'Three-seat sofa',category:'living',w:3,h:1,price:60000,action:'Sit'},
- {id:'desk',name:'Oak writing desk',category:'study',w:2,h:1,price:35000,action:'Read'},
- {id:'sink',name:'Kitchen sink unit',category:'kitchen',w:1,h:1,price:28000,action:'Wash'},
- {id:'wardrobe',name:'Double wardrobe',category:'bedroom',w:1,h:2,price:48000,action:'Dress'},
- {id:'armchair',name:'Lounge armchair',category:'living',w:1,h:1,price:25000,action:'Sit'},
- {id:'dining-table',name:'Four-person dining table',category:'dining',w:2,h:2,price:42000,action:'inspect'},
- {id:'dining-chair',name:'Dining chair',category:'dining',w:1,h:1,price:9500,action:'Sit'},
- {id:'bookshelf',name:'Tall bookcase',category:'study',w:1,h:2,price:30000,action:'Read'},
- {id:'sideboard',name:'Living-room sideboard',category:'living',w:2,h:1,price:33000,action:'inspect'},
- {id:'plant',name:'Indoor palm planter',category:'decor',w:1,h:1,price:7000,action:'inspect'},
- {id:'coffee-table',name:'Low coffee table',category:'living',w:2,h:1,price:19000,action:'inspect'},
- {id:'fridge',name:'Kitchen refrigerator',category:'kitchen',w:1,h:1,price:68000,action:'inspect'}
-];
+import {FURNITURE,LIGHT_SCENES,lightView} from './furniture-catalogue.ts';
+import type {FurnitureLight} from './furniture-catalogue.ts';
+export {FURNITURE} from './furniture-catalogue.ts';
 export const FINISHES=['walnut','oak','cream','slate','sage','terracotta','navy'];
 type Placement={x:number;y:number;rotation:number};
-export type FurnitureItem={id:string;owner:string;model:string;finish:string;homeId:string|null;placement:Placement|null;starter:boolean;alias?:string;purchaseKey?:string;version:number};
+export type FurnitureItem={id:string;owner:string;model:string;finish:string;homeId:string|null;placement:Placement|null;starter:boolean;alias?:string;purchaseKey?:string;version:number;light?:FurnitureLight};
 export type Home={id:string;region:string;width:number;height:number;version:number;wall:string;floor:string;parkingSpaces:number;partitions?:Partition[];roomSettings?:Record<string,{name:string;floor:string}>};
 type Parking={id:string;vehicleId:string;homeId:string;actor:string;slot:number;status:'parked'|'released';version:number};
 export type FurnishingState={homes:Record<string,Home>;items:Record<string,FurnitureItem>;npcStock:Record<string,number>;parking:Record<string,Parking>;visits?:Record<string,HomeVisit>};
@@ -59,10 +46,10 @@ export function residenceEntrance(s:State,actor:string){
 }
 export function entranceForHome(s:State,home:Home,actor:string){
  const asset=s.property?.assets[home.id];
- if(!asset){const shelter=BUILDINGS.find(b=>b.id==='shelter')!;return{...shelter,homeId:home.id,address:'Starter shelter',facadeId:null,parking:{x:0,y:6}};}
+ if(!asset){const shelter=BUILDINGS.find(b=>b.id==='shelter')!;return{...shelter,homeId:home.id,address:'Starter shelter',facadeId:null,parking:{x:0,y:1},parkingStacked:false};}
  const plot=RESIDENTIAL_PLOTS.find(p=>asset.id==='npc-'+home.region+'-'+p.catalogueKind);
  if(!plot)throw new DomainError('HOME_ADDRESS_UNAVAILABLE','This residence needs an authored street address before entry.');
- return{...plot,id:'residence:'+home.id,homeId:home.id,name:asset.owner===actor?'Your home':'Your rented home',parking:{x:plot.x+plot.w,y:plot.y+plot.h-1}};
+ return{...plot,id:'residence:'+home.id,homeId:home.id,name:asset.owner===actor?'Your home':'Your rented home',parking:{x:plot.x+plot.w,y:plot.y},parkingStacked:plot.catalogueKind==='land'};
 }
 export function releaseResidence(s:State,homeId:string,actor:string){
  const m=s.furnishing;if(!m)return;for(const item of Object.values(m.items))if(item.homeId===homeId&&item.owner===actor){item.homeId=null;item.placement=null;item.version++;}
@@ -76,7 +63,7 @@ export function changeResidence(s:State,actor:string,housing:string){
  if(s.world?.positions[actor])releaseResidence(s,homeIdentity(s,actor).id,actor);
  citizen.housing=housing;
 }
-export function homeFixtures(s:State,home:Home){return Object.values(get(s).items).filter(i=>i.homeId===home.id&&i.placement).map(i=>{const model=FURNITURE.find(f=>f.id===i.model)!,p=i.placement!,rotated=p.rotation%180!==0;return{id:i.alias??i.id,instanceId:i.id,name:model.name,model:model.id,finish:i.finish,rotation:p.rotation,x:p.x,y:p.y,w:rotated?model.h:model.w,h:rotated?model.w:model.h,action:model.action,copy:model.name};});}
+export function homeFixtures(s:State,home:Home){return Object.values(get(s).items).filter(i=>i.homeId===home.id&&i.placement).map(i=>{const model=FURNITURE.find(f=>f.id===i.model)!,p=i.placement!,rotated=p.rotation%180!==0;return{id:i.alias??i.id,instanceId:i.id,name:model.name,model:model.id,kind:model.kind,style:model.style,seats:model.seats,light:model.lightable?lightView(i.light):null,finish:i.finish,rotation:p.rotation,x:p.x,y:p.y,w:rotated?model.h:model.w,h:rotated?model.w:model.h,action:model.action,copy:model.lightable?'Choose this lamp in Furniture to change its light.':model.name};});}
 export function usableHome(s:State,actor:string){const home=homeFor(s,actor),pos=s.world!.positions[actor];if(pos.interior!=='shelter'||pos.homeId&&pos.homeId!==home.id)throw new DomainError('HOME_REQUIRED','Enter your current local home first.');return home;}
 export function homeWalkable(s:State,home:Home,x:number,y:number){return Number.isInteger(x)&&Number.isInteger(y)&&x>=0&&y>=0&&x<home.width&&y<home.height&&!homeFixtures(s,home).some(f=>x>=f.x&&x<f.x+f.w&&y>=f.y&&y<f.y+f.h);}
 export function homeStep(s:State,home:Home,x:number,y:number,nx:number,ny:number){return Math.abs(x-nx)+Math.abs(y-ny)===1&&homeWalkable(s,home,nx,ny)&&edgePassable(home,x,y,nx,ny);}
@@ -96,7 +83,7 @@ function validateLayout(s:State,home:Home){
  if(seen.size!==home.width*home.height-occupied.size||!seen.has('4:7')||fixtures.some(f=>![...seen].some(tile=>{const [x,y]=tile.split(':').map(Number);return fixtureAccessible(home,x,y,f);})))throw new DomainError('FURNITURE_PATH','Keep a reachable path to the exit and every furnishing.');
 }
 export function furnishingCommand(s:State,actor:string,c:Command,now:number,key:string):Record<string,unknown>|undefined{
- if(!['BuyFurniture','PlaceFurniture','StoreFurniture','CustomiseHome','BuildHomePartition','RemoveHomePartition','CustomiseRoom','ParkVehicle','UnparkVehicle'].includes(c.type))return;
+ if(!['BuyFurniture','PlaceFurniture','StoreFurniture','SetFurnitureLight','CustomiseHome','BuildHomePartition','RemoveHomePartition','CustomiseRoom','ParkVehicle','UnparkVehicle'].includes(c.type))return;
  const home=homeFor(s,actor),m=get(s),p=c.payload,pos=s.world!.positions[actor];
  if(s.world!.activeTrips[actor])throw new DomainError('IN_TRANSIT','Finish your journey first.');
  if(c.type==='BuyFurniture'){
@@ -105,6 +92,17 @@ export function furnishingCommand(s:State,actor:string,c:Command,now:number,key:
   const stockKey=pos.region+':'+Math.floor(now/DAY)+':'+model.id;if((m.npcStock[stockKey]??0)>=20)throw new DomainError('FURNITURE_STOCK','This local model is sold out for today.');
   const id='furniture_'+hash(key);post(s,key,now,'Furniture catalogue purchase',[{account:'citizen:'+actor,amount:-model.price},{account:'system:furniture-provider',amount:model.price}]);
   m.items[id]={id,owner:actor,model:model.id,finish:String(p.finish),homeId:null,placement:null,starter:false,purchaseKey:key,version:1};m.npcStock[stockKey]=(m.npcStock[stockKey]??0)+1;return{furnitureId:id,amount:model.price,message:'Furniture purchased once and placed in your personal storage.'};
+ }
+ if(c.type==='SetFurnitureLight'){
+  usableHome(s,actor);if(p.leaseVersion!==pos.leaseVersion)throw new DomainError('STALE_LEASE','Your location changed. Refresh before using the light.');
+  if(p.homeVersion!==home.version)throw new DomainError('HOME_CHANGED','The furniture moved. Refresh before using the light.');
+  const item=m.items[String(p.furnitureId)],model=FURNITURE.find(f=>f.id===item?.model),fixture=homeFixtures(s,home).find(f=>f.instanceId===item?.id);
+  if(!item||item.owner!==actor||item.homeId!==home.id||!fixture||!model?.lightable)throw new DomainError('LIGHT_PERMISSION','Use a placed light you own in your current home.',403);
+  if(!fixtureAccessible(home,pos.interiorX??4,pos.interiorY??6,fixture))throw new DomainError('TOO_FAR','Walk beside the lamp before changing it.');
+  const version=item.light?.version??0;if(p.lightVersion!==version)throw new DomainError('LIGHT_CHANGED','The light changed. Refresh before saving again.');
+  if(typeof p.enabled!=='boolean'||!LIGHT_SCENES.some(scene=>scene.id===p.scene)||!Number.isInteger(p.brightness)||Number(p.brightness)<0||Number(p.brightness)>100||!Number.isSafeInteger(version+1))throw new DomainError('INVALID_LIGHT','Choose a listed scene and brightness from 0 to 100.');
+  item.light={enabled:p.enabled,scene:String(p.scene),brightness:Number(p.brightness),version:version+1,commandKey:key};item.version++;
+  return{furnitureId:item.id,homeId:home.id,previousVersion:version,light:lightView(item.light),message:p.enabled?'Light settings saved.':'Light switched off.'};
  }
  if(c.type==='PlaceFurniture'||c.type==='StoreFurniture'){
   usableHome(s,actor);if(p.homeVersion!==home.version)throw new DomainError('HOME_CHANGED','Refresh the current layout before editing.');
@@ -151,10 +149,14 @@ export function furnishingCommand(s:State,actor:string,c:Command,now:number,key:
  const slot=Number(p.slot);if(!Number.isInteger(p.slot)||slot<1||slot>home.parkingSpaces||existing||Object.values(m.parking).some(r=>r.homeId===home.id&&r.slot===slot&&r.status==='parked'))throw new DomainError('PARKING_OCCUPIED','Choose an available parking space.');
  const id='parking_'+hash(key);m.parking[id]={id,vehicleId:vehicle.id,homeId:home.id,actor,slot,status:'parked',version:1};vehicle.version++;return{parkingId:id,vehicleId:vehicle.id,message:'Your vehicle occupies one recorded home parking space.'};
 }
-export function furnishingView(s:State,actor:string,now:number){if(!s.citizens[actor])return null;const copy=structuredClone(s),home=homeFor(copy,actor),m=get(copy);return{home,rooms:homeRooms(home),construction:{...ROOM_RULES,canBuild:!s.property?.assets[home.id]||s.property.assets[home.id].owner===actor,materials:Object.values(s.commerce?.batches??{}).filter(b=>b.owner==='citizen:'+actor&&b.region===home.region&&b.goods==='materials'&&b.expiresAt>now&&b.quality>0).reduce((n,b)=>n+b.quantity,0)},catalogue:FURNITURE,finishes:FINISHES,items:Object.values(m.items).filter(i=>i.owner===actor).map(i=>({...i,owner:s.citizens[actor].id})),parking:Object.values(m.parking).filter(r=>r.actor===actor).map(r=>({...r,actor:s.citizens[actor].id})),fixtures:homeFixtures(copy,home)};}
+export function furnishingView(s:State,actor:string,now:number){if(!s.citizens[actor])return null;const copy=structuredClone(s),home=homeFor(copy,actor),m=get(copy);return{home,rooms:homeRooms(home),lightScenes:LIGHT_SCENES,construction:{...ROOM_RULES,canBuild:!s.property?.assets[home.id]||s.property.assets[home.id].owner===actor,materials:Object.values(s.commerce?.batches??{}).filter(b=>b.owner==='citizen:'+actor&&b.region===home.region&&b.goods==='materials'&&b.expiresAt>now&&b.quality>0).reduce((n,b)=>n+b.quantity,0)},catalogue:FURNITURE,finishes:FINISHES,items:Object.values(m.items).filter(i=>i.owner===actor).map(i=>({...i,light:i.light?lightView(i.light):undefined,owner:s.citizens[actor].id})),parking:Object.values(m.parking).filter(r=>r.actor===actor).map(r=>({...r,actor:s.citizens[actor].id})),fixtures:homeFixtures(copy,home)};}
 export function reconcileFurnishing(s:State){const m=s.furnishing;if(!m)return;for(const home of Object.values(m.homes)){validateLayout(s,home);for(const p of home.partitions??[]){const receipt=s.commands[p.purchaseKey]?.receipt;if(!s.citizens[p.builtBy]||!receipt||receipt.type!=='BuildHomePartition'||receipt.actorId!==p.builtBy||receipt.detail.homeId!==home.id||!Array.isArray(receipt.detail.partitions)||!receipt.detail.partitions.some(e=>e&&typeof e==='object'&&['id','axis','x','y','door','builtBy','purchaseKey'].every(k=>(e as Record<string,unknown>)[k]===(p as unknown as Record<string,unknown>)[k])))throw new Error('Partition lacks construction evidence');}}for(const item of Object.values(m.items)){
  if(!s.citizens[item.owner]||!FURNITURE.some(f=>f.id===item.model)||!FINISHES.includes(item.finish)||!!item.homeId!==!!item.placement||item.homeId&&!m.homes[item.homeId])throw new Error('Furniture ownership or placement mismatch');
  if(!item.starter){const command=s.commands[item.purchaseKey??''];if(!command||command.receipt.type!=='BuyFurniture'||command.receipt.actorId!==item.owner||command.receipt.detail.furnitureId!==item.id||command.receipt.detail.amount!==FURNITURE.find(f=>f.id===item.model)!.price)throw new Error('Furniture lacks purchase evidence');}
+ if(item.light){const light=item.light,receipt=s.commands[light.commandKey]?.receipt,detail=receipt?.detail,model=FURNITURE.find(f=>f.id===item.model),saved=detail?.light as Record<string,unknown>|undefined;
+  if(!model?.lightable||Object.keys(light).length!==5||typeof light.enabled!=='boolean'||!LIGHT_SCENES.some(scene=>scene.id===light.scene)||!Number.isInteger(light.brightness)||light.brightness<0||light.brightness>100||!Number.isSafeInteger(light.version)||light.version<1||!receipt||receipt.type!=='SetFurnitureLight'||receipt.actorId!==item.owner||detail?.furnitureId!==item.id||detail.previousVersion!==light.version-1||!saved||['enabled','scene','brightness','version'].some(k=>saved[k]!==light[k as keyof FurnitureLight]))throw new Error('Light lacks saved interaction evidence');
+ }
+
  }
  const slots=new Set<string>(),vehicles=new Set<string>();for(const r of Object.values(m.parking))if(r.status==='parked'){const v=s.mobility?.vehicles[r.vehicleId],h=m.homes[r.homeId],slot=r.homeId+':'+r.slot;if(!v||!h||v.owner!==r.actor||v.region!==h.region||v.status!=='parked'||r.slot<1||r.slot>h.parkingSpaces||slots.has(slot)||vehicles.has(v.id))throw new Error('Parking title, location or capacity mismatch');slots.add(slot);vehicles.add(v.id);}
 }

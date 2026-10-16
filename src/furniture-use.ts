@@ -4,8 +4,8 @@ import type {State} from './domain.ts';
 import {homeFixtures} from './furnishing.ts';
 import type {Home} from './furnishing.ts';
 export const FURNITURE_USE_RULES={version:'furniture-use-v1',duration:10000};
-type Fixture={id:string;instanceId:string;model:string;action:string;x:number;y:number;w:number;h:number;rotation:number};
-export const fixtureCapacity=(f:Pick<Fixture,'model'|'action'>)=>['Sit','Read','Wash','Rest','Dress'].includes(f.action)?f.model==='sofa'?3:1:0;
+type Fixture={id:string;instanceId:string;model:string;action:string;x:number;y:number;w:number;h:number;rotation:number;seats?:number};
+export const fixtureCapacity=(f:Pick<Fixture,'model'|'action'|'seats'>)=>['Sit','Read','Wash','Rest','Dress'].includes(f.action)?f.seats||(f.model==='sofa'?3:1):0;
 const slotOf=(f:Fixture,activity:{slot?:number})=>activity.slot??Math.floor(fixtureCapacity(f)/2);
 function activeUses(s:State,home:Home,f:Fixture,now:number){
  return Object.entries(s.world?.positions??{}).flatMap(([actor,p])=>{

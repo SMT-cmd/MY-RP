@@ -24,7 +24,7 @@ export interface CommandStore {
   liveState?(sessionIds?:string[]):Promise<{state:State;revokedSessionIds:string[]}>;
 }
 export function createApp(options: { store: CommandStore; authenticate: (req: IncomingMessage)=>Promise<Identity>; config?: Record<string, unknown>; accounts?:AccountGateway; mfa?:MFAGateway; appOrigin?:string; clock?: ()=>number;multiplayer?:boolean }) {
-  const importMap='{"imports":{"three":"/engine/three.module.js","three/addons/geometries/RoundedBoxGeometry.js":"/engine/rounded-box.js"}}',mapHash=createHash('sha256').update(importMap).digest('base64');
+  const importMap='{"imports":{"three":"/engine/three.module.js","three/addons/geometries/RoundedBoxGeometry.js":"/engine/rounded-box.js","three/addons/":"/engine/addons/"}}',mapHash=createHash('sha256').update(importMap).digest('base64');
   const { store, authenticate } = options, clock = options.clock ?? Date.now;
   if(options.multiplayer&&!liveStore(store))throw new Error('Multiplayer requires a durable connection store.');
   let origin = options.appOrigin??'';
@@ -47,6 +47,11 @@ export function createApp(options: { store: CommandStore; authenticate: (req: In
   assets.set('/walking.js',['walking.js','text/javascript']);
   assets.set('/world-renderer.js',['world-renderer.js','text/javascript']);
   for(const [url,file] of [['/world-3d-controller.js','world-3d-controller.js'],['/scene/engine.js','scene/engine.js'],['/scene/models.js','scene/models.js'],['/scene/motion.js','scene/motion.js'],['/engine/three.module.js','../node_modules/three/build/three.module.js'],['/engine/three.core.js','../node_modules/three/build/three.core.js'],['/engine/rounded-box.js','../node_modules/three/examples/jsm/geometries/RoundedBoxGeometry.js']])assets.set(url,[file,'text/javascript']);
+  for(const file of ['authored-characters.js','lighting.js'])assets.set('/scene/'+file,['scene/'+file,'text/javascript']);
+  for(const file of ['loaders/GLTFLoader.js','utils/BufferGeometryUtils.js','utils/SkeletonUtils.js'])assets.set('/engine/addons/'+file,['../node_modules/three/examples/jsm/'+file,'text/javascript']);
+  for(const file of ['adult-male.glb','adult-female.glb'])assets.set('/assets/characters/'+file,['assets/characters/'+file,'model/gltf-binary']);
+  for(const [file,type] of [['eyes-brown.png','image/png'],['LICENSE-Quaternius.txt','text/plain']])assets.set('/assets/characters/'+file,['assets/characters/'+file,type]);
+  for(const file of ['furniture-art.js','furniture-shop.js'])assets.set('/'+file,[file,'text/javascript']);
   assets.set('/economy-ui.js',['economy-ui.js','text/javascript']);
   assets.set('/governance-ui.js',['governance-ui.js','text/javascript']);
   assets.set('/insurance-ui.js',['insurance-ui.js','text/javascript']);
@@ -75,7 +80,7 @@ export function createApp(options: { store: CommandStore; authenticate: (req: In
       const url=new URL(req.url??'/',origin);
       if(req.method==='GET'&&url.pathname==='/sw.js'){const source=await serviceWorker();res.writeHead(200,{'Content-Type':'text/javascript; charset=utf-8','Cache-Control':'no-cache','Service-Worker-Allowed':'/'});res.end(source);return;}
       if(req.method==='GET' && assets.has(url.pathname)){
-        const [name,type]=assets.get(url.pathname)!;const content=await readFile(new URL('../web/'+name,import.meta.url));res.writeHead(200,{'Content-Type':type+'; charset=utf-8'});res.end(content);return;
+        const [name,type]=assets.get(url.pathname)!;const content=await readFile(new URL('../web/'+name,import.meta.url));res.writeHead(200,{'Content-Type':type+(type.startsWith('text/')||type.includes('json')?'; charset=utf-8':'')});res.end(content);return;
       }
       if(req.method==='GET' && url.pathname==='/healthz')return json(200,{status:'ok'});
       if(req.method==='GET' && url.pathname==='/api/config')return json(200,{...(options.config??{mode:'development'}),multiplayer:options.multiplayer===true});

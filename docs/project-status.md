@@ -1,5 +1,13 @@
 # Project status
 
+## Character and lighting release verified, 16 October 2026
+
+Published identical tested source to main and build/main-game-2026-10-08 as `2c83974c6107daed8c4854dd0b9686cfc2a90a7c`, tree `20eab50ee10c37e623319f18314e1acef46a6772`. Terminal fetch/index comparisons match both branches. Existing free MY-RP service deployed manually as `dep-db93avbrjlhs73e2l7g0`, live at 14:33:02 UTC. Automatic deployment remains off and release stage remains build. The independent demo branch remains `28c8437c89fdedb866e1cc3bfc0630d71574246b`.
+
+Live verification: ready/liveness 200, Supabase/build/multiplayer config, unauthenticated citizen 401 and untrusted origin 403. All seventeen changed public browser files, including both GLBs, eye texture and publisher licence, match source byte for byte. Three new local loader/utility routes match pinned installed dependencies. Render reports successful Node 24.21.0 build, zero dependency vulnerabilities and authenticated PostgreSQL server startup. The post-deploy error-log query returned no errors. The cloud browser renders the correct build-labelled game sign-in page; authenticated GPU gameplay is not claimed from that screen. See docs/releases/2026-10-16-characters-and-lighting.json.
+
+This completes the current character/catalogue/lighting implementation and deployment milestone. It does not complete the 75-requirement game Bible. Direct driving, nationwide scene coverage, production art/device/cultural review, load, public SMTP and operational recovery gates remain open. The owner's existing account is preserved; no credential or verification bypass was used.
+
 ## Adult characters, visual furniture shop and lighting, 16 October 2026
 
 The main build now loads two licensed CC0 adult base meshes locally, with five body frames, the existing fitted wardrobe/palettes, independent skeletons and confirmed-movement retargeting. The visual shop contains 152 furniture SKUs, seven finishes, original illustrations, search/filter/sort and bounded paging. Working placed lamps have five scenes, brightness and saved on/off state. Owner/proximity/lease/version checks, immutable receipts and SQL/backup recovery remain authoritative. Medium/high point lights are capped and reduced motion stops colour changes. Car meshes and bays now have human-scale dimensions. Read docs/character-assets.md, docs/furniture-lighting-contract.md and docs/reference-playthrough-2026-10-16.md.
@@ -8,7 +16,7 @@ Verification: all 216 tests pass (120.23 seconds), strict TypeScript and changed
 
 Hosted migration 20261016142754_authored_characters_furniture_lighting corresponds exactly to local 20261016142134_authored_characters_furniture_lighting.sql. History has fourteen entries. Catalogue parity, invoker permissions and a rolled-back PostgreSQL 17 unchanged-world/invalid-light rejection probe pass. Eighteen forced-RLS tables remain; aggregate account evidence is now one Auth account and one citizen, replacing historical zero-account statements. No account/session was fabricated. The existing password-protection advisor warning is recorded in hosted-schema-verification; no paid resource was enabled.
 
-Source publication and manual release verification follow below. Automatic deployment stays off and GAME_RELEASE_STAGE stays build. These are component improvements: full Bible status, real driving, mobile/GPU/art/cultural review, capacity, public SMTP and operational backup/restore gates remain open. No full-game/AAA parity or earnings claim is made.
+The subsequent verified release is recorded above. Automatic deployment stays off and GAME_RELEASE_STAGE stays build. These are component improvements: full Bible status, real driving, mobile/GPU/art/cultural review, capacity, public SMTP and operational backup/restore gates remain open. No full-game/AAA parity or earnings claim is made.
 
 ## Interface release verified, 14 October 2026
 

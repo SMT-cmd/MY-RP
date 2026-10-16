@@ -1,0 +1,41 @@
+{
+  "date": "2026-10-16",
+  "runtime_commit": "2c83974c6107daed8c4854dd0b9686cfc2a90a7c",
+  "runtime_tree": "20eab50ee10c37e623319f18314e1acef46a6772",
+  "render_service": "srv-db378467bikc73bta2e0",
+  "render_deploy": "dep-db93avbrjlhs73e2l7g0",
+  "live_at_utc": "2026-10-16T14:33:02.619999Z",
+  "url": "https://my-rp-8kiw.onrender.com/",
+  "plan": "free",
+  "auto_deploy": "off",
+  "release_stage": "build",
+  "local_migration": "20261016142134_authored_characters_furniture_lighting.sql",
+  "hosted_migration": "20261016142754_authored_characters_furniture_lighting",
+  "hosted_migration_count": 14,
+  "tests": {
+    "passed": 216,
+    "failed": 0,
+    "duration_seconds": 120.23167128,
+    "typecheck": "passed",
+    "syntax_and_diff": "passed"
+  },
+  "live": {
+    "exact_changed_web_assets": 17,
+    "exact_new_loader_dependencies": 3,
+    "readiness": 200,
+    "liveness": 200,
+    "unsigned_citizen": 401,
+    "untrusted_origin": 403,
+    "post_deploy_error_logs": 0,
+    "browser": "logged-out account screen verified; authenticated GPU gameplay not verified"
+  },
+  "demo_head": "28c8437c89fdedb866e1cc3bfc0630d71574246b",
+  "requirements": {
+    "total": 75,
+    "status_counts": {
+      "In progress": 46,
+      "Specified": 29
+    },
+    "full_game_complete": false
+  }
+}

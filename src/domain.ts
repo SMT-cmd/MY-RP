@@ -44,6 +44,12 @@ import {civicCommand,civicView,civicRevision} from './civic.ts';
 import type {CivicState} from './civic.ts';
 import {neighbourCommand} from './neighbours.ts';
 import type {NeighbourState} from './neighbours.ts';
+import {navigationCommand,settleNavigation,stopNavigation} from './navigation.ts';
+import {venueCommand} from './venues.ts';
+import type {VenueState} from './venues.ts';
+import {drivingCommand} from './driving.ts';
+import type {DrivingState} from './driving.ts';
+import {cancelHomeActivity} from './home-activities.ts';
 
 
 
@@ -56,7 +62,7 @@ export type Citizen = { id: string; actorId: string; name: string; state: string
 type Entry = { account: string; amount: number };
 export type Receipt = { commandId: string; actorId: string; type: string; at: number; detail: Record<string, unknown> };
 type StoredCommand = { fingerprint: string; receipt: Receipt };
-export type State = { version: 1; worldId: string; citizens: Record<string, Citizen>; balances: Record<string, number>; journals: { id: string; at: number; reason: string; entries: Entry[] }[]; commands: Record<string, StoredCommand>; outbox: { id: string; type: string; actorId: string; at: number; payload: Record<string, unknown> }[]; npcSpend: Record<string, number>; life?:LifeState; world?:WorldState; education?:EducationState; commerce?:CommerceState; employment?:EmploymentState; finance?:FinanceState; property?:PropertyState; mobility?:MobilityState; healthcare?:HealthcareState; incidents?:IncidentState; insurance?:InsuranceState; governance?:GovernanceState; furnishing?:FurnishingState; sessions?:SessionsState; administration?:AdminState; relationships?:RelationshipState; neighbours?:NeighbourState; civic?:CivicState };
+export type State = { version: 1; worldId: string; citizens: Record<string, Citizen>; balances: Record<string, number>; journals: { id: string; at: number; reason: string; entries: Entry[] }[]; commands: Record<string, StoredCommand>; outbox: { id: string; type: string; actorId: string; at: number; payload: Record<string, unknown> }[]; npcSpend: Record<string, number>; life?:LifeState; world?:WorldState; education?:EducationState; commerce?:CommerceState; employment?:EmploymentState; finance?:FinanceState; property?:PropertyState; mobility?:MobilityState; healthcare?:HealthcareState; incidents?:IncidentState; insurance?:InsuranceState; governance?:GovernanceState; furnishing?:FurnishingState; sessions?:SessionsState; administration?:AdminState; relationships?:RelationshipState; neighbours?:NeighbourState; civic?:CivicState;venues?:VenueState;driving?:DrivingState };
 export type Command = { id: string; worldId?: string; expectedVersion?: number; type: string; payload: Record<string, unknown> };
 export function initialState(): State { return { version: 1, worldId: 'development-world', citizens: {}, balances: {}, journals: [], commands: {}, outbox: [], npcSpend: {},life:initialLife() }; }
 export function canonical(value: unknown): string {
@@ -94,12 +100,16 @@ export function execute(original: State, actorId: string, command: Command, now:
     return { state: original, receipt: structuredClone(previous.receipt), replayed: true };
   }
   const state = structuredClone(original);
+  if(command.type==='Rest')throw new DomainError('PHYSICAL_REST_REQUIRED','Walk to a bed and finish its rest activity.');
   const visitClosures=settleHomeVisits(state,now,key),relationshipClosures=settleRelationships(state,now,key);
+  settleNavigation(state,actorId,now);
+  if(['NavigateCitizen','MoveCitizen','MoveInterior','ExitBuilding','BeginTravel','PlaceFurniture','StoreFurniture','BuildHomePartition','RemoveHomePartition','CustomiseRoom','CustomiseHome','EnterVehicle','BeginShowroomShuttle'].includes(command.type))cancelHomeActivity(state,actorId,now);
+  if(['MoveCitizen','MoveInterior','EnterBuilding','ExitBuilding','InteractHomeFixture','InteractStreetObject','BeginTravel','ArriveTravel','CancelTravel','PlaceFurniture','StoreFurniture','BeginVenueTask','CompleteVenueTask','ExitVehicle'].includes(command.type))stopNavigation(state,actorId,now,key+':stop');
   guardNewCompanyCommitment(state,command);
   let citizen = state.citizens[actorId];
   let detail: Record<string, unknown> = {};
   let handled:Record<string,unknown>|undefined=adminCommand(state,actorId,command,now,key,context);
-  if(handled===undefined)for(const handler of [civicCommand,neighbourCommand,relationshipCommand,homeVisitCommand,appearanceCommand,furnishingCommand,worldCommand,educationCommand,lifeCommand,workCommand,commerceCommand,employmentCommand,financeCommand,propertyCommand,mobilityCommand,healthcareCommand,insuranceCommand,governanceCommand]){handled=handler(state,actorId,command,now,key);if(handled!==undefined)break;}
+  if(handled===undefined)for(const handler of [navigationCommand,drivingCommand,venueCommand,civicCommand,neighbourCommand,relationshipCommand,homeVisitCommand,appearanceCommand,furnishingCommand,worldCommand,educationCommand,lifeCommand,workCommand,commerceCommand,employmentCommand,financeCommand,propertyCommand,mobilityCommand,healthcareCommand,insuranceCommand,governanceCommand]){handled=handler(state,actorId,command,now,key);if(handled!==undefined)break;}
   if(handled!==undefined)detail=handled;
   else if (command.type === 'CreateCitizen') {
     if (citizen) fail('CITIZEN_EXISTS', 'This account already has a citizen in this world.');
@@ -124,6 +134,7 @@ export function execute(original: State, actorId: string, command: Command, now:
       detail = { amount: RULES.basicMealCost, item: 'Basic meal' };
     } else throw new DomainError('UNKNOWN_COMMAND', 'This command is not implemented.', 400);
   }
+  if(command.type==='BeginShowroomShuttle'&&detail.rideDestination){const destination=detail.rideDestination as {x:number;y:number};Object.assign(detail,navigationCommand(state,actorId,{...command,type:'NavigateCitizen',payload:{...destination,leaseVersion:state.world!.positions[actorId].leaseVersion}},now,key));}
   visitClosures.push(...settleHomeVisits(state,now,key));
   relationshipClosures.push(...settleRelationships(state,now,key));
   if(relationshipClosures.length)detail.relationshipClosureProofs=relationshipClosures.map(relationshipClosureHash);
@@ -135,7 +146,7 @@ export function execute(original: State, actorId: string, command: Command, now:
 }
 
 export function citizenView(state: State, actorId: string, now: number) {
-  state=structuredClone(state);settleHomeVisits(state,now);settleRelationships(state,now);
+  state=structuredClone(state);settleHomeVisits(state,now);settleRelationships(state,now);settleNavigation(state,actorId,now);
   const citizen = state.citizens[actorId];
   return {
     worldId: state.worldId, serverTime: now, rulesVersion: RULES.version, citizen: citizen ?? null,

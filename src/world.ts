@@ -14,8 +14,13 @@ import {fixtureAccessible,homeRooms} from './home-layout.ts';
 import {MAP,BUILDINGS,STREET_OBJECTS,streetWalkable,districtAt} from './neighbourhood.ts';
 import {usableInterior,guestEntrances,settleHomeVisits,authorisedInterior,HOME_VISIT_RULES} from './home-visits.ts';
 import {fixtureUse,claimFixtureUse,fixtureCapacity,homeUseRevision} from './furniture-use.ts';
+import {settleNavigation} from './navigation.ts';
+import type {NavigationPlan} from './navigation.ts';
+import {venueFor,venueStep,venueView,VENUE_BUILDINGS} from './venues.ts';
+import {drivingView} from './driving.ts';
+import {resolveFixtureAction,timedHomeActivity,startHomeActivity,finishHomeActivity,prepareHomeBathroom,homeCareView,cancelHomeActivity} from './home-activities.ts';
 export {MAP,BUILDINGS,CORE_MAP} from './neighbourhood.ts';
-type Position={region:string;district:string;interior:string|null;x:number;y:number;leaseVersion:number;lastMoveAt:number;visited:string[];interiorX?:number;interiorY?:number;facing?:string;homeId?:string;visitId?:string;activity?:{kind:string;fixtureId:string;startedAt:number;slot?:number;instanceId?:string;useKey?:string}};
+export type Position={region:string;district:string;interior:string|null;x:number;y:number;leaseVersion:number;lastMoveAt:number;visited:string[];interiorX?:number;interiorY?:number;facing?:string;homeId?:string;visitId?:string;navigation?:NavigationPlan;activity?:{kind:string;fixtureId:string;startedAt:number;slot?:number;instanceId?:string;useKey?:string;sessionId?:string;endsAt?:number}};
 export type Trip={id:string;actor:string;origin:string;destination:string;departAt:number;arriveAt:number;fee:number;status:'travelling'|'arrived'|'cancelled';leaseVersion:number;vehicleId?:string;vehicleFuel?:number;vehicleWear?:number;careCaseId?:string};
 export type WorldState={positions:Record<string,Position>;trips:Record<string,Trip>;activeTrips:Record<string,string>};
 export const initialWorld=():WorldState=>({positions:{},trips:{},activeTrips:{}});
@@ -29,10 +34,14 @@ export function travelQuote(origin:string,destination:string,state?:State){
   return{distance,fee:5000+service+fuel+wear,duration:Math.ceil((15000+distance*100)*(1+(100-road)/100)),mode:'NPC intercity bus',components:{base:5000,service,fuel,wear},explanation:'₦50 base fare + route service + measured fuel consumption + road wear. Damaged roads increase time and cost.'};
 }
 export function worldCommand(state:State,actor:string,command:Command,now:number,key:string):Record<string,unknown>|undefined{
-  if(!['MoveCitizen','MoveInterior','InteractHomeFixture','InteractStreetObject','EnterBuilding','ExitBuilding','MeetGuide','BeginTravel','ArriveTravel','CancelTravel'].includes(command.type))return;
+  if(!['MoveCitizen','MoveInterior','InteractHomeFixture','FinishHomeActivity','CancelHomeActivity','PrepareHomeBathroom','InteractStreetObject','EnterBuilding','ExitBuilding','MeetGuide','BeginTravel','ArriveTravel','CancelTravel'].includes(command.type))return;
   const c=state.citizens[actor];if(!c)throw new DomainError('CITIZEN_REQUIRED','Create your citizen first.');const pos=positionFor(state,c,now),world=state.world!,p=command.payload,trip=world.trips[world.activeTrips[actor]];
   if(p.leaseVersion!==undefined&&p.leaseVersion!==pos.leaseVersion)throw new DomainError('STALE_LEASE','Your location changed. Refresh before moving again.');
   if(trip&&trip.status==='travelling'&&!['ArriveTravel','CancelTravel'].includes(command.type))throw new DomainError('IN_TRANSIT','Finish the current journey before taking another world action.');
+  if(command.type==='FinishHomeActivity')return finishHomeActivity(state,actor,now,key,p);
+  if(command.type==='CancelHomeActivity'){const active=homeCareView(state,actor,now).active;if(!active||active.sessionId!==p.sessionId)throw new DomainError('ACTIVITY_NOT_FOUND','This activity is unavailable.',404);cancelHomeActivity(state,actor,now);return{activitySessionId:active.sessionId,message:'Activity stopped.'};}
+  if(command.type==='PrepareHomeBathroom')return prepareHomeBathroom(state,actor,p,now,key);
+  if(command.type==='MoveInterior'&&pos.interior&&pos.interior!=='shelter'){const room=venueFor(pos.interior),{dx,dy}=p,x=pos.interiorX??4,y=pos.interiorY??6;if(!room)throw new DomainError('INTERIOR_ACTIVE','Use the exit to return to the city.');if(!Number.isInteger(dx)||!Number.isInteger(dy)||Math.abs(dx as number)+Math.abs(dy as number)!==1)throw new DomainError('INVALID_MOVE','Move one adjacent tile.',400);if(now-pos.lastMoveAt<250)throw new DomainError('MOVE_COOLDOWN','Wait for the next movement step.');if(!venueStep(room.id,x,y,x+(dx as number),y+(dy as number)))throw new DomainError('PATH_BLOCKED','Walk around the fixtures.');delete pos.activity;pos.interiorX=x+(dx as number);pos.interiorY=y+(dy as number);pos.facing=(dx as number)>0?'right':(dx as number)<0?'left':(dy as number)>0?'front':'back';pos.lastMoveAt=now;return{interiorPosition:{x:pos.interiorX,y:pos.interiorY},leaseVersion:pos.leaseVersion};}
   if(command.type==='MoveInterior'||command.type==='InteractHomeFixture'){
     if(pos.interior!=='shelter')throw new DomainError('HOME_REQUIRED','Enter your starter shelter first.');
     const home=usableInterior(state,actor,now),x=pos.interiorX??STARTER_HOME.spawn.x,y=pos.interiorY??STARTER_HOME.spawn.y;
@@ -46,7 +55,8 @@ export function worldCommand(state:State,actor:string,command:Command,now:number
     const fixture=homeFixtures(state,home).find(f=>f.id===p.fixtureId||f.instanceId===p.fixtureId);if(!fixture)throw new DomainError('FIXTURE_NOT_FOUND','Choose a furnishing in your home.',404);
     if(pos.visitId&&!HOME_VISIT_RULES.actions.includes(fixture.action))throw new DomainError('GUEST_PERMISSION','This furnishing is reserved for the resident. Guests may sit, read, wash and inspect.',403);
     if(!fixtureAccessible(home,x,y,fixture))throw new DomainError('TOO_FAR','Walk beside the furnishing before interacting.');
-    const slot=fixtureCapacity(fixture)?claimFixtureUse(state,home,fixture,actor,now,p.useSlot):undefined;
+    const action=resolveFixtureAction(fixture,p.action),slot=fixtureCapacity(fixture)?claimFixtureUse(state,home,fixture,actor,now,p.useSlot):undefined;
+    if(timedHomeActivity(action))return startHomeActivity(state,actor,home,fixture,action,slot??0,now,key);
     const result=fixture.action==='Rest'?lifeCommand(state,actor,{...command,type:'Rest'},now,key):fixture.action==='RequestFoodAssistance'?commerceCommand(state,actor,{...command,type:'RequestFoodAssistance',payload:{}},now,key):{message:fixture.copy};
     if(slot!==undefined)pos.activity={kind:fixture.action,fixtureId:fixture.id,instanceId:fixture.instanceId,slot,startedAt:now,useKey:key};
     return{...result,fixtureId:fixture.id,...(slot!==undefined?{homeId:home.id,fixtureInstanceId:fixture.instanceId,fixtureUseSlot:slot,activityKind:fixture.action}:{})};
@@ -66,9 +76,9 @@ export function worldCommand(state:State,actor:string,command:Command,now:number
   }
   if(command.type==='EnterBuilding'){
     const own=residenceEntrance(state,actor),guest=guestEntrances(state,actor,now).find(e=>e.id===p.buildingId),entrance=guest??own,isHome=p.buildingId===own.id||!!guest;
-    const building=isHome?entrance:BUILDINGS.find(b=>b.id===p.buildingId&&b.id!=='shelter');if(!building||pos.interior)throw new DomainError('INVALID_BUILDING','Choose an available service, your residence or an accepted home invitation.',400);
+    const building=isHome?entrance:[...BUILDINGS,...VENUE_BUILDINGS].find(b=>b.id===p.buildingId&&b.id!=='shelter');if(!building||pos.interior)throw new DomainError('INVALID_BUILDING','Choose an available service, your residence or an accepted home invitation.',400);
     if(Math.abs(pos.x-building.door.x)+Math.abs(pos.y-building.door.y)>1)throw new DomainError('TOO_FAR','Walk to the marked door first.');
-    const interior=isHome?'shelter':building.id;delete pos.activity;pos.interior=interior;if(isHome){pos.homeId=entrance.homeId;if(guest)pos.visitId=guest.visitId;pos.interiorX=STARTER_HOME.spawn.x;pos.interiorY=STARTER_HOME.spawn.y;pos.facing='back';}pos.leaseVersion++;if(!guest&&!pos.visited.includes(interior))pos.visited.push(interior);return{buildingId:building.id,...(isHome?{homeId:entrance.homeId,address:entrance.address,...(guest?{visitId:guest.visitId}:{})}:{}),message:'You entered '+building.name+'.'};
+    const interior=isHome?'shelter':building.id;delete pos.activity;pos.interior=interior;if(isHome){pos.homeId=entrance.homeId;if(guest)pos.visitId=guest.visitId;pos.interiorX=STARTER_HOME.spawn.x;pos.interiorY=STARTER_HOME.spawn.y;pos.facing='back';}else{const room=venueFor(interior);if(room){pos.interiorX=room.spawn.x;pos.interiorY=room.spawn.y;pos.facing='back';}}pos.leaseVersion++;if(!guest&&!pos.visited.includes(interior))pos.visited.push(interior);return{buildingId:building.id,...(isHome?{homeId:entrance.homeId,address:entrance.address,...(guest?{visitId:guest.visitId}:{})}:{}),message:'You entered '+building.name+'.'};
   }
   if(command.type==='ExitBuilding'){if(!pos.interior)throw new DomainError('NOT_INSIDE','You are already in the city.');pos.interior=null;delete pos.interiorX;delete pos.interiorY;delete pos.homeId;delete pos.visitId;delete pos.activity;pos.leaseVersion++;return{message:'You returned to the city.'};}
   if(command.type==='MeetGuide'){
@@ -91,12 +101,13 @@ export function worldCommand(state:State,actor:string,command:Command,now:number
   return{region:pos.region,leaseVersion:pos.leaseVersion,incidentIds:Object.values(state.incidents?.records??{}).filter(i=>i.source===trip.id).map(i=>i.id),message:'You arrived safely. The destination now holds your single location lease.'};
 }
 export function worldView(state:State,actor:string,now:number){
-  const citizen=state.citizens[actor];if(!citizen)return null;const copy=structuredClone(state);settleHomeVisits(copy,now);const position=positionFor(copy,copy.citizens[actor],now),trip=state.world?.trips[state.world.activeTrips[actor]];
+  const citizen=state.citizens[actor];if(!citizen)return null;const copy=structuredClone(state);settleHomeVisits(copy,now);settleNavigation(copy,actor,now);const position=positionFor(copy,copy.citizens[actor],now),trip=state.world?.trips[state.world.activeTrips[actor]];
   position.district=districtAt(position.x,position.y)!;
   const room=position.interior==='shelter'?(position.visitId?authorisedInterior(copy,actor,now):homeFor(copy,actor)):null;
   const visit=position.visitId?copy.furnishing?.visits?.[position.visitId]:null;
   const home=room&&(!position.homeId||position.homeId===room.id)?{...room,useRevision:homeUseRevision(copy,room,now),guest:!!visit,name:visit?copy.citizens[visit.host].name+"'s home":residenceEntrance(copy,actor).name,address:visit?guestEntrances(copy,actor,now).find(e=>e.visitId===visit.id)?.address:residenceEntrance(copy,actor).address,spawn:STARTER_HOME.spawn,exit:STARTER_HOME.exit,x:position.interiorX??4,y:position.interiorY??6,rooms:homeRooms(room),fixtures:homeFixtures(copy,room).map(f=>({...f,use:fixtureUse(copy,room,f,actor,now),allowed:!visit||HOME_VISIT_RULES.actions.includes(f.action),nearby:fixtureAccessible(room,position.interiorX??4,position.interiorY??6,f)}))}:null;
   const residence=homeFor(copy,actor),entrance=residenceEntrance(copy,actor),parking={homeId:residence.id,origin:entrance.parking,spaces:residence.parkingSpaces,bays:Array.from({length:residence.parkingSpaces},(_,i)=>({slot:i+1,x:entrance.parking.x+(entrance.parkingStacked?0:i*2),y:entrance.parking.y+(entrance.parkingStacked?i*4.8:0),w:2,h:4.8})),vehicles:Object.values(copy.furnishing!.parking).filter(r=>r.actor===actor&&r.homeId===residence.id&&r.status==='parked').map(r=>({slot:r.slot,vehicleId:r.vehicleId,model:state.mobility?.vehicles[r.vehicleId]?.model}))};
-  const visits=guestEntrances(copy,actor,now),enterable=[...BUILDINGS.filter(b=>b.id!=='shelter'),entrance,...visits];
-  return{serverTime:now,npcs:nearbyNeighbours(copy,actor,now),npcHistory:neighbourHistory(copy,actor),map:MAP,residence:entrance,guestEntrances:visits,avatar:appearanceRender(citizen.appearance??DEFAULT_APPEARANCE),position,home,parking,nearbyStreetObjects:position.interior?[]:STREET_OBJECTS.filter(o=>fixtureDistance(position.x,position.y,o)<=1),trip:trip??null,region:regionByName(position.region),nearby:enterable.filter(b=>Math.abs(position.x-b.door.x)+Math.abs(position.y-b.door.y)<=1).map(b=>({id:b.id,name:b.name})),routes:REGIONS.filter(r=>r.name!==position.region).map(r=>({destination:r.name,...travelQuote(position.region,r.name,state)}))};
+  const visits=guestEntrances(copy,actor,now),enterable=[...BUILDINGS.filter(b=>b.id!=='shelter'),...VENUE_BUILDINGS,entrance,...visits];
+  const map={...MAP,buildings:[...MAP.buildings,...VENUE_BUILDINGS],obstacles:MAP.obstacles.filter(o=>!VENUE_BUILDINGS.some(b=>b.facadeId===o.id))};
+  return{serverTime:now,npcs:nearbyNeighbours(copy,actor,now),npcHistory:neighbourHistory(copy,actor),map,residence:entrance,guestEntrances:visits,avatar:appearanceRender(citizen.appearance??DEFAULT_APPEARANCE),position,navigation:position.navigation??null,home,venue:venueView(copy,actor,now),driving:drivingView(copy,actor,now),homeCare:homeCareView(copy,actor,now),parking,nearbyStreetObjects:position.interior?[]:STREET_OBJECTS.filter(o=>fixtureDistance(position.x,position.y,o)<=1),trip:trip??null,region:regionByName(position.region),nearby:enterable.filter(b=>Math.abs(position.x-b.door.x)+Math.abs(position.y-b.door.y)<=1).map(b=>({id:b.id,name:b.name})),routes:REGIONS.filter(r=>r.name!==position.region).map(r=>({destination:r.name,...travelQuote(position.region,r.name,state)}))};
 }

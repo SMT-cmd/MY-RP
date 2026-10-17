@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
 import {footTarget,legAngles} from './motion.js';
 import {attachAuthoredCharacter} from './authored-characters.js';
+import {disposeGarmentTextures} from './garments.js';
 
 export const finishes={walnut:0x76513c,oak:0xba956a,cream:0xe8dfd0,slate:0x586675,sage:0x809882,terracotta:0xb57254,navy:0x354d68};
 const materials=new Map();
@@ -11,6 +12,10 @@ export function box(parent,w,h,d,x,y,z,color,radius=0){return mesh(parent,radius
 function sphere(parent,r,x,y,z,color,sx=1,sy=1,sz=1){const m=mesh(parent,new THREE.SphereGeometry(r,12,10),material(color),x,y,z);m.scale.set(sx,sy,sz);return m;}
 function capsule(parent,r,length,x,y,z,color){return mesh(parent,new THREE.CapsuleGeometry(r,length,4,10),material(color),x,y,z);}
 function group(parent,x=0,y=0,z=0){const g=new THREE.Group();g.position.set(x,y,z);parent.add(g);return g;}
+function reachArm(arm,target,weight=1){
+ const down=new THREE.Vector3(0,-1,0),delta=target.clone().sub(arm.shoulder.position),distance=Math.max(.015,Math.min(.575,delta.length())),axis=delta.normalize(),bend=new THREE.Vector3(arm.side,0,.35);bend.addScaledVector(axis,-bend.dot(axis)).normalize();const elbow=axis.clone().multiplyScalar(distance/2).addScaledVector(bend,Math.sqrt(.29*.29-distance*distance/4)),upper=new THREE.Quaternion().setFromUnitVectors(down,elbow.clone().normalize()),lower=new THREE.Quaternion().setFromUnitVectors(down,target.clone().sub(arm.shoulder.position).sub(elbow).normalize().applyQuaternion(upper.clone().invert()));
+ arm.shoulder.quaternion.slerp(upper,weight);arm.elbow.quaternion.slerp(lower,weight);
+}
 
 // Original articulated adult geometry, with a 1.81 m height and small head.
 // The rig is independent of game authority and can later accept authored assets.
@@ -57,23 +62,36 @@ export function adultModel({skin=0x805238,shirt=0x2e7477,trousers=0x303f52,hair=
   capsule(hip,.073,.29,0,-.205,0,trousers);capsule(knee,.061,.30,0,-.21,0,trousers);
   box(ankle,.145,.14,.245,0,-.01,.058,0x282b29,.035);hips.push({hip,knee,ankle,side});
   const shoulder=group(body,side*.219,1.45,0),elbow=group(shoulder,0,-.29,0);shoulder.name=side<0?'Left shoulder':'Right shoulder';elbow.name=side<0?'Left elbow':'Right elbow';
-  capsule(shoulder,.064,.10,0,-.067,0,shirt);capsule(shoulder,.050,.13,0,-.19,0,outfit==='tee'?skin:shirt);capsule(elbow,.041,.19,0,-.135,0,outfit==='tee'?skin:shirt);sphere(elbow,.045,0,-.295,.005,skin,.68,1.15,.55);arms.push({shoulder,elbow,side});
+  capsule(shoulder,.064,.10,0,-.067,0,shirt);capsule(shoulder,.050,.13,0,-.19,0,outfit==='tee'?skin:shirt);capsule(elbow,.041,.19,0,-.135,0,outfit==='tee'?skin:shirt);const hand=group(elbow,0,-.29,0);sphere(hand,.045,0,-.005,.005,skin,.68,1.15,.55);arms.push({shoulder,elbow,hand,side});
  }
  const book=group(body,0,1.12,.31);box(book,.25,.024,.17,0,0,0,0xd0b889,.008);box(book,.23,.010,.16,0,.014,0,0xf0e9db);book.visible=false;
- function pose(time,walkWeight,activity,reduced=false,{distance=time*1.5,seatHeight=.575,activityWeight=1}={}){
+ function pose(time,walkWeight,activity,reduced=false,{distance=time*1.5,seatHeight=.575,activityWeight=1,activityPhase='hold',activityProgress=0,phaseProgress=activityProgress,contactHeight=.98}={}){
   const weight=reduced?0:Math.max(0,Math.min(1,walkWeight)),phase=Math.sin(distance/1.2*Math.PI*2),a=activityWeight;
   body.position.set(0,(-.11+.014*Math.cos(distance/1.2*Math.PI*4))*weight,0);body.rotation.set(0,0,0);head.rotation.set(0,0,phase*.006*weight);book.visible=activity==='Read';
   for(const {hip,knee,ankle,side} of hips){const foot=footTarget(distance,side,weight),angles=legAngles(foot.z/Math.sqrt(frame),.94+body.position.y,foot.y);hip.rotation.set(angles.hip,0,0);knee.rotation.set(angles.knee,0,0);ankle.rotation.set(angles.ankle,0,0);}
   for(const {shoulder,elbow,side} of arms){shoulder.rotation.set(-phase*side*.30*weight,0,side*.045);elbow.rotation.set(-.10-Math.max(0,phase*side)*.14*weight,0,0);}
-  if(activity==='Sit'){
-   body.position.y=(seatHeight+.015-.94)*a;
-   for(const leg of hips){const angles=legAngles(.40,seatHeight+.015,.08);leg.hip.rotation.x=angles.hip*a;leg.knee.rotation.x=angles.knee*a;leg.ankle.rotation.x=angles.ankle*a;}
+  if(activity==='Sit'||activity==='Toilet'){
+   const height=activity==='Toilet'?Math.min(seatHeight,.47):seatHeight;body.position.y+=(height+.015-.94-body.position.y)*a;body.rotation.x=.12*Math.sin(Math.PI*a);
+   for(const leg of hips){const foot=footTarget(distance,leg.side,weight),z=foot.z*(1-a)+.40*a,y=foot.y*(1-a)+.08*a-body.position.y,c=Math.cos(body.rotation.x),s=Math.sin(body.rotation.x),angles=legAngles((-y*s+z*c)/Math.sqrt(frame),.94,y*c+z*s);leg.hip.rotation.x=angles.hip;leg.knee.rotation.x=angles.knee;leg.ankle.rotation.x=angles.ankle;}
+   for(const arm of arms)reachArm(arm,new THREE.Vector3(arm.side*.17,1.06,.24),a);
   }
-  if(activity==='Rest'){body.rotation.x=-Math.PI/2*a;body.position.set(0,.83*a,.86*a);}
-  if(['Read','Wash','Dress'].includes(activity)){head.rotation.x=.10*a;for(const arm of arms){arm.shoulder.rotation.x=-.45*a;arm.elbow.rotation.x=-1.18*a;}}
+  if(activity==='Rest'){body.rotation.x=-Math.PI/2*a;body.position.lerp(new THREE.Vector3(0,.83,.86),a);for(const arm of arms)reachArm(arm,new THREE.Vector3(arm.side*.22,.97,.10),a);}
+  if(['Read','Dress'].includes(activity)){head.rotation.x=.10*a;for(const arm of arms){arm.shoulder.rotation.x=-.45*a;arm.elbow.rotation.x=-1.18*a;}}
+  if(['Wash','Shower','Clean'].includes(activity)){
+   const cycle=reduced?0:Math.sin(time*(activityPhase==='Scrub'?12:8)),dry=activityPhase==='Dry',tap=activityPhase==='ReachTap',rinse=activityPhase==='Rinse',scrub=activity==='Clean'||activityPhase==='Scrub',shower=activity==='Shower';head.rotation.x=(dry?.12:shower?0:.22)*a;body.rotation.x=(scrub?.24:shower?0:dry?.06:.14)*a;
+   if(scrub&&contactHeight<.8){body.position.y-=Math.min(.29,(.9-contactHeight)*.85)*a;for(const leg of hips){const angles=legAngles(.08,.94+body.position.y,.08);leg.hip.rotation.x+=(angles.hip-leg.hip.rotation.x)*a;leg.knee.rotation.x+=(angles.knee-leg.knee.rotation.x)*a;leg.ankle.rotation.x+=(angles.ankle-leg.ankle.rotation.x)*a;}}
+   for(const arm of arms){let x=arm.side*(dry?.034:rinse?.030:.050),y=dry?1.15:shower?1.28:contactHeight+.025,z=dry?.29:shower?.17:.36;
+    if(tap){x=arm.side>0?.075:-.16;y=arm.side>0?contactHeight+.13:1.03;z=arm.side>0?.43:.18;}
+    else if(dry){x+=cycle*.018*arm.side;y+=cycle*.026;z+=cycle*.025;}
+    else if(scrub){x+=cycle*.065;y=contactHeight+.01+(reduced?0:Math.cos(time*10)*.012);z=.41+cycle*.055;}
+    else if(!rinse){x+=cycle*.022*arm.side;y+=cycle*.018*arm.side;z+=cycle*.028*arm.side;}
+    reachArm(arm,new THREE.Vector3(x,y,z),a);
+   }
+   if(tap&&phaseProgress>.65)head.rotation.y=.08*a;
+  }
   const blink=!reduced&&time%4.7>4.58?.10:1;for(const eye of eyes)eye.scale.y=blink;
  }
- pose(0,0);const rig={root,body,head,hips,arms,eyes,pose,book,accessories};attachAuthoredCharacter(rig,{skin,shirt,trousers,hair,hairColour,frame,outfit},template,eyeTexture);return rig;
+ pose(0,0);const rig={root,body,head,hips,arms,hands:arms.map(a=>a.hand),eyes,pose,book,accessories};attachAuthoredCharacter(rig,{skin,shirt,trousers,hair,hairColour,frame,outfit},template,eyeTexture);return rig;
 }
 function legs(g,w,d,height){for(const x of [-1,1])for(const z of [-1,1])box(g,.10,height,.10,x*(w/2-.15),height/2,z*(d/2-.15),0x6e503a,.012);}
 function cabinet(g,w,d,height,color,shelves=false){
@@ -118,6 +136,20 @@ export function furnitureModel(f){
  }else if(kind==='sink'){
 
   cabinet(g,w-.12,d-.12,.83,color);box(g,w-.08,.07,d-.08,0,.90,0,0xd7d7cb,.026);box(g,.50,.02,.46,0,.94,.07,0x819da2,.085);mesh(g,new THREE.TorusGeometry(.13,.02,6,16,Math.PI),material(0xbfc5c5,.3,.65),0,1.05,-.19).rotation.y=Math.PI/2;
+ }else if(kind==='toilet'){
+  const porcelain=0xf0f0e8;box(g,.52,.46,.20,0,.64,-.29,porcelain,.055);box(g,.55,.045,.23,0,.89,-.29,porcelain,.016);box(g,.09,.018,.055,.13,.92,-.27,0xa5b5b9,.009);
+  mesh(g,new THREE.CylinderGeometry(.16,.20,.24,20),material(porcelain,.24),0,.15,.07).scale.z=1.2;
+  const profile=[[.12,.21],[.20,.24],[.27,.34],[.28,.42],[.27,.45],[.225,.45],[.20,.385],[.12,.33]].map(([r,y])=>new THREE.Vector2(r,y)),bowl=mesh(g,new THREE.LatheGeometry(profile,28),material(porcelain,.22),0,0,.085);bowl.scale.z=1.25;
+  const seat=mesh(g,new THREE.TorusGeometry(.245,.025,8,32),material(0xe3e7df,.32),0,.465,.085);seat.rotation.x=Math.PI/2;seat.scale.y=1.25;
+  const water=mesh(g,new THREE.CircleGeometry(.14,20),material(0x91c7ce,.14),0,.351,.085);water.rotation.x=-Math.PI/2;water.scale.y=1.3;
+  const lid=box(g,.48,.46,.045,0,.66,-.17,porcelain,.045);lid.rotation.x=.09;
+ }else if(kind==='shower'){
+  const chrome=material(0xb8c7ca,.23,.72);box(g,.90,.10,.90,0,.055,0,0xe6e9e2,.045);box(g,.12,.01,.12,0,.112,.06,0x8b999c,.01);
+  for(const x of [-.43,.43])box(g,.025,2.10,.025,x,1.12,-.43,0x8b9c9f,.006);box(g,.90,.025,.025,0,2.17,-.43,0x8b9c9f,.006);
+  const glass=new THREE.MeshStandardMaterial({color:0xb6d1cf,roughness:.58,transparent:true,opacity:.72,side:THREE.DoubleSide}),back=mesh(g,new THREE.PlaneGeometry(.84,2.02),glass,0,1.13,-.435),side=mesh(g,new THREE.PlaneGeometry(.84,2.02),glass,-.435,1.13,-.01);side.rotation.y=Math.PI/2;back.userData.ownedMaterial=side.userData.ownedMaterial=true;
+  for(const y of [.81,1.02,1.23,1.44]){box(g,.84,.15,.012,0,y,-.42,0xc7ded6,.002);box(g,.012,.15,.84,-.42,y,0,0xc7ded6,.002);}
+  mesh(g,new THREE.CylinderGeometry(.014,.014,1.25,10),chrome,.19,1.43,-.385);const arm=mesh(g,new THREE.CylinderGeometry(.015,.015,.34,10),chrome,.19,2.04,-.22);arm.rotation.x=Math.PI/2;
+  mesh(g,new THREE.CylinderGeometry(.13,.13,.034,20),chrome,.19,2.025,-.055);mesh(g,new THREE.SphereGeometry(.035,10,8),chrome,.19,1.13,-.34);box(g,.08,.018,.04,.19,1.13,-.30,0xd0d8d6,.007);
  }else if(kind==='fridge'){
   box(g,w-.13,1.74,d-.15,0,.89,0,color,.045);for(const [y,h] of [[.61,1.08],[1.45,.47]]){box(g,w-.17,h,.065,0,y,d/2-.055,0xd9dfdb,.025);box(g,.034,.23,.05,w/2-.21,y,d/2-.005,0x777f7f,.008);}
  }else cabinet(g,w-.10,d-.10,kind==='bookshelf'||kind==='wardrobe'?1.86:kind==='pantry'?1.20:.93,color,kind==='bookshelf');
@@ -146,4 +178,4 @@ export function vehicleModel(model='compact'){
 }
 export function disposeModels(root){const geometries=new Set(),mats=new Set();root.traverse(o=>{o.userData.disposeAuthored?.();if(o.geometry)geometries.add(o.geometry);if(o.userData.ownedMaterial&&o.material)for(const m of Array.isArray(o.material)?o.material:[o.material])mats.add(m);});for(const g of geometries)g.dispose();for(const m of mats)m.dispose();return geometries.size;}
 
-export function disposeMaterialCache(){for(const m of materials.values())m.dispose();materials.clear();}
+export function disposeMaterialCache(){for(const m of materials.values())m.dispose();materials.clear();disposeGarmentTextures();}

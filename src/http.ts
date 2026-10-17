@@ -52,7 +52,11 @@ export function createApp(options: { store: CommandStore; authenticate: (req: In
   assets.set('/walking.js',['walking.js','text/javascript']);
   assets.set('/world-renderer.js',['world-renderer.js','text/javascript']);
   for(const [url,file] of [['/world-3d-controller.js','world-3d-controller.js'],['/scene/engine.js','scene/engine.js'],['/scene/models.js','scene/models.js'],['/scene/motion.js','scene/motion.js'],['/engine/three.module.js','../node_modules/three/build/three.module.js'],['/engine/three.core.js','../node_modules/three/build/three.core.js'],['/engine/rounded-box.js','../node_modules/three/examples/jsm/geometries/RoundedBoxGeometry.js']])assets.set(url,[file,'text/javascript']);
-  for(const file of ['authored-characters.js','lighting.js','world-assets.js','asset-catalogue.js','sprites.js'])assets.set('/scene/'+file,['scene/'+file,'text/javascript']);
+  for(const file of ['authored-characters.js','garments.js','lighting.js','world-assets.js','asset-catalogue.js','sprites.js','camera.js','environment.js','navigation.js','activity-effects.js'])assets.set('/scene/'+file,['scene/'+file,'text/javascript']);
+  for(const name of ['asphalt','grass','plaster','wood'])for(const map of ['color','normal','roughness']){const file=name+'-'+map+'.webp';assets.set('/assets/world/materials/'+file,['assets/world/materials/'+file,'image/webp']);}
+  for(const [file,type]of [['sky-color.webp','image/webp'],['manifest.json','application/json'],['LICENSE.txt','text/plain']])assets.set('/assets/world/materials/'+file,['assets/world/materials/'+file,type]);
+  for(const file of ['venue-ui.js','driving-ui.js'])assets.set('/'+file,[file,'text/javascript']);
+  assets.set('/physical-life.css',['physical-life.css','text/css']);
   const artManifest=JSON.parse(readFileSync(new URL('../web/assets/world/manifest.json',import.meta.url),'utf8'));
   for(const item of Object.values(artManifest.assets) as {url:string}[]){if(!/^\/assets\/world\/[a-z]+\/[A-Za-z0-9-]+\.glb$/.test(item.url))throw Error('Invalid local art manifest.');assets.set(item.url,[item.url.slice(1),'model/gltf-binary']);}
   assets.set('/assets/world/manifest.json',['assets/world/manifest.json','application/json']);
@@ -147,6 +151,7 @@ export function createApp(options: { store: CommandStore; authenticate: (req: In
       if(req.method==='POST' && url.pathname==='/api/commands'){
         const command:Command & {accountId?:unknown;clientLease?:ClientFence}=await body(req);
         if(isAdminCommand(command.type))throw new DomainError('STAFF_COMMAND','Use the separately authenticated staff controls.',403);
+        if(command.type==='Rest')throw new DomainError('PHYSICAL_REST_REQUIRED','Walk to a bed and finish its rest activity.');
         if(options.accounts&&command.accountId!==identity.actorId)throw new DomainError('ACCOUNT_CHANGED','Sign in to the account that created this action.',401);
         const result=await store.dispatch(identity.actorId,command,clock(),identity.sessionId,{requireConnection:options.multiplayer===true,clientLease:command.clientLease,includeState:true});
         void realtime?.publish();

@@ -13,6 +13,6 @@ export function buildingAsset(b){if(b.id==='shelter')return SUBURBAN[2];const in
 export function furnitureAsset(f){const form=FURNITURE_ASSETS[f.kind??f.model??f.id];return form?'furniture/'+form[0]:null;}
 export const carAsset=model=>model==='van'?'cars/van':model==='suv'?'cars/suv-luxury':'cars/sedan';
 export function requiredAssets(world){
- if(world.home)return [...new Set(world.home.fixtures.map(furnitureAsset).filter(Boolean))];
- return [...new Set([...world.map.buildings.map(buildingAsset),...(world.map.obstacles??[]).filter(o=>o.kind!=='tree').map(buildingAsset),'suburban/tree-large',...(world.map.streetObjects??[]).map(furnitureAsset),...(world.parking?.vehicles??[]).map(v=>carAsset(v.model))])];
+ const room=world.home??world.venue;if(room)return [...new Set(room.fixtures.map(furnitureAsset).filter(Boolean))];
+ return [...new Set([...world.map.buildings.map(buildingAsset),...(world.map.obstacles??[]).filter(o=>o.kind!=='tree').map(buildingAsset),'suburban/tree-large',...(world.map.streetObjects??[]).map(furnitureAsset),...(world.parking?.vehicles??[]).map(v=>carAsset(v.model)),...(world.driving?.active?[carAsset(world.driving.active.model)]:[])])];
 }

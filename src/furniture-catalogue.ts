@@ -14,7 +14,9 @@ const ORIGINAL_FURNITURE=[
  {id:'sideboard',name:'Living-room sideboard',category:'living',w:2,h:1,price:33000,action:'inspect'},
  {id:'plant',name:'Indoor palm planter',category:'decor',w:1,h:1,price:7000,action:'inspect'},
  {id:'coffee-table',name:'Low coffee table',category:'living',w:2,h:1,price:19000,action:'inspect'},
- {id:'fridge',name:'Kitchen refrigerator',category:'kitchen',w:1,h:1,price:68000,action:'inspect'}
+ {id:'fridge',name:'Kitchen refrigerator',category:'kitchen',w:1,h:1,price:68000,action:'inspect'},
+ {id:'toilet',name:'Ceramic toilet',category:'bath',w:1,h:1,price:28000,action:'Toilet'},
+ {id:'shower',name:'Frosted shower enclosure',category:'bath',w:1,h:1,price:50000,action:'Shower'}
 ];
 export const FURNITURE_COLLECTIONS=[{id:'reed',name:'Reed',style:'woven',factor:1},{id:'marina',name:'Marina',style:'metal',factor:1.25},{id:'heritage',name:'Heritage',style:'carved',factor:1.5},{id:'atelier',name:'Atelier',style:'angled',factor:1.75},{id:'horizon',name:'Horizon',style:'soft',factor:2},{id:'regal',name:'Regal',style:'brass',factor:2.5}];
 const FORMS=[

@@ -19,10 +19,14 @@ import {homeIdentity,homeWalkable,reconcileFurnishing} from './furnishing.ts';
 import {authorisedInterior,reconcileHomeVisits} from './home-visits.ts';
 import {reconcileRelationships} from './relationships.ts';
 import {reconcileFurnitureUse} from './furniture-use.ts';
+import {venueFor,venueWalkable,reconcileVenues} from './venues.ts';
+import {reconcileDriving} from './driving.ts';
+import {reconcileHomeActivities} from './home-activities.ts';
+import {reconcileNavigation} from './navigation.ts';
 
 export function reconcile(state: State) {
   for(const [actor,position] of Object.entries(state.world?.positions??{})){
-    if(!state.citizens[actor]||!regionByName(position.region)||!streetWalkable(position.x,position.y)||!Number.isSafeInteger(position.leaseVersion)||position.leaseVersion<1||position.interior!==null&&!BUILDINGS.some(b=>b.id===position.interior))throw new Error('Invalid authoritative street position');
+    if(!state.citizens[actor]||!regionByName(position.region)||!streetWalkable(position.x,position.y)||!Number.isSafeInteger(position.leaseVersion)||position.leaseVersion<1||position.interior!==null&&!BUILDINGS.some(b=>b.id===position.interior)&&!venueFor(position.interior))throw new Error('Invalid authoritative street position');
     if(position.interior==='shelter'){
       const home=homeIdentity(state,actor);
       if(position.visitId?!authorisedInterior(state,actor):position.homeId&&position.homeId!==home.id||!position.homeId&&state.property?.assets[home.id])throw new Error('Home position lacks current residence permission');
@@ -30,6 +34,7 @@ export function reconcile(state: State) {
   }
 
   for(const position of Object.values(state.world?.positions??{}))if(position.interior==='shelter'&&(position.interiorX!==undefined||position.interiorY!==undefined)&&!(position.homeId&&state.furnishing?.homes[position.homeId]?homeWalkable(state,state.furnishing.homes[position.homeId],position.interiorX!,position.interiorY!):homeTile(position.interiorX!,position.interiorY!)))throw new Error('Invalid starter home position');
+  for(const p of Object.values(state.world?.positions??{}))if(p.interior&&p.interior!=='shelter'&&venueFor(p.interior)&&(p.interiorX!==undefined||p.interiorY!==undefined)&&!venueWalkable(p.interior,p.interiorX!,p.interiorY!))throw new Error('Invalid venue floor position');
   reconcileCivic(state);
   reconcileNeighbours(state);
   reconcileAdministration(state);
@@ -38,6 +43,7 @@ export function reconcile(state: State) {
   reconcileFurnishing(state);
   reconcileHomeVisits(state);
   reconcileFurnitureUse(state);
+  reconcileHomeActivities(state);reconcileVenues(state);reconcileDriving(state);reconcileNavigation(state);
   reconcileRelationships(state);
   reconcileStock(state);
   reconcileProperty(state);

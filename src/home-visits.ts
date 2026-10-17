@@ -33,7 +33,7 @@ export function usableInterior(s:State,actor:string,now:number){
 function close(s:State,v:HomeVisit,now:number,key:string|undefined,reason:CloseReason){
  v.status=reason==='declined'?'declined':'ended';v.version++;v.closedAt=now;v.closeReason=reason;if(key)v.closedKey=key;
  const p=s.world?.positions[v.guest];
- if(p?.visitId===v.id){p.interior=null;delete p.homeId;delete p.visitId;delete p.interiorX;delete p.interiorY;delete p.activity;p.leaseVersion++;}
+ if(p?.visitId===v.id){p.interior=null;delete p.homeId;delete p.visitId;delete p.interiorX;delete p.interiorY;delete p.activity;delete p.navigation;if(s.furnishing?.care)delete s.furnishing.care.active[v.guest];p.leaseVersion++;}
 }
 // On reads this operates on a copy. On writes closures share the command's atomic receipt.
 export function settleHomeVisits(s:State,now:number,key?:string){

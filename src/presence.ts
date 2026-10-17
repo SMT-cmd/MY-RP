@@ -9,9 +9,10 @@ import {relationshipRevision} from './relationships.ts';
 import {civicRevision} from './civic.ts';
 import {nearbyNeighbours} from './neighbours.ts';
 import {homeUseRevision} from './furniture-use.ts';
+import {settleNavigation} from './navigation.ts';
 export const PRESENCE_RULES={radius:12,maxVisible:32,protocol:1};
 export function nearbyPresence(s:State,actor:string,sessionId:string,fence:ClientFence,now:number){
- assertClientLease(s,actor,sessionId,fence,now);s=structuredClone(s);settleHomeVisits(s,now);const here=s.world?.positions[actor],room=here?.interior==='shelter'?authorisedInterior(s,actor,now):null;
+ assertClientLease(s,actor,sessionId,fence,now);s=structuredClone(s);settleHomeVisits(s,now);for(const other of Object.keys(s.world?.positions??{}))settleNavigation(s,other,now);const here=s.world?.positions[actor],room=here?.interior==='shelter'?authorisedInterior(s,actor,now):null;
  const scope=here?{region:here.region,interior:here.interior,leaseVersion:here.leaseVersion,homeId:here.homeId??null}:null;
  const coords=(p:NonNullable<typeof here>)=>p.interior?{x:p.interiorX??4,y:p.interiorY??6}:{x:p.x,y:p.y};
  const distance=(p:NonNullable<typeof here>)=>{const a=coords(here!),b=coords(p);return Math.abs(a.x-b.x)+Math.abs(a.y-b.y);};

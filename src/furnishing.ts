@@ -8,6 +8,7 @@ import type {Partition} from './home-layout.ts';
 import {DAY} from './rules.ts';
 import {BUILDINGS,RESIDENTIAL_PLOTS} from './neighbourhood.ts';
 import type {HomeVisit} from './home-visits.ts';
+import type {HomeCareState} from './home-activities.ts';
 
 import {FURNITURE,LIGHT_SCENES,lightView} from './furniture-catalogue.ts';
 import type {FurnitureLight} from './furniture-catalogue.ts';
@@ -17,7 +18,7 @@ type Placement={x:number;y:number;rotation:number};
 export type FurnitureItem={id:string;owner:string;model:string;finish:string;homeId:string|null;placement:Placement|null;starter:boolean;alias?:string;purchaseKey?:string;version:number;light?:FurnitureLight};
 export type Home={id:string;region:string;width:number;height:number;version:number;wall:string;floor:string;parkingSpaces:number;partitions?:Partition[];roomSettings?:Record<string,{name:string;floor:string}>};
 type Parking={id:string;vehicleId:string;homeId:string;actor:string;slot:number;status:'parked'|'released';version:number};
-export type FurnishingState={homes:Record<string,Home>;items:Record<string,FurnitureItem>;npcStock:Record<string,number>;parking:Record<string,Parking>;visits?:Record<string,HomeVisit>};
+export type FurnishingState={homes:Record<string,Home>;items:Record<string,FurnitureItem>;npcStock:Record<string,number>;parking:Record<string,Parking>;visits?:Record<string,HomeVisit>;care?:HomeCareState};
 const get=(s:State)=>s.furnishing??={homes:{},items:{},npcStock:{},parking:{}};
 const hash=(s:string)=>createHash('sha256').update(s).digest('hex').slice(0,24);
 export function homeIdentity(s:State,actor:string,region=s.world?.positions[actor]?.region){
@@ -55,7 +56,7 @@ export function releaseResidence(s:State,homeId:string,actor:string){
  const m=s.furnishing;if(!m)return;for(const item of Object.values(m.items))if(item.homeId===homeId&&item.owner===actor){item.homeId=null;item.placement=null;item.version++;}
  for(const record of Object.values(m.parking))if(record.homeId===homeId&&record.actor===actor&&record.status==='parked'){record.status='released';record.version++;}
  if(m.homes[homeId])m.homes[homeId].version++;
- const pos=s.world?.positions[actor];if(pos?.homeId===homeId&&!s.world?.activeTrips[actor]){pos.interior=null;delete pos.homeId;delete pos.interiorX;delete pos.interiorY;delete pos.activity;pos.leaseVersion++;}
+ const pos=s.world?.positions[actor];if(pos?.homeId===homeId&&!s.world?.activeTrips[actor]){pos.interior=null;delete pos.homeId;delete pos.interiorX;delete pos.interiorY;delete pos.activity;if(m.care)delete m.care.active[actor];pos.leaseVersion++;}
 }
 export function changeResidence(s:State,actor:string,housing:string){
  const citizen=s.citizens[actor];if(!citizen)throw new DomainError('CITIZEN_REQUIRED','Create a citizen first.');
@@ -67,8 +68,8 @@ export function homeFixtures(s:State,home:Home){return Object.values(get(s).item
 export function usableHome(s:State,actor:string){const home=homeFor(s,actor),pos=s.world!.positions[actor];if(pos.interior!=='shelter'||pos.homeId&&pos.homeId!==home.id)throw new DomainError('HOME_REQUIRED','Enter your current local home first.');return home;}
 export function homeWalkable(s:State,home:Home,x:number,y:number){return Number.isInteger(x)&&Number.isInteger(y)&&x>=0&&y>=0&&x<home.width&&y<home.height&&!homeFixtures(s,home).some(f=>x>=f.x&&x<f.x+f.w&&y>=f.y&&y<f.y+f.h);}
 export function homeStep(s:State,home:Home,x:number,y:number,nx:number,ny:number){return Math.abs(x-nx)+Math.abs(y-ny)===1&&homeWalkable(s,home,nx,ny)&&edgePassable(home,x,y,nx,ny);}
-function clearHomeActivities(s:State,home:Home){for(const p of Object.values(s.world?.positions??{}))if(p.homeId===home.id)delete p.activity;}
-function validateLayout(s:State,home:Home){
+function clearHomeActivities(s:State,home:Home){for(const [actor,p] of Object.entries(s.world?.positions??{}))if(p.homeId===home.id){delete p.activity;if(s.furnishing?.care)delete s.furnishing.care.active[actor];}}
+export function validateLayout(s:State,home:Home){
  const fixtures=homeFixtures(s,home),occupied=new Set<string>(),edges=new Set<string>();
  if(home.partitions!==undefined&&!Array.isArray(home.partitions)||home.partitions&&home.partitions.length>ROOM_RULES.maxSegments)throw new DomainError('INVALID_PARTITION','The partition catalogue is invalid.');
  for(const p of home.partitions??[]){
@@ -152,7 +153,7 @@ export function furnishingCommand(s:State,actor:string,c:Command,now:number,key:
 export function furnishingView(s:State,actor:string,now:number){if(!s.citizens[actor])return null;const copy=structuredClone(s),home=homeFor(copy,actor),m=get(copy);return{home,rooms:homeRooms(home),lightScenes:LIGHT_SCENES,construction:{...ROOM_RULES,canBuild:!s.property?.assets[home.id]||s.property.assets[home.id].owner===actor,materials:Object.values(s.commerce?.batches??{}).filter(b=>b.owner==='citizen:'+actor&&b.region===home.region&&b.goods==='materials'&&b.expiresAt>now&&b.quality>0).reduce((n,b)=>n+b.quantity,0)},catalogue:FURNITURE,finishes:FINISHES,items:Object.values(m.items).filter(i=>i.owner===actor).map(i=>({...i,light:i.light?lightView(i.light):undefined,owner:s.citizens[actor].id})),parking:Object.values(m.parking).filter(r=>r.actor===actor).map(r=>({...r,actor:s.citizens[actor].id})),fixtures:homeFixtures(copy,home)};}
 export function reconcileFurnishing(s:State){const m=s.furnishing;if(!m)return;for(const home of Object.values(m.homes)){validateLayout(s,home);for(const p of home.partitions??[]){const receipt=s.commands[p.purchaseKey]?.receipt;if(!s.citizens[p.builtBy]||!receipt||receipt.type!=='BuildHomePartition'||receipt.actorId!==p.builtBy||receipt.detail.homeId!==home.id||!Array.isArray(receipt.detail.partitions)||!receipt.detail.partitions.some(e=>e&&typeof e==='object'&&['id','axis','x','y','door','builtBy','purchaseKey'].every(k=>(e as Record<string,unknown>)[k]===(p as unknown as Record<string,unknown>)[k])))throw new Error('Partition lacks construction evidence');}}for(const item of Object.values(m.items)){
  if(!s.citizens[item.owner]||!FURNITURE.some(f=>f.id===item.model)||!FINISHES.includes(item.finish)||!!item.homeId!==!!item.placement||item.homeId&&!m.homes[item.homeId])throw new Error('Furniture ownership or placement mismatch');
- if(!item.starter){const command=s.commands[item.purchaseKey??''];if(!command||command.receipt.type!=='BuyFurniture'||command.receipt.actorId!==item.owner||command.receipt.detail.furnitureId!==item.id||command.receipt.detail.amount!==FURNITURE.find(f=>f.id===item.model)!.price)throw new Error('Furniture lacks purchase evidence');}
+ if(!item.starter){const command=s.commands[item.purchaseKey??''];if(!command||!['BuyFurniture','BuyShowroomFurniture'].includes(command.receipt.type)||command.receipt.actorId!==item.owner||command.receipt.detail.furnitureId!==item.id||command.receipt.detail.amount!==FURNITURE.find(f=>f.id===item.model)!.price)throw new Error('Furniture lacks purchase evidence');}
  if(item.light){const light=item.light,receipt=s.commands[light.commandKey]?.receipt,detail=receipt?.detail,model=FURNITURE.find(f=>f.id===item.model),saved=detail?.light as Record<string,unknown>|undefined;
   if(!model?.lightable||Object.keys(light).length!==5||typeof light.enabled!=='boolean'||!LIGHT_SCENES.some(scene=>scene.id===light.scene)||!Number.isInteger(light.brightness)||light.brightness<0||light.brightness>100||!Number.isSafeInteger(light.version)||light.version<1||!receipt||receipt.type!=='SetFurnitureLight'||receipt.actorId!==item.owner||detail?.furnitureId!==item.id||detail.previousVersion!==light.version-1||!saved||['enabled','scene','brightness','version'].some(k=>saved[k]!==light[k as keyof FurnitureLight]))throw new Error('Light lacks saved interaction evidence');
  }

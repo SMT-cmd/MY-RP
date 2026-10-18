@@ -10,11 +10,12 @@ import type {ClientFence} from '../src/sessions.ts';
 const waitFor=async(check:()=>boolean)=>{for(let i=0;i<800;i++){if(check())return;await new Promise(resolve=>setTimeout(resolve,10));}throw Error('Home visit interface did not settle');};
 test('two authenticated browsers review home consent, recover lost acceptance, share an interior and refresh revoked or expired access without a guest action',async t=>{
  const store=await WorldStore.open(),sockets:WebSocket[]=[],doms:JSDOM[]=[],errors:unknown[]=[];let clock=Date.now(),sequence=0,dropAccept=false;
- const run=(actor:string,type:string,payload:Record<string,unknown>={})=>store.dispatch(actor,{id:'home_visit_ui_setup_'+ ++sequence,type,payload},clock+=700);
+ const wallStart=Date.now(),now=()=>clock+Date.now()-wallStart;
+ const run=(actor:string,type:string,payload:Record<string,unknown>={})=>{clock+=700;return store.dispatch(actor,{id:'home_visit_ui_setup_'+ ++sequence,type,payload},now());};
  for(const [actor,name] of [['visit-host','Home Resident'],['visit-guest','Home Guest']]){await run(actor,'CreateCitizen',{name,state:'Lagos',adultConfirmed:true});await run(actor,'SetPrivacy',{location:true,presence:true,dm:false});}
  const p=await run('visit-host','ReservePropertyPurchase',{propertyId:'npc-Lagos-home',acceptedTotal:512500,acceptTerms:true});await run('visit-host','CompletePropertyPurchase',{purchaseId:p.receipt.detail.purchaseId});
  for(const actor of ['visit-host','visit-guest'])for(let i=0;i<(actor==='visit-host'?20:19);i++)await run(actor,'MoveCitizen',{dx:1,dy:0});await run('visit-host','EnterBuilding',{buildingId:'residence:npc-Lagos-home'});
- const server=createApp({store,multiplayer:true,clock:()=>clock,authenticate:async req=>{const actor=String(req.headers['x-development-key']??'');if(!['visit-host','visit-guest'].includes(actor))throw new DomainError('AUTH_REQUIRED','Sign in.',401);return{actorId:actor,sessionId:actor+'-session',assurance:'aal1'};}});
+ const server=createApp({store,multiplayer:true,clock:now,authenticate:async req=>{const actor=String(req.headers['x-development-key']??'');if(!['visit-host','visit-guest'].includes(actor))throw new DomainError('AUTH_REQUIRED','Sign in.',401);return{actorId:actor,sessionId:actor+'-session',assurance:'aal1'};}});
  await new Promise<void>(resolve=>server.listen(0,'127.0.0.1',resolve));t.after(async()=>{doms.forEach(d=>d.window.close());sockets.forEach(s=>s.terminate());await new Promise<void>(resolve=>server.close(()=>resolve()));});const a=server.address();if(!a||typeof a==='string')throw Error();const origin='http://127.0.0.1:'+a.port;
  async function browser(actor:string){
   const vc=new VirtualConsole();vc.on('jsdomError',e=>errors.push(e));const dom=await JSDOM.fromURL(origin,{runScripts:'dangerously',resources:'usable',pretendToBeVisual:true,virtualConsole:vc,beforeParse(window){

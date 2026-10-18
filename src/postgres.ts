@@ -13,6 +13,10 @@ export interface Database {
   transaction<T>(work: (sql: Sql) => Promise<T>): Promise<T>;
 }
 
+export async function assertPhysicalSchema(database:Database){
+ const ready=await database.transaction(async sql=>{await sql.query('SET LOCAL ROLE simulator_server');const result=await sql.query<{ready:boolean}>("SELECT simulator.furniture_catalogue() ? 'television' AND to_regprocedure('simulator.physical_gameplay_reconciles()') IS NOT NULL AND to_regprocedure('simulator.television_reconciles()') IS NOT NULL AND EXISTS(SELECT 1 FROM pg_policy WHERE polname='physical_active_claim_delete' AND polrelid='simulator.domain_records'::regclass) AS ready");return result.rows[0]?.ready;});
+ if(!ready)throw new Error('Required physical-world migration is missing. Review and apply 20261018190000_physical_world_gameplay.sql before starting this build.');
+}
 export function pooledDatabase(pool: Pool): Database {
   return { async transaction(work) {
     const client: PoolClient = await pool.connect();
@@ -126,6 +130,7 @@ export class PostgresWorldStore {
       }
       const records=(state:State)=>({
         'civic.petition':state.civic?.petitions??{},'npc.conversation':state.neighbours?.conversations??{},'social.relationship':state.relationships?.records??{},'furnishing.home':state.furnishing?.homes??{},'furnishing.item':state.furnishing?.items??{},'furnishing.parking':state.furnishing?.parking??{},'furnishing.visit':state.furnishing?.visits??{},
+        'physical.activity':state.furnishing?.care?.sessions??{},'physical.order':state.venues?.orders??{},'physical.work':state.venues?.work??{},'physical.driver':state.driving?.drivers??{},'physical.vehicle-location':state.driving?.locations??{},
         'world.position':state.world?.positions??{}, 'world.trip':state.world?.trips??{},
         'education.foundation':state.education?.foundation??{}, 'education.enrolment':state.education?.enrolments??{},
         'education.scholarship':state.education?.scholarships??{}, 'education.licence':state.education?.licences??{}
@@ -148,6 +153,7 @@ export class PostgresWorldStore {
         if(JSON.stringify(data)===JSON.stringify((before[domain as keyof typeof before] as Record<string,unknown>)[id]))continue;
         await sql.query('INSERT INTO simulator.domain_records(world_id,domain,id,data,version) VALUES ($1,$2,$3,$4::jsonb,$5) ON CONFLICT(world_id,domain,id) DO UPDATE SET data=EXCLUDED.data,version=EXCLUDED.version,updated_at=clock_timestamp()',[this.#world,domain,id,JSON.stringify(data),revision]);
       }
+      for(const domain of ['physical.work','physical.driver'] as const)for(const id of Object.keys(before[domain]))if(!(id in records(result.state)[domain]))await sql.query('DELETE FROM simulator.domain_records WHERE world_id=$1 AND domain=$2 AND id=$3',[this.#world,domain,id]);
       for(const [id,quantity] of Object.entries(result.state.commerce?.stock?.balances??{})){
         if(original.commerce?.stock?.balances[id]===quantity)continue;const split=id.indexOf(':'),goods=id.slice(0,split),account=id.slice(split+1);
         await sql.query('INSERT INTO simulator.stock_accounts(world_id,goods,id,quantity) VALUES ($1,$2,$3,$4) ON CONFLICT(world_id,goods,id) DO UPDATE SET quantity=EXCLUDED.quantity',[this.#world,goods,account,quantity]);

@@ -1,10 +1,16 @@
 # Change log
 
-## Local camera and physical-interaction checkpoint, 18 October 2026
+## Physical gameplay integrated locally, 18 October 2026
 
-Local development checkpoint only, not deployed. Added camera views/input, bounded one-tile visual prediction with rejection recovery, seat/stand sequencing, handwashing effects and garment surfaces. Focused renderer/geometry/HTTP input checks and local Chromium software-WebGL runs pass; this is not native GPU/device or live-account evidence. Full validation is in progress. Reference: uploaded 48-second WhatsApp clip and handoff; repository Bible v1.1 remains newer than the supplied PDF v1.0.
+Integrated main baseline `50edec602a7c64dcfcb3790ff22cd603b540f1d9`, the local camera checkpoint and recovered branch `df05ceeb2d03ba66e81fd10b6fcfeb95fbd401a7`, preserving both histories. Completed missing client connections, persistence migration, safeguards and QA. This checkpoint is not deployed; no hosted account, money, migration, provider setting or independent demo was changed.
 
-Remote inspection identified recovered source `df05ceeb2d03ba66e81fd10b6fcfeb95fbd401a7` on build/real-world-gameplay-2026-10-17. That unverified work must be preserved and assessed before completing integration. No provider, database, hosted account, independent demo, or production deployment change.
+The browser now connects server-timed destination routes, follow/close/overview cameras, articulated garments, seat/stand and home wash/toilet/shower/clean/rest flows, saved original silent TV channels, physical service/work rooms, showroom purchase/collection/placement with one 25-XP award, owned road driving with reserved/consumed/refunded fuel, and a free NPC showroom shuttle. Keyboard has bounded one-step visual prediction; route acknowledgement loss retains command recovery and does not automatically enter/interact. Phone/Canvas fallback remains available. Driving uses timed road routes; full steering/physics and reference-quality art remain open.
+
+All 250 regression tests pass (167.11 seconds, zero skipped), strict TypeScript passes, and 21 changed browser/QA scripts pass syntax checks. Local Chromium software-WebGL QA completes sit/wash/toilet/shower, purchase/collection/home placement, exactly 25 design XP and retained TV power after reload, with zero script errors or failed non-API assets. A 390 × 844 touch-emulated context verifies controls and dock bounds. Character fit and a mixed-clock home-visit regression were corrected without dropping authority/privacy assertions. Captures are isolated local fixtures, not production accounts, phone hardware, WAN/FPS or multiplayer acceptance.
+
+Migration `20261018190000_physical_world_gameplay.sql` is authored and PGlite-tested but unapplied to hosted data. Production now refuses an older physical/TV schema before loading a world. The migration preserves journals and limits runtime DELETE to the current actor's transient work/driver mirrors. Review schema/backup/rollback compatibility before any live release. The optional external PBR import was proxy-blocked; original procedural textures are active and missing vendor files are not requested. Unity assets have not been downloaded or licensed here.
+
+Read [physical-gameplay-contract.md](physical-gameplay-contract.md) and [releases/2026-10-18-physical-gameplay-local.json](releases/2026-10-18-physical-gameplay-local.json). Existing Render/Supabase account tools are not callable in this chat and production bindings are absent from this runtime. Saved environment configuration is a review draft, not applied/published access. Requirements remain in progress: visual/device/cultural acceptance, current hosted auth and multiclient play, nationwide content, continuous driving, public SMTP, capacity and operational recovery still need work. This does not establish parity with the referenced commercial games or full Bible completion.
 
 ## Interaction and world-art release live, 16 October 2026
 

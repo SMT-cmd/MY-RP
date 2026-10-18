@@ -17,7 +17,7 @@ test('room construction consumes actual materials and labour once, preserves doo
  s=run(s,'CustomiseRoom',{roomId:'room_0',name:'Bedroom',floor:'cream',homeVersion:2}).state;s=restoreBackup(exportBackup(s));assert.equal(citizenView(s,actor,11000).world!.home!.rooms[0].name,'Bedroom');
  for(const [i,[dx,dy]] of [[0,-1],[0,-1],[0,-1],[-1,0],[-1,0]].entries())s=run(s,'MoveInterior',{dx,dy},12000+i*300).state;
  assert.throws(()=>run(s,'MoveInterior',{dx:0,dy:-1},14000),code('PATH_BLOCKED'));assert.throws(()=>run(s,'InteractHomeFixture',{fixtureId:'bed'},14000),code('TOO_FAR'));
- for(const [i,[dx,dy]] of [[1,0],[1,0],[0,-1],[-1,0]].entries())s=run(s,'MoveInterior',{dx,dy},14500+i*300).state;s=run(s,'InteractHomeFixture',{fixtureId:'bed'},16000).state;assert.equal(s.citizens[actor].life!.lastRestAt,16000);
+ for(const [i,[dx,dy]] of [[1,0],[1,0],[0,-1],[-1,0]].entries())s=run(s,'MoveInterior',{dx,dy},14500+i*300).state;s=run(s,'InteractHomeFixture',{fixtureId:'bed'},16000).state;assert.equal(s.citizens[actor].life!.lastRestAt,null,'Rest benefit waits for the completed bed sequence');const sessionId=s.furnishing!.care!.active[actor];assert.throws(()=>run(s,'FinishHomeActivity',{sessionId},20000),code('ACTIVITY_PENDING'));s=run(s,'FinishHomeActivity',{sessionId},26000).state;assert.equal(s.citizens[actor].life!.lastRestAt,26000);
  const count=Object.keys(s.furnishing!.items).length;releaseResidence(s,home.id,actor);homeFor(s,actor);assert.equal(Object.keys(s.furnishing!.items).length,count);assert.equal(homeRooms(homeFor(s,actor)).length,2);reconcile(s);
 });
 test('invalid, sealed, overlapping and stale partition builds cannot spend funds or materials',()=>{

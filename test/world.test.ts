@@ -31,7 +31,7 @@ test('furnished home movement and interactions use server position, protected st
  for(const [dx,dy] of [[0,-1],[0,-1],[0,-1],[-1,0],[0,-1]])move(dx,dy);
  assert.equal(s.world!.positions.traveller.facing,'back');assert.throws(()=>apply(s,'MoveInterior',{dx:-1,dy:0},clock),code('PATH_BLOCKED'));
  const rest={id:'home_rest_once',type:'InteractHomeFixture',payload:{fixtureId:'bed',leaseVersion:2}};s=execute(s,'traveller',rest,clock).state;
- assert.equal(execute(s,'traveller',rest,clock+10).replayed,true);assert.throws(()=>apply(s,'InteractHomeFixture',{fixtureId:'bed'},clock+20),code('REST_COOLDOWN'));
+ assert.equal(execute(s,'traveller',rest,clock+10).replayed,true);assert.throws(()=>apply(s,'InteractHomeFixture',{fixtureId:'bed'},clock+20),code('ACTIVITY_ACTIVE'));
  const queue:[[number,number],[number,number][]][]=[[[3,2],[]]],seen=new Set(['3,2']);let route:[number,number][]=[];
  for(let i=0;i<queue.length;i++){const [[x,y],path]=queue[i];if(x===8&&y===2){route=path;break;}for(const [dx,dy] of [[1,0],[0,1],[-1,0],[0,-1]]){const nx=x+dx,ny=y+dy,k=`${nx},${ny}`;if(homeTile(nx,ny)&&!seen.has(k)){seen.add(k);queue.push([[nx,ny],[...path,[dx,dy]]]);}}}
  for(const [dx,dy] of route)move(dx,dy);

@@ -21,19 +21,21 @@ function notice(message, error = false) { $('notice').textContent = message; $('
 const paragraph=text=>{const p=document.createElement('p');p.textContent=text;return p;};
 function actionButton(label,type,payload={},disabled=false){const b=document.createElement('button');b.type='button';b.textContent=label;b.disabled=busy||!!pending||disabled||window.WorldSync?.ready()===false;b.addEventListener('click',()=>perform(type,payload));return b;}
 function renderWorld(){
- const world=view.world;if(!world)return;const pos=world.position;
+ const world=view.world;if(!world)return;const pos=world.position;window.VenueUI?.render(view,perform,busy||!!pending,followRoute);window.DrivingUI?.render(view,perform,busy||!!pending);renderHomeCare(world);window.TelevisionUI?.render(view,perform,busy||!!pending,followRoute);
  if(window.WorldSync?.ready()!==false&&nearbyScene?.scope?.region===pos.region&&nearbyScene.scope.leaseVersion===pos.leaseVersion&&nearbyScene.scope.interior===pos.interior&&(nearbyScene.scope.homeId??null)===(pos.homeId??null)&&nearbyScene.cursor>=(view.sync?.cursor??0))world.people=nearbyScene.people;
  if(nearbyScene?.scope?.region===pos.region&&nearbyScene.scope.leaseVersion===pos.leaseVersion&&nearbyScene.scope.interior===pos.interior&&nearbyScene.serverTime>=world.serverTime)world.npcs=nearbyScene.npcs??[];
  window.NeighboursUI?.render(view,perform,busy||!!pending||window.WorldSync?.ready()===false);
  $('world-neighbours').replaceChildren(...(world.people??[]).map(c=>{const row=document.createElement('li');row.textContent=c.name+' · nearby';return row;}));
  $('world-title').textContent=world.region.capital+' · '+world.region.name;
  $('world-location').textContent=world.trip?.status==='travelling'?`Travelling to ${world.trip.destination}.`:pos.interior?`Inside ${world.home ? world.home.name+' · '+world.home.address : world.map.buildings.find(b=>b.id===pos.interior)?.name}.`:`${pos.district} · ${world.region.capital}`;
- $('world-controls').hidden=!!world.trip||!!pos.interior&&!world.home;document.querySelectorAll('#world-controls button').forEach(b=>b.disabled=busy||!!pending||window.WorldSync?.ready()===false);
+ $('world-controls').hidden=!!world.trip||!!pos.interior&&!world.home&&!world.venue;document.querySelectorAll('#world-controls button').forEach(b=>b.disabled=busy||!!pending||window.WorldSync?.ready()===false);
  $('world-interactions').replaceChildren();if(pos.interior)$('world-interactions').append(actionButton('Exit to the city','ExitBuilding',{leaseVersion:pos.leaseVersion},!!world.trip));else world.nearby.forEach(b=>$('world-interactions').append(actionButton('Enter '+b.name,'EnterBuilding',{buildingId:b.id,leaseVersion:pos.leaseVersion},!!world.trip)));
  if(world.home){
   $('world-interactions').append(paragraph(`${world.home.guest?'Visiting '+world.home.name:'Your home'}. Walk around the furniture or tap an object to approach it.`));
   for(const f of world.home.fixtures){if(f.use?.capacity)$('world-interactions').append(paragraph(`${f.name}: ${f.use.free} of ${f.use.capacity} positions free${f.use.currentSlot!==null?' · you are using position '+(f.use.currentSlot+1):''}.`));$('world-interactions').append(actionButton(f.name+' · '+(f.action==='Rest'?'Rest':f.action==='RequestFoodAssistance'?'Request protective meal':f.action==='Sit'?'Sit':f.action==='Read'?'Read':f.action==='Wash'?'Wash hands':f.action==='Dress'?'Use wardrobe':f.action==='Light'?'Use light':'Inspect'),'InteractHomeFixture',{fixtureId:f.id,leaseVersion:pos.leaseVersion},!f.nearby||f.allowed===false||f.use?.capacity>0&&!f.use.availableSlots.length));}
  }
+ if(world.venue)window.VenueUI?.render(view,perform,busy||!!pending,followRoute);
+ if(world.driving?.shuttle&&!world.position.interior)$('world-interactions').append(actionButton(world.driving.shuttle.name+' · free','BeginShowroomShuttle',{destination:world.driving.shuttle.destination,leaseVersion:pos.leaseVersion}));
  const navigation=$('world-navigation');navigation.replaceChildren();navigation.hidden=!!pos.interior||!!world.trip;
  if(!navigation.hidden){
   const heading=document.createElement('summary');heading.textContent='Places and neighbourhoods';navigation.append(heading);
@@ -97,7 +99,7 @@ async function perform(type, payload = {}) {
   rememberPending();
   // Predict at most the single adjacent tile being submitted, never rewards,
   // durable state, additional steps, or a route past an unknown response.
-  const stepId=pending.id,w=view?.world,room=w?.home??w?.position;
+  const stepId=pending.id,w=view?.world,room=w?.home??w?.venue??w?.position;
   if(['MoveCitizen','MoveInterior'].includes(type)&&room&&Number.isInteger(payload.dx)&&Number.isInteger(payload.dy)){
     const to={x:room.x+payload.dx,y:room.y+payload.dy},path=window.Walking?.path(w,to.x,to.y);
     if(path?.length===1)window.dispatchEvent(new CustomEvent('citizen-step-preview',{detail:{id:stepId,from:{x:room.x,y:room.y},to,leaseVersion:w.position.leaseVersion,homeId:w.home?.id??null,region:w.position.region}}));
@@ -114,6 +116,7 @@ async function sendPending() {
     pending = null; rememberPending(); view = result.view;confirmed=true;
     const detail = result.receipt.detail;
     openWardrobe=result.receipt.type==='InteractHomeFixture'&&view.world?.home?.fixtures.some(f=>f.id===detail.fixtureId&&f.action==='Dress');
+    if(result.receipt.type==='InteractHomeFixture'&&view.world?.home?.fixtures.some(f=>f.id===detail.fixtureId&&f.action==='Watch'))window.GameUI?.open('furnish');
     if(result.receipt.type==='InteractHomeFixture'){const lamp=view.world?.home?.fixtures.find(f=>f.id===detail.fixtureId&&f.action==='Light');if(lamp)openLight=lamp.instanceId;}
     const messages = { CreateCitizen: 'Your citizen is ready. Welcome to your first day.', CompleteShift: `Shift settled. You earned ${money(detail.amount)}.`, BuyBasicMeal: `Meal purchased for ${money(detail.amount)}.`, CompleteLesson: `Module ${detail.day} is complete.`, SubmitExam: detail.passed ? `You passed with ${detail.score}%. Your certificate is recorded.` : `You scored ${detail.score}%. Review module five, then try again.` };
     notice((messages[result.receipt.type] || detail.message || 'Action confirmed.') + (result.replayed ? ' The original receipt was recovered.' : ''));
@@ -122,7 +125,7 @@ async function sendPending() {
     if (error.auth) {key='';window.WorldSync?.stop();}
     if (error.confirmed) { pending = null; rememberPending(); }
     notice(error.message + (pending ? ' Your action identifier has been kept for a safe retry.' : ''), true);
-  } finally { busy = false; $('retry-panel').hidden = !pending; lock();if(openWardrobe){window.GameUI?.open('appearance');$('appearance-panel').scrollIntoView?.({block:'nearest',behavior:'auto'});$('appearance-hair').focus();}if(openLight){window.GameUI?.open('furnish');const control=$('lamp-'+openLight);control?.scrollIntoView?.({block:'nearest',behavior:'auto'});control?.querySelector('select')?.focus();}if(confirmed)drainDestination(); }
+  } finally { busy = false; $('retry-panel').hidden = !pending; lock();if(openWardrobe){window.GameUI?.open('appearance');$('appearance-panel').scrollIntoView?.({block:'nearest',behavior:'auto'});$('appearance-hair').focus();}if(openLight){window.GameUI?.open('furnish');const control=$('lamp-'+openLight);control?.scrollIntoView?.({block:'nearest',behavior:'auto'});control?.querySelector('select')?.focus();}if(confirmed)drainDestination();queueMicrotask(drainNavigationStop); }
 }
 function render() {
   const citizen = view.citizen;window.CityMapUI?.observe(key?view:null);window.ObjectUI?.observe(key?view:null,perform,busy||!!pending||window.WorldSync?.ready()===false);window.EntryUI?.stage(!!key,!!citizen);
@@ -205,7 +208,7 @@ $('access-form').addEventListener('submit', async event => {
   try { view = await request('/api/citizen'); $('access-key').value = ''; render(); $('retry-panel').hidden = !pending; notice(pending ? 'An unconfirmed action was recovered. Retry it to check the original result.' : 'Local game opened.'); } catch (error) { key = ''; notice(error.message, true); } finally { busy = false; lock(); }
 });
 $('create-form').addEventListener('submit', event => { event.preventDefault(); perform('CreateCitizen', { name: $('citizen-name').value, state: $('citizen-state').value, path:$('start-path').value, appearance:window.AppearanceUI?.creation(), adultConfirmed: $('adult-confirmed').checked }); });
-$('rest').addEventListener('click',()=>perform('Rest'));
+$('rest').addEventListener('click',()=>{const w=view?.world;if(w?.home){const bed=w.home.fixtures.find(f=>f.action==='Rest');if(bed)window.dispatchEvent(new CustomEvent('home-fixture-use',{detail:{fixtureId:bed.id,homeId:w.home.id,leaseVersion:w.position.leaseVersion}}));}else if(w)window.dispatchEvent(new CustomEvent('building-select',{detail:{buildingId:w.residence.id,leaseVersion:w.position.leaseVersion}}));});
 $('care').addEventListener('click',()=>perform('RequestBasicCare'));
 $('privacy-form').addEventListener('submit',event=>{event.preventDefault();perform('SetPrivacy',Object.fromEntries(['dm','location','presence','relationships'].map(field=>[field,$('privacy-'+field).checked])));});
 $('household-create').addEventListener('submit',event=>{event.preventDefault();perform('CreateHousehold',{name:$('household-name').value,consent:$('household-consent').checked});});
@@ -265,7 +268,7 @@ let heldDirection=null,stepTimer=null,lastStep=0,walkRun=0,queuedDestination=nul
 const WALK_INTERVAL=300;
 function cancelRoute(){walkRun++;queuedDestination=null;window.dispatchEvent(new CustomEvent('walk-target',{detail:null}));}
 function stopWalking(){cancelRoute();heldDirection=null;if(stepTimer)clearInterval(stepTimer);stepTimer=null;}
-function step(){if(!heldDirection||busy||pending||window.WorldSync?.ready()===false||!view?.citizen||!key||document.hidden)return;const world=view.world;if(!world||world.trip||world.position.interior&&!world.home)return;if(Date.now()-lastStep<WALK_INTERVAL)return;lastStep=Date.now();const [x,y]=movementKeys[heldDirection],{dx,dy}=window.GameCamera?.step(x,y)??{dx:x,dy:y};perform(world.home?'MoveInterior':'MoveCitizen',{dx,dy,leaseVersion:world.position.leaseVersion});}
+function step(){if(!heldDirection||busy||pending||window.WorldSync?.ready()===false||!view?.citizen||!key||document.hidden)return;const world=view.world;if(!world||world.trip||world.position.interior&&!world.home&&!world.venue)return;if(Date.now()-lastStep<WALK_INTERVAL)return;lastStep=Date.now();const [x,y]=movementKeys[heldDirection],{dx,dy}=window.GameCamera?.step(x,y)??{dx:x,dy:y};perform(world.home||world.venue?'MoveInterior':'MoveCitizen',{dx,dy,leaseVersion:world.position.leaseVersion});}
 document.addEventListener('keydown',event=>{if(window.GameUI?.blocksMovement()||!movementKeys[event.key]||event.ctrlKey||event.altKey||event.metaKey||event.target.closest?.('input,textarea,select,[contenteditable="true"],dialog')||!key)return;event.preventDefault();cancelRoute();heldDirection=event.key;if(!stepTimer)stepTimer=setInterval(step,50);step();});
 document.addEventListener('keyup',event=>{if(event.key===heldDirection)stopWalking();});
 // A canvas tap dispatches its destination during pointerup. Bubbling that same
@@ -274,25 +277,54 @@ window.addEventListener('pointerup',()=>{if(heldDirection)stopWalking();});windo
 
 async function followRoute(world,route,action){
  stopWalking();if(!route){notice('There is no clear route to that object or tile.');return;}
- const run=++walkRun,lease=world.position.leaseVersion,homeId=world.home?.id,homeVersion=world.home?.version,region=world.position.region,actor=view.accountId,credential=key;
- const start=world.home??world.position,destination=route.reduce((point,step)=>({x:point.x+step.dx,y:point.y+step.dy}),{x:start.x,y:start.y});window.dispatchEvent(new CustomEvent('walk-target',{detail:{...destination,homeId:homeId??null,leaseVersion:lease}}));
- const current=()=>run===walkRun&&!pending&&!busy&&window.WorldSync?.ready()!==false&&key===credential&&view?.accountId===actor&&view?.world?.position.leaseVersion===lease&&view.world.position.region===region&&view.world.home?.id===homeId&&view.world.home?.version===homeVersion&&!view.world.trip;
- for(const direction of route){
-  if(!current())return;const wait=Math.max(0,WALK_INTERVAL-(Date.now()-lastStep));if(wait)await new Promise(resolve=>setTimeout(resolve,wait));if(!current())return;
-  const before=view.world.home??view.world.position;lastStep=Date.now();await perform(homeId?'MoveInterior':'MoveCitizen',{...direction,leaseVersion:lease});
-  const after=view?.world?.home??view?.world?.position;if(!current()||after.x!==before.x+direction.dx||after.y!==before.y+direction.dy)return;
+ const run=++walkRun,lease=world.position.leaseVersion,room=world.home??world.venue,homeId=room?.id,homeVersion=room?.version,region=world.position.region,actor=view.accountId,credential=key;
+ const start=room??world.position,destination=route.reduce((p,d)=>({x:p.x+d.dx,y:p.y+d.dy}),{x:start.x,y:start.y});
+ const current=()=>run===walkRun&&!pending&&!busy&&window.WorldSync?.ready()!==false&&key===credential&&view?.accountId===actor&&view?.world?.position.leaseVersion===lease&&view.world.position.region===region&&(view.world.home??view.world.venue)?.id===homeId&&(view.world.home??view.world.venue)?.version===homeVersion&&!view.world.trip;
+ window.dispatchEvent(new CustomEvent('walk-target',{detail:{...destination,homeId:world.home?.id??null,venueId:world.venue?.id??null,leaseVersion:lease}}));
+ if(route.length){
+  await perform('NavigateCitizen',{...destination,leaseVersion:lease});if(!current())return;
+  const plan=view.world.navigation??view.world.position.navigation;if(!plan||plan.points.at(-1).x!==destination.x||plan.points.at(-1).y!==destination.y)return;
+  const wait=(plan.points.length-1)*plan.stepMs-Math.max(0,view.world.serverTime-plan.startedAt),until=performance.now()+Math.max(0,wait)+50;
+  while(performance.now()<until){if(!current())return;await new Promise(r=>setTimeout(r,Math.min(200,until-performance.now())));}
+  if(!current())return;
+  for(let attempts=0;attempts<20;attempts++){
+   try{view=await request('/api/citizen');render();}catch(error){notice(error.message,true);return;}if(!current())return;
+   const active=view.world.navigation??view.world.position.navigation;if(!active)break;
+   if(active.id!==plan.id)return;const remaining=active.startedAt+(active.points.length-1)*active.stepMs-view.world.serverTime;
+   if(remaining<=0)break;await new Promise(r=>setTimeout(r,Math.max(100,Math.min(1000,remaining))));
+  }
+  if(!current())return;const actual=view.world.home??view.world.venue??view.world.position;if(actual.x!==destination.x||actual.y!==destination.y){notice('The route was interrupted. Choose the destination again.');return;}
+  await perform('StopNavigation',{leaseVersion:lease});
  }
  if(current())window.dispatchEvent(new CustomEvent('walk-target',{detail:null}));
  if(action&&current())await perform(action.type,{...action.payload,leaseVersion:lease});
 }
 window.addEventListener('home-fixture-select',event=>{const w=view?.world,d=event.detail;if(w?.home&&w.home.id===d.homeId&&w.position.leaseVersion===d.leaseVersion)window.ObjectUI?.open(d);});
-window.addEventListener('home-fixture-use',event=>{const d=event.detail,w=view?.world;if(!key||!w?.home||w.home.id!==d.homeId||w.position.leaseVersion!==d.leaseVersion||busy||pending)return;const f=w.home.fixtures.find(f=>f.id===d.fixtureId);if(f&&f.allowed!==false&&!(f.use?.capacity>0&&!f.use.availableSlots.length))followRoute(w,window.Walking?.approach(w,f),{type:'InteractHomeFixture',payload:{fixtureId:f.id}});});
-window.addEventListener('building-select',event=>{const d=event.detail,w=view?.world;if(!key||!w||w.position.interior||w.trip||w.position.leaseVersion!==d.leaseVersion||busy||pending)return;const b=[...w.map.buildings.filter(b=>b.id!=='shelter'),w.residence,...(w.guestEntrances??[])].find(b=>b.id===d.buildingId);if(b)followRoute(w,window.Walking?.approach(w,b),{type:'EnterBuilding',payload:{buildingId:b.id}});});
+window.addEventListener('home-fixture-use',event=>{const d=event.detail,w=view?.world;if(!key||!w?.home||w.home.id!==d.homeId||w.position.leaseVersion!==d.leaseVersion||busy||pending)return;const f=w.home.fixtures.find(f=>f.id===d.fixtureId);if(f&&f.allowed!==false&&!(f.use?.capacity>0&&!f.use.availableSlots.length))followRoute(w,window.Walking?.approach(w,f),{type:'InteractHomeFixture',payload:{fixtureId:f.id,...(d.action?{action:d.action}:{})}});});
+window.addEventListener('building-select',async event=>{const d=event.detail;let w=view?.world;if(!key||!w||w.trip||w.position.leaseVersion!==d.leaseVersion||busy||pending)return;if(w.position.interior){if(w.venue?.id===d.buildingId||w.home&&w.residence.id===d.buildingId)return;await perform('ExitBuilding',{leaseVersion:w.position.leaseVersion});if(busy||pending||view?.world?.position.interior)return;w=view.world;}const b=[...w.map.buildings.filter(b=>b.id!=='shelter'),w.residence,...(w.guestEntrances??[])].find(b=>b.id===d.buildingId);if(b)followRoute(w,window.Walking?.approach(w,b),{type:'EnterBuilding',payload:{buildingId:b.id}});});
 window.addEventListener('street-object-select',event=>{const d=event.detail,w=view?.world;if(!key||!w||w.position.interior||w.trip||w.position.leaseVersion!==d.leaseVersion||busy||pending)return;const o=w.map.streetObjects?.find(o=>o.id===d.objectId);if(o)followRoute(w,window.Walking?.approach(w,o),{type:'InteractStreetObject',payload:{objectId:o.id}});});
 window.addEventListener('world-tile-select',event=>{
- const d=event.detail,w=view?.world;if(!key||!w||w.trip||w.position.interior&&!w.home||w.home?.id!==d.homeId&&!(d.homeId===null&&!w.home)||w.position.leaseVersion!==d.leaseVersion)return;
+ const d=event.detail,w=view?.world;if(!key||!w||w.trip||w.position.interior&&!w.home&&!w.venue||w.home?.id!==d.homeId&&!(d.homeId===null&&!w.home)||w.venue?.id!==(d.venueId??undefined)||w.position.leaseVersion!==d.leaseVersion)return;
  window.ObjectUI?.close();
- if(busy||pending){if(pending&&['MoveCitizen','MoveInterior'].includes(pending.type)){stopWalking();queuedDestination={...d,actor:view.accountId};}return;}
+ if(busy||pending){if(pending&&['MoveCitizen','MoveInterior','NavigateCitizen'].includes(pending.type)){stopWalking();queuedDestination={...d,actor:view.accountId};}return;}
  followRoute(w,window.Walking?.path(w,d.x,d.y));
 });
 function drainDestination(){const next=queuedDestination;queuedDestination=null;if(next&&next.actor===view?.accountId)queueMicrotask(()=>window.dispatchEvent(new CustomEvent('world-tile-select',{detail:next})));}
+
+window.addEventListener('movement-intent',e=>{const keyFor={forward:'w',back:'s',left:'a',right:'d'},next=keyFor[e.detail?.direction];if(!next){if(heldDirection)stopWalking();return;}if(window.GameUI?.blocksMovement())return;cancelRoute();heldDirection=next;if(!stepTimer)stepTimer=setInterval(step,50);step();});
+let careTimer=null,careKey='',careReceived=0,careClock=0;
+function renderHomeCare(world){
+ let host=$('home-care-status');if(!host){host=document.createElement('div');host.id='home-care-status';$('world-interactions').after(host);}host.hidden=!world.home;host.replaceChildren();if(!world.home)return;
+ const active=world.homeCare?.active;if(!world.home.guest&&!world.home.fixtures.some(f=>f.action==='Toilet'))host.append(actionButton('Fit free bathroom fixtures','PrepareHomeBathroom',{homeVersion:world.home.version,leaseVersion:world.position.leaseVersion}));
+ if(!active){clearTimeout(careTimer);careTimer=null;careKey='';return;}
+ host.append(paragraph(active.kind+' in progress. Benefits are saved after completion.'));const progress=document.createElement('progress');progress.max=1;progress.value=active.progress;progress.setAttribute('aria-label','Home activity progress');host.append(progress,actionButton('Stop activity','CancelHomeActivity',{sessionId:active.sessionId,leaseVersion:world.position.leaseVersion}));
+ if(careKey===active.sessionId)return;clearTimeout(careTimer);careKey=active.sessionId;careClock=world.serverTime;careReceived=performance.now();const sessionId=careKey,lease=world.position.leaseVersion;
+ const finish=async()=>{const w=view?.world;if(careKey!==sessionId||w?.homeCare?.active?.sessionId!==sessionId||w.position.leaseVersion!==lease)return;const remaining=active.endsAt-(careClock+performance.now()-careReceived);if(remaining>0||busy||pending){careTimer=setTimeout(finish,Math.max(150,remaining));return;}await perform('FinishHomeActivity',{sessionId,leaseVersion:lease});};
+ careTimer=setTimeout(finish,Math.max(100,active.endsAt-world.serverTime+100));
+}
+
+let navigationStopRequested=false;
+function requestNavigationStop(){navigationStopRequested=true;drainNavigationStop();}
+function drainNavigationStop(){if(!navigationStopRequested||busy||pending)return;navigationStopRequested=false;const w=view?.world;if(key&&w?.navigation&&window.WorldSync?.ready()!==false)void perform('StopNavigation',{leaseVersion:w.position.leaseVersion});}
+for(const name of ['blur','pointercancel','game-input-release'])window.addEventListener(name,requestNavigationStop);
+document.addEventListener('visibilitychange',()=>{if(document.hidden)requestNavigationStop();});

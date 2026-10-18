@@ -8,16 +8,18 @@ import type {Partition} from './home-layout.ts';
 import {DAY} from './rules.ts';
 import {BUILDINGS,RESIDENTIAL_PLOTS} from './neighbourhood.ts';
 import type {HomeVisit} from './home-visits.ts';
+import type {HomeCareState} from './home-activities.ts';
 
 import {FURNITURE,LIGHT_SCENES,lightView} from './furniture-catalogue.ts';
 import type {FurnitureLight} from './furniture-catalogue.ts';
 export {FURNITURE} from './furniture-catalogue.ts';
 export const FINISHES=['walnut','oak','cream','slate','sage','terracotta','navy'];
 type Placement={x:number;y:number;rotation:number};
-export type FurnitureItem={id:string;owner:string;model:string;finish:string;homeId:string|null;placement:Placement|null;starter:boolean;alias?:string;purchaseKey?:string;version:number;light?:FurnitureLight};
+export type TelevisionState={enabled:boolean;channel:string;version:number;commandKey:string};
+export type FurnitureItem={id:string;owner:string;model:string;finish:string;homeId:string|null;placement:Placement|null;starter:boolean;alias?:string;purchaseKey?:string;version:number;light?:FurnitureLight;screen?:TelevisionState};
 export type Home={id:string;region:string;width:number;height:number;version:number;wall:string;floor:string;parkingSpaces:number;partitions?:Partition[];roomSettings?:Record<string,{name:string;floor:string}>};
 type Parking={id:string;vehicleId:string;homeId:string;actor:string;slot:number;status:'parked'|'released';version:number};
-export type FurnishingState={homes:Record<string,Home>;items:Record<string,FurnitureItem>;npcStock:Record<string,number>;parking:Record<string,Parking>;visits?:Record<string,HomeVisit>};
+export type FurnishingState={homes:Record<string,Home>;items:Record<string,FurnitureItem>;npcStock:Record<string,number>;parking:Record<string,Parking>;visits?:Record<string,HomeVisit>;care?:HomeCareState};
 const get=(s:State)=>s.furnishing??={homes:{},items:{},npcStock:{},parking:{}};
 const hash=(s:string)=>createHash('sha256').update(s).digest('hex').slice(0,24);
 export function homeIdentity(s:State,actor:string,region=s.world?.positions[actor]?.region){
@@ -55,7 +57,7 @@ export function releaseResidence(s:State,homeId:string,actor:string){
  const m=s.furnishing;if(!m)return;for(const item of Object.values(m.items))if(item.homeId===homeId&&item.owner===actor){item.homeId=null;item.placement=null;item.version++;}
  for(const record of Object.values(m.parking))if(record.homeId===homeId&&record.actor===actor&&record.status==='parked'){record.status='released';record.version++;}
  if(m.homes[homeId])m.homes[homeId].version++;
- const pos=s.world?.positions[actor];if(pos?.homeId===homeId&&!s.world?.activeTrips[actor]){pos.interior=null;delete pos.homeId;delete pos.interiorX;delete pos.interiorY;delete pos.activity;pos.leaseVersion++;}
+ const pos=s.world?.positions[actor];if(pos?.homeId===homeId&&!s.world?.activeTrips[actor]){pos.interior=null;delete pos.homeId;delete pos.interiorX;delete pos.interiorY;delete pos.activity;if(m.care)delete m.care.active[actor];pos.leaseVersion++;}
 }
 export function changeResidence(s:State,actor:string,housing:string){
  const citizen=s.citizens[actor];if(!citizen)throw new DomainError('CITIZEN_REQUIRED','Create a citizen first.');
@@ -63,12 +65,12 @@ export function changeResidence(s:State,actor:string,housing:string){
  if(s.world?.positions[actor])releaseResidence(s,homeIdentity(s,actor).id,actor);
  citizen.housing=housing;
 }
-export function homeFixtures(s:State,home:Home){return Object.values(get(s).items).filter(i=>i.homeId===home.id&&i.placement).map(i=>{const model=FURNITURE.find(f=>f.id===i.model)!,p=i.placement!,rotated=p.rotation%180!==0;return{id:i.alias??i.id,instanceId:i.id,name:model.name,model:model.id,kind:model.kind,style:model.style,seats:model.seats,light:model.lightable?lightView(i.light):null,finish:i.finish,rotation:p.rotation,x:p.x,y:p.y,w:rotated?model.h:model.w,h:rotated?model.w:model.h,action:model.action,copy:model.lightable?'Choose this lamp in Furniture to change its light.':model.name};});}
+export function homeFixtures(s:State,home:Home){return Object.values(get(s).items).filter(i=>i.homeId===home.id&&i.placement).map(i=>{const model=FURNITURE.find(f=>f.id===i.model)!,p=i.placement!,rotated=p.rotation%180!==0;return{id:i.alias??i.id,instanceId:i.id,name:model.name,model:model.id,kind:model.kind,style:model.style,seats:model.seats,light:model.lightable?lightView(i.light):null,finish:i.finish,rotation:p.rotation,x:p.x,y:p.y,w:rotated?model.h:model.w,h:rotated?model.w:model.h,action:model.action,screen:i.screen?{enabled:i.screen.enabled,channel:i.screen.channel,version:i.screen.version}:null,copy:model.lightable?'Choose this lamp in Furniture to change its light.':model.name};});}
 export function usableHome(s:State,actor:string){const home=homeFor(s,actor),pos=s.world!.positions[actor];if(pos.interior!=='shelter'||pos.homeId&&pos.homeId!==home.id)throw new DomainError('HOME_REQUIRED','Enter your current local home first.');return home;}
 export function homeWalkable(s:State,home:Home,x:number,y:number){return Number.isInteger(x)&&Number.isInteger(y)&&x>=0&&y>=0&&x<home.width&&y<home.height&&!homeFixtures(s,home).some(f=>x>=f.x&&x<f.x+f.w&&y>=f.y&&y<f.y+f.h);}
 export function homeStep(s:State,home:Home,x:number,y:number,nx:number,ny:number){return Math.abs(x-nx)+Math.abs(y-ny)===1&&homeWalkable(s,home,nx,ny)&&edgePassable(home,x,y,nx,ny);}
-function clearHomeActivities(s:State,home:Home){for(const p of Object.values(s.world?.positions??{}))if(p.homeId===home.id)delete p.activity;}
-function validateLayout(s:State,home:Home){
+function clearHomeActivities(s:State,home:Home){for(const [actor,p] of Object.entries(s.world?.positions??{}))if(p.homeId===home.id){delete p.activity;if(s.furnishing?.care)delete s.furnishing.care.active[actor];}}
+export function validateLayout(s:State,home:Home){
  const fixtures=homeFixtures(s,home),occupied=new Set<string>(),edges=new Set<string>();
  if(home.partitions!==undefined&&!Array.isArray(home.partitions)||home.partitions&&home.partitions.length>ROOM_RULES.maxSegments)throw new DomainError('INVALID_PARTITION','The partition catalogue is invalid.');
  for(const p of home.partitions??[]){
@@ -83,7 +85,7 @@ function validateLayout(s:State,home:Home){
  if(seen.size!==home.width*home.height-occupied.size||!seen.has('4:7')||fixtures.some(f=>![...seen].some(tile=>{const [x,y]=tile.split(':').map(Number);return fixtureAccessible(home,x,y,f);})))throw new DomainError('FURNITURE_PATH','Keep a reachable path to the exit and every furnishing.');
 }
 export function furnishingCommand(s:State,actor:string,c:Command,now:number,key:string):Record<string,unknown>|undefined{
- if(!['BuyFurniture','PlaceFurniture','StoreFurniture','SetFurnitureLight','CustomiseHome','BuildHomePartition','RemoveHomePartition','CustomiseRoom','ParkVehicle','UnparkVehicle'].includes(c.type))return;
+ if(!['BuyFurniture','PlaceFurniture','StoreFurniture','SetFurnitureLight','SetHomeTelevision','CustomiseHome','BuildHomePartition','RemoveHomePartition','CustomiseRoom','ParkVehicle','UnparkVehicle'].includes(c.type))return;
  const home=homeFor(s,actor),m=get(s),p=c.payload,pos=s.world!.positions[actor];
  if(s.world!.activeTrips[actor])throw new DomainError('IN_TRANSIT','Finish your journey first.');
  if(c.type==='BuyFurniture'){
@@ -92,6 +94,13 @@ export function furnishingCommand(s:State,actor:string,c:Command,now:number,key:
   const stockKey=pos.region+':'+Math.floor(now/DAY)+':'+model.id;if((m.npcStock[stockKey]??0)>=20)throw new DomainError('FURNITURE_STOCK','This local model is sold out for today.');
   const id='furniture_'+hash(key);post(s,key,now,'Furniture catalogue purchase',[{account:'citizen:'+actor,amount:-model.price},{account:'system:furniture-provider',amount:model.price}]);
   m.items[id]={id,owner:actor,model:model.id,finish:String(p.finish),homeId:null,placement:null,starter:false,purchaseKey:key,version:1};m.npcStock[stockKey]=(m.npcStock[stockKey]??0)+1;return{furnitureId:id,amount:model.price,message:'Furniture purchased once and placed in your personal storage.'};
+ }
+ if(c.type==='SetHomeTelevision'){
+  usableHome(s,actor);if(p.leaseVersion!==pos.leaseVersion)throw new DomainError('STALE_LEASE','Your location changed.');if(p.homeVersion!==home.version)throw new DomainError('HOME_CHANGED','Refresh the current home layout.');
+  const item=m.items[String(p.furnitureId)],fixture=homeFixtures(s,home).find(f=>f.instanceId===item?.id);if(!item||item.owner!==actor||item.homeId!==home.id||item.model!=='television'||!fixture)throw new DomainError('TELEVISION_PERMISSION','Use your placed television in your current home.',403);
+  if(!fixtureAccessible(home,pos.interiorX??4,pos.interiorY??6,fixture))throw new DomainError('TOO_FAR','Walk beside the television before changing it.');const previousVersion=item.screen?.version??0;
+  if(p.screenVersion!==previousVersion)throw new DomainError('TELEVISION_CHANGED','The television changed. Refresh before saving.');if(typeof p.enabled!=='boolean'||!['city','nature','learning'].includes(String(p.channel)))throw new DomainError('INVALID_TELEVISION','Choose a listed channel and on/off setting.');
+  item.screen={enabled:p.enabled,channel:String(p.channel),version:previousVersion+1,commandKey:key};item.version++;return{furnitureId:item.id,homeId:home.id,previousVersion,screen:{enabled:item.screen.enabled,channel:item.screen.channel,version:item.screen.version},message:p.enabled?'Television on. Original silent programme is playing.':'Television switched off.'};
  }
  if(c.type==='SetFurnitureLight'){
   usableHome(s,actor);if(p.leaseVersion!==pos.leaseVersion)throw new DomainError('STALE_LEASE','Your location changed. Refresh before using the light.');
@@ -152,7 +161,8 @@ export function furnishingCommand(s:State,actor:string,c:Command,now:number,key:
 export function furnishingView(s:State,actor:string,now:number){if(!s.citizens[actor])return null;const copy=structuredClone(s),home=homeFor(copy,actor),m=get(copy);return{home,rooms:homeRooms(home),lightScenes:LIGHT_SCENES,construction:{...ROOM_RULES,canBuild:!s.property?.assets[home.id]||s.property.assets[home.id].owner===actor,materials:Object.values(s.commerce?.batches??{}).filter(b=>b.owner==='citizen:'+actor&&b.region===home.region&&b.goods==='materials'&&b.expiresAt>now&&b.quality>0).reduce((n,b)=>n+b.quantity,0)},catalogue:FURNITURE,finishes:FINISHES,items:Object.values(m.items).filter(i=>i.owner===actor).map(i=>({...i,light:i.light?lightView(i.light):undefined,owner:s.citizens[actor].id})),parking:Object.values(m.parking).filter(r=>r.actor===actor).map(r=>({...r,actor:s.citizens[actor].id})),fixtures:homeFixtures(copy,home)};}
 export function reconcileFurnishing(s:State){const m=s.furnishing;if(!m)return;for(const home of Object.values(m.homes)){validateLayout(s,home);for(const p of home.partitions??[]){const receipt=s.commands[p.purchaseKey]?.receipt;if(!s.citizens[p.builtBy]||!receipt||receipt.type!=='BuildHomePartition'||receipt.actorId!==p.builtBy||receipt.detail.homeId!==home.id||!Array.isArray(receipt.detail.partitions)||!receipt.detail.partitions.some(e=>e&&typeof e==='object'&&['id','axis','x','y','door','builtBy','purchaseKey'].every(k=>(e as Record<string,unknown>)[k]===(p as unknown as Record<string,unknown>)[k])))throw new Error('Partition lacks construction evidence');}}for(const item of Object.values(m.items)){
  if(!s.citizens[item.owner]||!FURNITURE.some(f=>f.id===item.model)||!FINISHES.includes(item.finish)||!!item.homeId!==!!item.placement||item.homeId&&!m.homes[item.homeId])throw new Error('Furniture ownership or placement mismatch');
- if(!item.starter){const command=s.commands[item.purchaseKey??''];if(!command||command.receipt.type!=='BuyFurniture'||command.receipt.actorId!==item.owner||command.receipt.detail.furnitureId!==item.id||command.receipt.detail.amount!==FURNITURE.find(f=>f.id===item.model)!.price)throw new Error('Furniture lacks purchase evidence');}
+ if(!item.starter){const command=s.commands[item.purchaseKey??''];if(!command||!['BuyFurniture','BuyShowroomFurniture'].includes(command.receipt.type)||command.receipt.actorId!==item.owner||command.receipt.detail.furnitureId!==item.id||command.receipt.detail.amount!==FURNITURE.find(f=>f.id===item.model)!.price)throw new Error('Furniture lacks purchase evidence');}
+ if(item.screen){const screen=item.screen,receipt=s.commands[screen.commandKey]?.receipt,saved=receipt?.detail.screen as Record<string,unknown>|undefined;if(item.model!=='television'||typeof screen.enabled!=='boolean'||!['city','nature','learning'].includes(screen.channel)||!Number.isSafeInteger(screen.version)||screen.version<1||receipt?.type!=='SetHomeTelevision'||receipt.actorId!==item.owner||receipt.detail.furnitureId!==item.id||receipt.detail.previousVersion!==screen.version-1||!saved||saved.enabled!==screen.enabled||saved.channel!==screen.channel||saved.version!==screen.version)throw new Error('Television lacks saved settings evidence');}
  if(item.light){const light=item.light,receipt=s.commands[light.commandKey]?.receipt,detail=receipt?.detail,model=FURNITURE.find(f=>f.id===item.model),saved=detail?.light as Record<string,unknown>|undefined;
   if(!model?.lightable||Object.keys(light).length!==5||typeof light.enabled!=='boolean'||!LIGHT_SCENES.some(scene=>scene.id===light.scene)||!Number.isInteger(light.brightness)||light.brightness<0||light.brightness>100||!Number.isSafeInteger(light.version)||light.version<1||!receipt||receipt.type!=='SetFurnitureLight'||receipt.actorId!==item.owner||detail?.furnitureId!==item.id||detail.previousVersion!==light.version-1||!saved||['enabled','scene','brightness','version'].some(k=>saved[k]!==light[k as keyof FurnitureLight]))throw new Error('Light lacks saved interaction evidence');
  }

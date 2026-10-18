@@ -1,0 +1,144 @@
+{
+  "checkpoint": "physical-gameplay-local",
+  "recorded_at": "2026-10-18T20:33:23.472985+00:00",
+  "deployment_status": "not deployed",
+  "hosted_migration_status": "not applied",
+  "repository": "SMT-cmd/MY-RP",
+  "baseline_commit": "50edec602a7c64dcfcb3790ff22cd603b540f1d9",
+  "recovered_commit": "df05ceeb2d03ba66e81fd10b6fcfeb95fbd401a7",
+  "initial_local_checkpoint": "b86394f",
+  "source_review_branch": "build/physical-gameplay-2026-10-18",
+  "validation": {
+    "full_suite": {
+      "command": "npm test",
+      "tests": 250,
+      "passed": 250,
+      "failed": 0,
+      "skipped": 0,
+      "duration_ms": 167108.971342
+    },
+    "typecheck": {
+      "command": "npm run typecheck",
+      "passed": true
+    },
+    "changed_browser_and_qa_script_syntax": {
+      "files": 21,
+      "passed": true
+    },
+    "diff_whitespace": "passed",
+    "browser": {
+      "command": "npm run test:browser",
+      "fixture": "isolated in-memory local citizen",
+      "renderer": "Chromium software WebGL",
+      "completed_activities": 4,
+      "activities": [
+        "Sit",
+        "Wash",
+        "Toilet",
+        "Shower"
+      ],
+      "showroom_purchase_collection_and_placement": true,
+      "design_xp": 25,
+      "tv_power_retained_after_reload": true,
+      "touch_context": {
+        "width": 390,
+        "height": 844,
+        "isMobile": true,
+        "hasTouch": true,
+        "joystick_visible": true,
+        "dock_in_bounds": true
+      },
+      "script_errors": [],
+      "failed_non_api_assets": [],
+      "fixture_selection": "normal client selection events followed by native action control clicks; full ray picking not accepted"
+    },
+    "television_frame_check": {
+      "command": "npm run test:browser:tv",
+      "fixture": "separate local domain-purchased TV",
+      "renderer": "Chromium software WebGL",
+      "city_programme_changes_frames": true
+    },
+    "production_login_native_phone_hardware_gpu_wan_capacity": "not verified"
+  },
+  "migration": {
+    "file": "supabase/migrations/20261018190000_physical_world_gameplay.sql",
+    "sha256": "22d747e47d71a7a9aa47d4eb5bbbeb16845ac047c8357c1c7c69b6cb20e0e872",
+    "local_sql_runner": "PGlite",
+    "hosted_applied": false,
+    "startup_refuses_old_schema": true
+  },
+  "environment": {
+    "local_development_verified": true,
+    "saved_draft_revision": 2,
+    "draft_published": false,
+    "install_and_start_saved": true,
+    "additive_requirements_and_domains_saved": true,
+    "provider_tools_callable": false,
+    "production_bindings_available": false,
+    "note": "Existing account connections may exist elsewhere; this chat only exposes the environment configuration connector. No credential values are stored here."
+  },
+  "external_surface_import": {
+    "status": "proxy blocked before reproduction",
+    "http_status": 403,
+    "host": "dl.polyhaven.org",
+    "checksum_bypass": false,
+    "active_runtime": "original deterministic procedural textures; absent vendor images not requested"
+  },
+  "preserved": {
+    "independent_demo_files": true,
+    "hosted_accounts_and_data": true,
+    "existing_service_and_plan": true,
+    "provider_settings": true
+  },
+  "remaining": [
+    "Expose existing Render/Supabase tools or secure bindings",
+    "Verify hosted migration/backup and apply exact pending migration before deployment",
+    "Publish deliberately with automatic deployment off and release stage build",
+    "Current-build production account/cookie and two-client acceptance",
+    "Art, animation, cultural and phone GPU/touch/landscape review",
+    "Continuous driving physics and broader authority revocation acceptance",
+    "Nationwide scenes, remaining Bible systems, public SMTP, capacity/cold-start and operational restore"
+  ],
+  "screenshots": {
+    "docs/qa/2026-10-18/local-aerial.png": {
+      "bytes": 115817,
+      "sha256": "765637969232d3710622ad06d96427c554d72f2e3bb4a7934a97ecaf0689d57e"
+    },
+    "docs/qa/2026-10-18/local-mobile.png": {
+      "bytes": 133154,
+      "sha256": "31ce9235f3b1e27319de826cdbf07533a225fb71ee381e4f6722cf0d4649424b"
+    },
+    "docs/qa/2026-10-18/local-seated.png": {
+      "bytes": 374282,
+      "sha256": "02a43cc7c57d13aace2ad65824683c3955b0c8eec9b181f81f8943e4647ab026"
+    },
+    "docs/qa/2026-10-18/local-shower.png": {
+      "bytes": 269385,
+      "sha256": "e340204c10ca9f7f1864b175b99ff80c592ae80abce2d1ea498dabeaf25ba1d8"
+    },
+    "docs/qa/2026-10-18/local-showroom.png": {
+      "bytes": 466704,
+      "sha256": "c3bd1849a0371f88027d43299eaf853782aa1e47aa7fc80994962ecdeee925c9"
+    },
+    "docs/qa/2026-10-18/local-television-front.png": {
+      "bytes": 142537,
+      "sha256": "9f6d8698c281d667704e88969e929a0205a6bed262223e122168e478b54914a4"
+    },
+    "docs/qa/2026-10-18/local-television.png": {
+      "bytes": 123364,
+      "sha256": "cee296a2d109a6253c28fbb04aa1ff946a4572d425135fcc723f565aeae87e12"
+    },
+    "docs/qa/2026-10-18/local-third-person.png": {
+      "bytes": 268551,
+      "sha256": "a7c9e74e9e38028828d96f45c66dbfc76eba46f33d23f940195c071f2134b3b7"
+    },
+    "docs/qa/2026-10-18/local-toilet.png": {
+      "bytes": 335977,
+      "sha256": "a0735cf21835ab923fda96643526bbf02b430b814ee9794803f187cba657e41f"
+    },
+    "docs/qa/2026-10-18/local-washing.png": {
+      "bytes": 272185,
+      "sha256": "3f18ee892769b4dc6071ef5daf9743698ce5cf9d653ba3241415b1d2cc80b7f3"
+    }
+  }
+}

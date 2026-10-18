@@ -1,0 +1,37 @@
+MY RP surface material and sky asset notice
+
+All source assets in this directory are made available under Creative Commons
+CC0 1.0 Universal (CC0-1.0):
+https://creativecommons.org/publicdomain/zero/1.0/
+https://creativecommons.org/publicdomain/zero/1.0/legalcode
+
+Asphalt Floor — eye-candy.xyz, via Poly Haven
+https://polyhaven.com/a/asphalt_floor
+
+Painted Plaster Wall — Amal Kumar, via Poly Haven
+https://polyhaven.com/a/painted_plaster_wall
+
+Laminate Floor 03 — Charlotte Baglioni (photography), Dario Barresi (processing),
+via Poly Haven
+https://polyhaven.com/a/laminate_floor_03
+
+Grass 005 — ambientCG / Lennart Demes
+https://ambientcg.com/view?id=Grass005
+
+Kloofendal 48d Partly Cloudy (Pure Sky) — Greg Zaal (original), Jarod Guest
+(sky edits), via Poly Haven
+https://polyhaven.com/a/kloofendal_48d_partly_cloudy_puresky
+
+The original providers' license statements were checked on 17 October 2026:
+https://polyhaven.com/license
+https://docs.ambientcg.com/license/
+
+These CC0 licenses permit modification, redistribution and commercial use.
+Attribution is voluntary and supplied here for provenance. No vendor logos,
+website layout, example renders or competitor game assets are included.
+
+MY RP modifications: bounded image downsampling and WebP encoding; OpenGL
+normal vectors renormalized after downsampling. Sky background uses the
+provider's tonemapped photograph and is not an HDR environment-lighting map.
+manifest.json records original download URLs, source bytes and SHA-256,
+archive member SHA-256 where relevant, and output bytes and SHA-256.

@@ -1,0 +1,293 @@
+{
+  "schemaVersion": 1,
+  "importedAt": "2026-10-17",
+  "license": "CC0-1.0",
+  "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+  "encoding": {
+    "tool": "Pillow",
+    "version": "12.3.0",
+    "size": 512,
+    "skySize": [
+      1024,
+      512
+    ],
+    "colorQuality": 82,
+    "dataMapsLossless": true,
+    "normalConvention": "OpenGL"
+  },
+  "sourceLock": "tools/assets/pbr-sources.json",
+  "materials": [
+    {
+      "id": "asphalt",
+      "title": "Asphalt Floor",
+      "author": "eye-candy.xyz",
+      "page": "https://polyhaven.com/a/asphalt_floor",
+      "provider": "Poly Haven",
+      "licensePage": "https://polyhaven.com/license",
+      "recommendedRepeatMetres": 2.3,
+      "maps": {
+        "color": {
+          "url": "/assets/world/materials/asphalt-color.webp",
+          "bytes": 83192,
+          "sha256": "52c22bd56f98edeb281144b40104823a56bb92c4bc497425be5d4a5c1a7943c9",
+          "width": 512,
+          "height": 512,
+          "colorSpace": "srgb",
+          "source": {
+            "alias": "asphalt",
+            "kind": "color",
+            "file": "asphalt_floor_diff_1k.jpg",
+            "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/asphalt_floor/asphalt_floor_diff_1k.jpg",
+            "bytes": 1152035,
+            "sha256": "3c4b3ff069a45e3af920f179ab8446a24c9c5cba32c563c235301e638e0ffb55"
+          }
+        },
+        "normal": {
+          "url": "/assets/world/materials/asphalt-normal.webp",
+          "bytes": 536334,
+          "sha256": "21ce5cb489c6a81a9672a4c214884f6df93ac0a75cf18240c4126e0d52fd5d67",
+          "width": 512,
+          "height": 512,
+          "colorSpace": "linear-data",
+          "source": {
+            "alias": "asphalt",
+            "kind": "normal",
+            "file": "asphalt_floor_nor_gl_1k.jpg",
+            "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/asphalt_floor/asphalt_floor_nor_gl_1k.jpg",
+            "bytes": 1365497,
+            "sha256": "726c4b2a4777a9f0ed2c7e174da12590dd135f476539dd61b642cb9af923d54f"
+          }
+        },
+        "roughness": {
+          "url": "/assets/world/materials/asphalt-roughness.webp",
+          "bytes": 112234,
+          "sha256": "573f486b9677fd8e147f03c609c767913b43aed66ba7dddd28724019353cc3e2",
+          "width": 512,
+          "height": 512,
+          "colorSpace": "linear-data",
+          "source": {
+            "alias": "asphalt",
+            "kind": "roughness",
+            "file": "asphalt_floor_rough_1k.jpg",
+            "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/asphalt_floor/asphalt_floor_rough_1k.jpg",
+            "bytes": 539563,
+            "sha256": "49c4d388e9c832501581c68d16a37b0742944e4007dfc9e5c3119c6fdd301368"
+          }
+        }
+      }
+    },
+    {
+      "id": "plaster",
+      "title": "Painted Plaster Wall",
+      "author": "Amal Kumar",
+      "page": "https://polyhaven.com/a/painted_plaster_wall",
+      "provider": "Poly Haven",
+      "licensePage": "https://polyhaven.com/license",
+      "recommendedRepeatMetres": 2,
+      "maps": {
+        "color": {
+          "url": "/assets/world/materials/plaster-color.webp",
+          "bytes": 10976,
+          "sha256": "59a75b11c4c873776b995b49df027aeb4b027eb25172737885da0629dc9fda38",
+          "width": 512,
+          "height": 512,
+          "colorSpace": "srgb",
+          "source": {
+            "alias": "plaster",
+            "kind": "color",
+            "file": "painted_plaster_wall_diff_1k.jpg",
+            "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/painted_plaster_wall/painted_plaster_wall_diff_1k.jpg",
+            "bytes": 686726,
+            "sha256": "440310f05af089f2c93353167573403cbc3f805948203237b5d26431eeb9e19c"
+          }
+        },
+        "normal": {
+          "url": "/assets/world/materials/plaster-normal.webp",
+          "bytes": 279894,
+          "sha256": "d6e2ef540bb8d1c5244d237b151103a2c3c3ef1ddcbe11f07177bbf9e055ee36",
+          "width": 512,
+          "height": 512,
+          "colorSpace": "linear-data",
+          "source": {
+            "alias": "plaster",
+            "kind": "normal",
+            "file": "painted_plaster_wall_nor_gl_1k.jpg",
+            "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/painted_plaster_wall/painted_plaster_wall_nor_gl_1k.jpg",
+            "bytes": 900461,
+            "sha256": "8eb01647d126eb5341e2c325821ad48c8ca11349dbef53447c95422c5d91cc9d"
+          }
+        },
+        "roughness": {
+          "url": "/assets/world/materials/plaster-roughness.webp",
+          "bytes": 67244,
+          "sha256": "fca63703e6c79122f569168ef44645e9f735e0e33addd6c21cb549e6993e2b5f",
+          "width": 512,
+          "height": 512,
+          "colorSpace": "linear-data",
+          "source": {
+            "alias": "plaster",
+            "kind": "roughness",
+            "file": "painted_plaster_wall_rough_1k.jpg",
+            "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/painted_plaster_wall/painted_plaster_wall_rough_1k.jpg",
+            "bytes": 354762,
+            "sha256": "e0564c297b22ab1cf4ef02a82157b84ce3b92eb4fd49d9c64b7256a8b300af82"
+          }
+        }
+      }
+    },
+    {
+      "id": "wood",
+      "title": "Laminate Floor 03",
+      "author": "Charlotte Baglioni (photography), Dario Barresi (processing)",
+      "page": "https://polyhaven.com/a/laminate_floor_03",
+      "provider": "Poly Haven",
+      "licensePage": "https://polyhaven.com/license",
+      "recommendedRepeatMetres": 2.1,
+      "maps": {
+        "color": {
+          "url": "/assets/world/materials/wood-color.webp",
+          "bytes": 20846,
+          "sha256": "71e1ea05b47a6cd08eea6866d4f9198c86d738b3333ec5e489d4213b4c64352c",
+          "width": 512,
+          "height": 512,
+          "colorSpace": "srgb",
+          "source": {
+            "alias": "wood",
+            "kind": "color",
+            "file": "laminate_floor_03_diff_1k.jpg",
+            "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/laminate_floor_03/laminate_floor_03_diff_1k.jpg",
+            "bytes": 701368,
+            "sha256": "ce2813cdc714fc5a2d816c9b79a0b4aece71c8d5bf56db52331cf413d950eae3"
+          }
+        },
+        "normal": {
+          "url": "/assets/world/materials/wood-normal.webp",
+          "bytes": 135708,
+          "sha256": "171a3c146ed9f5f663aad27b8547c17c55b1f52e3851a6e31febdbc8c14f62c4",
+          "width": 512,
+          "height": 512,
+          "colorSpace": "linear-data",
+          "source": {
+            "alias": "wood",
+            "kind": "normal",
+            "file": "laminate_floor_03_nor_gl_1k.jpg",
+            "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/laminate_floor_03/laminate_floor_03_nor_gl_1k.jpg",
+            "bytes": 426083,
+            "sha256": "8fc982ef3aaffcd3ace508334bbefb02ffefa748658914733ad8b235b9522d7a"
+          }
+        },
+        "roughness": {
+          "url": "/assets/world/materials/wood-roughness.webp",
+          "bytes": 68760,
+          "sha256": "051ff2f56c30d73db983a405740d04a8f4b040e978971831fdf8b20051d420c2",
+          "width": 512,
+          "height": 512,
+          "colorSpace": "linear-data",
+          "source": {
+            "alias": "wood",
+            "kind": "roughness",
+            "file": "laminate_floor_03_rough_1k.jpg",
+            "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/laminate_floor_03/laminate_floor_03_rough_1k.jpg",
+            "bytes": 342587,
+            "sha256": "ab02e47fcc399e84f99be3c2c99104da944541cdb48ae149da94cee86e67ca67"
+          }
+        }
+      }
+    },
+    {
+      "id": "grass",
+      "title": "Grass 005",
+      "author": "ambientCG / Lennart Demes",
+      "page": "https://ambientcg.com/view?id=Grass005",
+      "provider": "ambientCG",
+      "licensePage": "https://docs.ambientcg.com/license/",
+      "recommendedRepeatMetres": 4,
+      "maps": {
+        "color": {
+          "url": "/assets/world/materials/grass-color.webp",
+          "bytes": 76790,
+          "sha256": "4b372b6e6edc95a1827693886de38382ad29515e3088df0ec4c0bdb3be9de2c2",
+          "width": 512,
+          "height": 512,
+          "colorSpace": "srgb",
+          "source": {
+            "alias": "grass",
+            "kind": "archive",
+            "file": "Grass005_1K-JPG.zip",
+            "url": "https://ambientcg.com/get?file=Grass005_1K-JPG.zip",
+            "bytes": 10442657,
+            "sha256": "58a7fb7f32c44a86879483325b62781d04e0ab8f70b0f70ede36c8f1726f8a22",
+            "member": "Grass005_1K-JPG_Color.jpg",
+            "memberSha256": "5fd8edc1a04e2b9b093229dd0ec41f29668dda9fc698f6610b12cdd83b7690cb"
+          }
+        },
+        "normal": {
+          "url": "/assets/world/materials/grass-normal.webp",
+          "bytes": 475884,
+          "sha256": "16932dcebd982a7778dfa8641ef3451944ac0867a47b5604c691595633967743",
+          "width": 512,
+          "height": 512,
+          "colorSpace": "linear-data",
+          "source": {
+            "alias": "grass",
+            "kind": "archive",
+            "file": "Grass005_1K-JPG.zip",
+            "url": "https://ambientcg.com/get?file=Grass005_1K-JPG.zip",
+            "bytes": 10442657,
+            "sha256": "58a7fb7f32c44a86879483325b62781d04e0ab8f70b0f70ede36c8f1726f8a22",
+            "member": "Grass005_1K-JPG_NormalGL.jpg",
+            "memberSha256": "f89e3a1701511d379a9772774ec6b9d7b7ccf3e944fdcc2b98c09dee4cfd804f"
+          }
+        },
+        "roughness": {
+          "url": "/assets/world/materials/grass-roughness.webp",
+          "bytes": 195820,
+          "sha256": "f80b62058c5a0232dc7162ce956e3679e824c87ffdb364420fb038f4ad36d68a",
+          "width": 512,
+          "height": 512,
+          "colorSpace": "linear-data",
+          "source": {
+            "alias": "grass",
+            "kind": "archive",
+            "file": "Grass005_1K-JPG.zip",
+            "url": "https://ambientcg.com/get?file=Grass005_1K-JPG.zip",
+            "bytes": 10442657,
+            "sha256": "58a7fb7f32c44a86879483325b62781d04e0ab8f70b0f70ede36c8f1726f8a22",
+            "member": "Grass005_1K-JPG_Roughness.jpg",
+            "memberSha256": "04ca3a66eee6105cac9754ac773ffd4ee63ca2222984554c4c04b0cdca80da26"
+          }
+        }
+      }
+    },
+    {
+      "id": "sky",
+      "title": "Kloofendal 48d Partly Cloudy (Pure Sky)",
+      "author": "Greg Zaal (original), Jarod Guest (sky edits)",
+      "page": "https://polyhaven.com/a/kloofendal_48d_partly_cloudy_puresky",
+      "provider": "Poly Haven",
+      "licensePage": "https://polyhaven.com/license",
+      "projection": "equirectangular",
+      "usage": "background only; already tonemapped, not HDR lighting",
+      "maps": {
+        "color": {
+          "url": "/assets/world/materials/sky-color.webp",
+          "bytes": 22728,
+          "sha256": "a5c1f5f4fb499408cdd11b8923ba7763eb7b88b70dbbccbe5ae885d270ba7240",
+          "width": 1024,
+          "height": 512,
+          "colorSpace": "srgb",
+          "source": {
+            "alias": "sky",
+            "kind": "color",
+            "file": "kloofendal_48d_partly_cloudy_puresky.jpg",
+            "url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/kloofendal_48d_partly_cloudy_puresky.jpg",
+            "bytes": 22162150,
+            "sha256": "2bdd7abe32f1d2f7a626e0a6e45bb808313f29bd41d758eacbdba91560e93f04"
+          }
+        }
+      }
+    }
+  ],
+  "totalBytes": 2086410,
+  "runtimeRequests": "same-origin only; no vendor APIs or CDN requests"
+}

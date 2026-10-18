@@ -194,5 +194,14 @@
       "file": "20261012211508_civic_petitions.sql",
       "sha256": "123ec1846b871895a7aee73f6a36431257fd27e78462cd10e4164c0caf5a5458"
     }
-  ]
+  ],
+  "pending_local_migrations": [
+    {
+      "file": "20261018190000_physical_world_gameplay.sql",
+      "sha256": "22d747e47d71a7a9aa47d4eb5bbbeb16845ac047c8357c1c7c69b6cb20e0e872",
+      "hosted_applied": false,
+      "requires": "Review and apply through existing migration workflow before this source starts production; verify actual hosted history first."
+    }
+  ],
+  "history_note": "hosted_migrations is the earlier recorded snapshot, not a current provider query. Later verified 16 October character/lighting migration is recorded in project-status and hosted-schema-verification. No hosted query or migration application was possible in this chat on 18 October."
 }

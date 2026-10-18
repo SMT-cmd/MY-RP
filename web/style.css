@@ -38,3 +38,10 @@ body.is-playing{overflow:hidden;background:#172d27}body.is-playing>.masthead,bod
 /* Quiet game chrome, separate from readable phone content. */
 #game-place,#game-profile,#game-state,#game-needs,#game-dock,#game-context,.world-camera-controls{background:#202c2be8;border-color:#ffffff29;box-shadow:0 8px 30px #101b1830;backdrop-filter:blur(16px)}
 #game-drawer{background:#f6f6f2;border-color:#ffffff9c;box-shadow:0 18px 70px #10211d4d}.game-drawer-header{background:#f0f1eb;border-bottom-color:#dadfd8}.game-drawer-header button{background:#e4e9e0;color:#304c40}.game-app-grid button{background:#edf0e7;border:1px solid #dbe3d6;border-radius:16px}.game-app-grid button span{background:#315c4e;color:#f4eedb}.game-drawer-body .card{border-color:#e2e6dd;box-shadow:0 2px 8px #19392c06}.game-furnishing .furniture-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+/* Keep the world visible while camera choices remain keyboard/touch accessible. */
+#game-world details.world-camera-controls{display:block;max-width:210px}
+.world-camera-controls summary{cursor:pointer;min-height:44px;display:flex;align-items:center;justify-content:center;padding:7px 14px;color:#f3f4e9;font-size:.8rem;font-weight:650}
+.world-camera-controls .camera-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px;padding-top:6px}
+.world-camera-controls:not([open]) .camera-options{display:none}
+#game-world .world-camera-controls button[aria-pressed=true]{background:#ffb64c;color:#15222e}
+.myrp-theme #game-profile{color:#f4f0e6}.myrp-theme #game-profile strong{color:#ffb64c}

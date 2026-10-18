@@ -13,12 +13,20 @@ export function createCharacterLibrary(){
  },dispose(){if(!alive)return;alive=false;controller.abort();for(const root of templates.values())disposeTemplate(root);templates.clear();eyeTexture?.image?.close?.();eyeTexture?.dispose();eyeTexture=null;}};
 }
 const palette=(color,roughness=.82)=>new THREE.MeshStandardMaterial({color,roughness,metalness:0});
-function clothingRegion(x,y,outfit){if(y<.105)return 3;if(y<.985)return 2;const sleeve=outfit==='tee'?.47:.76;if(y<1.49&&(Math.abs(x)<.25||Math.abs(x)<sleeve&&y>1.17))return 1;return 0;}
+function clothingRegion(x,y,outfit){if(y<.105)return 3;if(y<.985)return 2;const sleeve=outfit==='tee'?.47:.76,neck=y>1.48&&Math.abs(x)<.105;if(!neck&&y<1.565&&(Math.abs(x)<.25||Math.abs(x)<sleeve&&y>1.17))return 1;return 0;}
 function dressGeometry(source,outfit){
  const geometry=source.clone(),position=geometry.getAttribute('position'),normal=geometry.getAttribute('normal'),indices=geometry.index,buckets=[[],[],[],[]];
  for(let i=0;i<indices.count;i+=3){const a=indices.getX(i),b=indices.getX(i+1),c=indices.getX(i+2);buckets[clothingRegion((position.getX(a)+position.getX(b)+position.getX(c))/3,(position.getY(a)+position.getY(b)+position.getY(c))/3,outfit)].push(a,b,c);}
  for(let i=0;i<position.count;i++){const region=clothingRegion(position.getX(i),position.getY(i),outfit),allowance=region===1?(outfit==='jacket'?.025:.012):region===2?.009:0;if(allowance)position.setXYZ(i,position.getX(i)+normal.getX(i)*allowance,position.getY(i),position.getZ(i)+normal.getZ(i)*allowance);}
  geometry.clearGroups();const ordered=[];for(let i=0;i<buckets.length;i++){geometry.addGroup(ordered.length,buckets[i].length,i);ordered.push(...buckets[i]);}geometry.setIndex(ordered);position.needsUpdate=true;geometry.computeBoundingBox();geometry.computeBoundingSphere();return geometry;
+}
+function separateGarments(object,outfit,materials){
+ const dressed=dressGeometry(object.geometry,outfit),indices=dressed.index,parts=dressed.groups.map(g=>({region:g.materialIndex,indices:Array.from({length:g.count},(_,i)=>indices.getX(g.start+i))}));
+ for(const part of parts){const geometry=dressed.clone();geometry.clearGroups();geometry.setIndex(part.indices);geometry.computeBoundingBox();geometry.computeBoundingSphere();
+  if(part.region===0){object.geometry=geometry;object.material=materials[0];continue;}
+  const garment=new THREE.SkinnedMesh(geometry,materials[part.region]);garment.name=['','Fitted shirt','Fitted trousers','Footwear'][part.region];garment.userData.garment=true;garment.position.copy(object.position);garment.quaternion.copy(object.quaternion);garment.scale.copy(object.scale);garment.bind(object.skeleton,object.bindMatrix);garment.castShadow=true;garment.receiveShadow=true;garment.frustumCulled=false;object.parent.add(garment);
+ }
+ dressed.dispose();
 }
 function inBody(object,body){return body.worldToLocal(object.getWorldPosition(new THREE.Vector3()));}
 function bodyQuaternion(object,body){const q=new THREE.Quaternion();for(let node=object;node&&node!==body;node=node.parent)q.premultiply(node.quaternion);return q;}
@@ -26,7 +34,7 @@ function pointBone(bone,child,direction,body){body.updateWorldMatrix(true,false)
 function solveKnee(hip,foot,a,b){const delta=foot.clone().sub(hip),length=Math.max(.001,Math.min(a+b-.00001,delta.length())),axis=delta.normalize(),along=(a*a-b*b+length*length)/(2*length),height=Math.sqrt(Math.max(0,a*a-along*along)),forward=new THREE.Vector3(0,axis.z,-axis.y).normalize();return hip.clone().addScaledVector(axis,along).addScaledVector(forward,height);}
 export function attachAuthoredCharacter(driver,appearance,template,eyeTexture=null){
  if(!template)return false;const root=clone(template),ownedMaterials=new Set(),skeletons=new Set(),bones=new Map(),{skin=0x895c40,shirt=0x2e7477,trousers=0x303f52,hairColour=0x282521,outfit='tee'}=appearance,bodyMaterials=[palette(skin,.72),palette(shirt),palette(trousers,.9),palette(0x222828,.67)];for(const m of bodyMaterials)ownedMaterials.add(m);root.name='Quaternius CC0 adult';root.userData.authoredCharacter=true;
- root.traverse(o=>{if(o.isBone)bones.set(o.name,o);if(!o.isMesh)return;o.castShadow=true;o.receiveShadow=true;o.frustumCulled=false;if(o.skeleton)skeletons.add(o.skeleton);if(/SuperHero|Superhero/i.test(o.name)){o.geometry=dressGeometry(o.geometry,outfit);o.material=bodyMaterials;}else{o.geometry=o.geometry.clone();const eye=/Eyes/i.test(o.name),mat=palette(eye?(eyeTexture?0xffffff:0x41352b):hairColour,.72);if(eye&&eyeTexture)mat.map=eyeTexture;o.material=mat;ownedMaterials.add(mat);}});
+ const meshes=[];root.traverse(o=>{if(o.isBone)bones.set(o.name,o);if(o.isMesh)meshes.push(o);});for(const o of meshes){o.castShadow=true;o.receiveShadow=true;o.frustumCulled=false;if(o.skeleton)skeletons.add(o.skeleton);if(/SuperHero|Superhero/i.test(o.name))separateGarments(o,outfit,bodyMaterials);else{o.geometry=o.geometry.clone();const eye=/Eyes/i.test(o.name),mat=palette(eye?(eyeTexture?0xffffff:0x41352b):hairColour,.72);if(eye&&eyeTexture)mat.map=eyeTexture;o.material=mat;ownedMaterials.add(mat);}}
  const keep=new Set();for(const node of [driver.head.children.find(o=>o.name==='Hair '+(appearance.hair??'crop')),driver.book,...driver.accessories])node?.traverse(o=>keep.add(o));driver.body.traverse(o=>{if(o.isMesh&&!keep.has(o))o.visible=false;});driver.body.add(root);root.updateWorldMatrix(true,true);
  const hipHeight=(inBody(bones.get('thigh_l'),driver.body).y+inBody(bones.get('thigh_r'),driver.body).y)/2;root.position.y+=.94-hipHeight;root.updateWorldMatrix(true,true);
  // Keep hair on the imported head during turns and reclining. The procedural

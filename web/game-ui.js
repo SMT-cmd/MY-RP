@@ -4,6 +4,7 @@
   const pages = new Map([...document.querySelectorAll('[data-game-page]')].map(e => [e.dataset.gamePage, e]));
   const titles = {phone:'Your phone',map:'Places & nearby objects',home:'Your home',furnish:'Furniture & room layout',appearance:'Your wardrobe',work:'Work',learn:'School & careers',people:'People',money:'Wallet & banking',business:'Business & inventory',travel:'Travel & vehicles',health:'Care & coverage',civic:'Your community',activity:'Recent activity',settings:'Settings',help:'How to play'};
   let active = false, page = null, returnFocus = null, actor = null, location = null, rotateDismissed = false, fullscreenBusy = false, generation = 0;
+  let activityTimer=null,activityKey='',activityExpiry=0;
   const release = () => window.dispatchEvent(new Event('game-input-release'));
   const move = (node, destination) => { if (node) pages.get(destination).append(node); };
   const card = (heading, destination) => move($(heading)?.closest('.card'), destination);
@@ -65,6 +66,7 @@
     returnFocus=null;
   }
   function reset() {
+    clearTimeout(activityTimer);activityTimer=null;activityKey='';activityExpiry=0;
     generation++;release();close(false);active=false;actor=null;location=null;stage.hidden=true;portals(false);document.body.classList.remove('is-playing');
     $('game-display-status').textContent='';$('game-name').textContent='';$('game-wallet').textContent='';$('game-connection').textContent='';$('game-activity').textContent='';
     $('world-title').textContent='';$('world-location').textContent='';$('game-context-actions').replaceChildren();$('game-context-label').textContent='';
@@ -82,7 +84,11 @@
     const needs=view.life?.needs;$('game-needs').hidden=!needs;
     if(needs)for(const [name,label] of [['hunger','Food'],['energy','Energy'],['health','Health']]){const m=$('game-'+name);m.value=needs[name];m.setAttribute('aria-label',`${label}: ${needs[name]} of 100`);}
     const world=view.world, pos=world?.position;
-    $('game-activity').textContent=world?.trip?.status==='travelling'?'On the road':view.work?.active?'Work in progress':pos?.activity?.kind?({Sit:'Sitting',Rest:'Resting',Read:'Reading',Wash:'Washing',Dress:'At the wardrobe',RequestFoodAssistance:'Getting a meal'}[pos.activity.kind]??'Using an object'):'Tap a door or floor to explore';
+    const nextActivity=JSON.stringify([actor,pos?.activity??null]),now=performance.now(),remaining=pos?.activity?Math.max(0,10000-((world.serverTime??pos.activity.startedAt)-pos.activity.startedAt)):0;
+    if(nextActivity!==activityKey){activityKey=nextActivity;activityExpiry=now+remaining;}else activityExpiry=Math.min(activityExpiry,now+remaining);
+    const fallback=world?.trip?.status==='travelling'?'On the road':view.work?.active?'Work in progress':'Tap a door or floor to explore';
+    $('game-activity').textContent=pos?.activity?.kind&&now<activityExpiry?({Sit:'Sitting',Rest:'Resting',Read:'Reading',Wash:'Washing',Dress:'At the wardrobe',RequestFoodAssistance:'Getting a meal'}[pos.activity.kind]??'Using an object'):fallback;
+    clearTimeout(activityTimer);if(now<activityExpiry)activityTimer=setTimeout(()=>{if(active&&activityKey===nextActivity)$('game-activity').textContent=fallback;},activityExpiry-now);
     const actions=$('game-context-actions');actions.replaceChildren();
     const sources=[...document.querySelectorAll('#world-interactions button, #travel-actions button')].filter(b=>!b.disabled);
     for(const source of sources.slice(0,3)){const b=document.createElement('button');b.type='button';b.textContent=source.textContent;b.disabled=!!locked;b.addEventListener('click',()=>source.click());actions.append(b);}

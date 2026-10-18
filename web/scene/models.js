@@ -60,17 +60,20 @@ export function adultModel({skin=0x805238,shirt=0x2e7477,trousers=0x303f52,hair=
   capsule(shoulder,.064,.10,0,-.067,0,shirt);capsule(shoulder,.050,.13,0,-.19,0,outfit==='tee'?skin:shirt);capsule(elbow,.041,.19,0,-.135,0,outfit==='tee'?skin:shirt);sphere(elbow,.045,0,-.295,.005,skin,.68,1.15,.55);arms.push({shoulder,elbow,side});
  }
  const book=group(body,0,1.12,.31);box(book,.25,.024,.17,0,0,0,0xd0b889,.008);box(book,.23,.010,.16,0,.014,0,0xf0e9db);book.visible=false;
- function pose(time,walkWeight,activity,reduced=false,{distance=time*1.5,seatHeight=.575,activityWeight=1}={}){
+ function pose(time,walkWeight,activity,reduced=false,{distance=time*1.5,seatHeight=.575,activityWeight=1,activityTime=time}={}){
   const weight=reduced?0:Math.max(0,Math.min(1,walkWeight)),phase=Math.sin(distance/1.2*Math.PI*2),a=activityWeight;
   body.position.set(0,(-.11+.014*Math.cos(distance/1.2*Math.PI*4))*weight,0);body.rotation.set(0,0,0);head.rotation.set(0,0,phase*.006*weight);book.visible=activity==='Read';
   for(const {hip,knee,ankle,side} of hips){const foot=footTarget(distance,side,weight),angles=legAngles(foot.z/Math.sqrt(frame),.94+body.position.y,foot.y);hip.rotation.set(angles.hip,0,0);knee.rotation.set(angles.knee,0,0);ankle.rotation.set(angles.ankle,0,0);}
   for(const {shoulder,elbow,side} of arms){shoulder.rotation.set(-phase*side*.30*weight,0,side*.045);elbow.rotation.set(-.10-Math.max(0,phase*side)*.14*weight,0,0);}
   if(activity==='Sit'){
    body.position.y=(seatHeight+.015-.94)*a;
-   for(const leg of hips){const angles=legAngles(.40,seatHeight+.015,.08);leg.hip.rotation.x=angles.hip*a;leg.knee.rotation.x=angles.knee*a;leg.ankle.rotation.x=angles.ankle*a;}
+   // Solve the feet at the current pelvis height through lowering/standing.
+   for(const leg of hips){const angles=legAngles(.40*a,.94+body.position.y,.08);leg.hip.rotation.x=angles.hip;leg.knee.rotation.x=angles.knee;leg.ankle.rotation.x=angles.ankle;}
+   for(const arm of arms){arm.shoulder.rotation.x=-.25*a;arm.elbow.rotation.x=-.55*a;}
   }
   if(activity==='Rest'){body.rotation.x=-Math.PI/2*a;body.position.set(0,.83*a,.86*a);}
-  if(['Read','Wash','Dress'].includes(activity)){head.rotation.x=.10*a;for(const arm of arms){arm.shoulder.rotation.x=-.45*a;arm.elbow.rotation.x=-1.18*a;}}
+  if(['Read','Dress'].includes(activity)){head.rotation.x=.10*a;for(const arm of arms){arm.shoulder.rotation.x=-.45*a;arm.elbow.rotation.x=-1.18*a;}}
+  if(activity==='Wash'){const rub=reduced?0:Math.sin(activityTime*10);head.rotation.x=.18*a;for(const arm of arms){arm.shoulder.rotation.set((-.68+rub*arm.side*.055)*a,0,arm.side*-.28*a);arm.elbow.rotation.set((-.32-rub*arm.side*.08)*a,0,0);}}
   const blink=!reduced&&time%4.7>4.58?.10:1;for(const eye of eyes)eye.scale.y=blink;
  }
  pose(0,0);const rig={root,body,head,hips,arms,eyes,pose,book,accessories};attachAuthoredCharacter(rig,{skin,shirt,trousers,hair,hairColour,frame,outfit},template,eyeTexture);return rig;

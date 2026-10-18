@@ -95,7 +95,15 @@ async function perform(type, payload = {}) {
   if(window.WorldSync?.ready()===false){notice('Reconnect this tab before issuing a new action.',true);return;}
   pending = { id: crypto.randomUUID(), type, payload,accountId:view?.accountId };
   rememberPending();
+  // Predict at most the single adjacent tile being submitted, never rewards,
+  // durable state, additional steps, or a route past an unknown response.
+  const stepId=pending.id,w=view?.world,room=w?.home??w?.position;
+  if(['MoveCitizen','MoveInterior'].includes(type)&&room&&Number.isInteger(payload.dx)&&Number.isInteger(payload.dy)){
+    const to={x:room.x+payload.dx,y:room.y+payload.dy},path=window.Walking?.path(w,to.x,to.y);
+    if(path?.length===1)window.dispatchEvent(new CustomEvent('citizen-step-preview',{detail:{id:stepId,from:{x:room.x,y:room.y},to,leaseVersion:w.position.leaseVersion,homeId:w.home?.id??null,region:w.position.region}}));
+  }
   await sendPending();
+  window.dispatchEvent(new CustomEvent('citizen-step-settled',{detail:{id:stepId}}));
 }
 async function sendPending() {
   if (!pending || busy) return;
@@ -257,7 +265,7 @@ let heldDirection=null,stepTimer=null,lastStep=0,walkRun=0,queuedDestination=nul
 const WALK_INTERVAL=300;
 function cancelRoute(){walkRun++;queuedDestination=null;window.dispatchEvent(new CustomEvent('walk-target',{detail:null}));}
 function stopWalking(){cancelRoute();heldDirection=null;if(stepTimer)clearInterval(stepTimer);stepTimer=null;}
-function step(){if(!heldDirection||busy||pending||window.WorldSync?.ready()===false||!view?.citizen||!key||document.hidden)return;const world=view.world;if(!world||world.trip||world.position.interior&&!world.home)return;if(Date.now()-lastStep<WALK_INTERVAL)return;lastStep=Date.now();const [dx,dy]=movementKeys[heldDirection];perform(world.home?'MoveInterior':'MoveCitizen',{dx,dy,leaseVersion:world.position.leaseVersion});}
+function step(){if(!heldDirection||busy||pending||window.WorldSync?.ready()===false||!view?.citizen||!key||document.hidden)return;const world=view.world;if(!world||world.trip||world.position.interior&&!world.home)return;if(Date.now()-lastStep<WALK_INTERVAL)return;lastStep=Date.now();const [x,y]=movementKeys[heldDirection],{dx,dy}=window.GameCamera?.step(x,y)??{dx:x,dy:y};perform(world.home?'MoveInterior':'MoveCitizen',{dx,dy,leaseVersion:world.position.leaseVersion});}
 document.addEventListener('keydown',event=>{if(window.GameUI?.blocksMovement()||!movementKeys[event.key]||event.ctrlKey||event.altKey||event.metaKey||event.target.closest?.('input,textarea,select,[contenteditable="true"],dialog')||!key)return;event.preventDefault();cancelRoute();heldDirection=event.key;if(!stepTimer)stepTimer=setInterval(step,50);step();});
 document.addEventListener('keyup',event=>{if(event.key===heldDirection)stopWalking();});
 // A canvas tap dispatches its destination during pointerup. Bubbling that same

@@ -84,6 +84,12 @@ test('main keyboard walking submits server commands and never moves while editin
  doc.dispatchEvent(new dom.window.KeyboardEvent('keydown',{key:'a',bubbles:true}));await waitFor(()=>store.snapshot().world!.positions.walker.x===6);doc.dispatchEvent(new dom.window.KeyboardEvent('keyup',{key:'a',bubbles:true}));assert.equal(store.snapshot().world!.positions.walker.facing,'left');
  const input=doc.getElementById('household-name') as HTMLInputElement;input.focus();input.dispatchEvent(new dom.window.KeyboardEvent('keydown',{key:'d',bubbles:true}));await new Promise(r=>setTimeout(r,350));assert.equal(store.snapshot().world!.positions.walker.x,6);
  doc.dispatchEvent(new dom.window.KeyboardEvent('keydown',{key:'d',bubbles:true}));await waitFor(()=>store.snapshot().world!.positions.walker.x===7);dom.window.dispatchEvent(new dom.window.Event('blur'));assert.equal(store.snapshot().world!.positions.walker.facing,'right');
+ // The 3D bridge maps a forward key into a cardinal, server-owned move.
+ (dom.window as unknown as {GameCamera:unknown}).GameCamera={step:()=>({dx:1,dy:0})};
+ await waitFor(()=>!(doc.getElementById('refresh') as HTMLButtonElement).disabled);await new Promise(r=>setTimeout(r,310));
+ const previews:unknown[]=[];dom.window.addEventListener('citizen-step-preview',e=>previews.push((e as CustomEvent).detail));
+ doc.dispatchEvent(new dom.window.KeyboardEvent('keydown',{key:'w',bubbles:true}));await waitFor(()=>store.snapshot().world!.positions.walker.x===8);doc.dispatchEvent(new dom.window.KeyboardEvent('keyup',{key:'w',bubbles:true}));
+ assert.equal(previews.length,1);assert.deepEqual(JSON.parse(JSON.stringify((previews[0] as {to:unknown}).to)),{x:8,y:7});assert.equal(store.snapshot().world!.positions.walker.y,7);
 });
 test('main floor selection saves a paid object and click-to-walk reaches a usable fixture through real HTTP',async t=>{
  const directory=await temporaryFolder('furnishing-interface-');t.after(()=>rm(directory,{recursive:true,force:true}));const store=await WorldStore.open(join(directory,'world.json')),actor='resident';

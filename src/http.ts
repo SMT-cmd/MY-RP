@@ -52,7 +52,7 @@ export function createApp(options: { store: CommandStore; authenticate: (req: In
   assets.set('/walking.js',['walking.js','text/javascript']);
   assets.set('/world-renderer.js',['world-renderer.js','text/javascript']);
   for(const [url,file] of [['/world-3d-controller.js','world-3d-controller.js'],['/scene/engine.js','scene/engine.js'],['/scene/models.js','scene/models.js'],['/scene/motion.js','scene/motion.js'],['/engine/three.module.js','../node_modules/three/build/three.module.js'],['/engine/three.core.js','../node_modules/three/build/three.core.js'],['/engine/rounded-box.js','../node_modules/three/examples/jsm/geometries/RoundedBoxGeometry.js']])assets.set(url,[file,'text/javascript']);
-  for(const file of ['authored-characters.js','lighting.js','world-assets.js','asset-catalogue.js','sprites.js'])assets.set('/scene/'+file,['scene/'+file,'text/javascript']);
+  for(const file of ['authored-characters.js','lighting.js','world-assets.js','asset-catalogue.js','sprites.js','camera.js','activity.js','activity-effects.js'])assets.set('/scene/'+file,['scene/'+file,'text/javascript']);
   const artManifest=JSON.parse(readFileSync(new URL('../web/assets/world/manifest.json',import.meta.url),'utf8'));
   for(const item of Object.values(artManifest.assets) as {url:string}[]){if(!/^\/assets\/world\/[a-z]+\/[A-Za-z0-9-]+\.glb$/.test(item.url))throw Error('Invalid local art manifest.');assets.set(item.url,[item.url.slice(1),'model/gltf-binary']);}
   assets.set('/assets/world/manifest.json',['assets/world/manifest.json','application/json']);

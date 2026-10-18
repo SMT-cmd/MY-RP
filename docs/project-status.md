@@ -1,5 +1,11 @@
 # Project status
 
+## Local camera and physical-interaction checkpoint, 18 October 2026
+
+Local development checkpoint only, not deployed. Added camera views/input, bounded one-tile visual prediction with rejection recovery, seat/stand sequencing, handwashing effects and garment surfaces. Focused renderer/geometry/HTTP input checks and local Chromium software-WebGL runs pass; this is not native GPU/device or live-account evidence. Full validation is in progress. Reference: uploaded 48-second WhatsApp clip and handoff; repository Bible v1.1 remains newer than the supplied PDF v1.0.
+
+Remote inspection identified recovered source `df05ceeb2d03ba66e81fd10b6fcfeb95fbd401a7` on build/real-world-gameplay-2026-10-17. That unverified work must be preserved and assessed before completing integration. No provider, database, hosted account, independent demo, or production deployment change.
+
 ## Interaction and world-art release live, 16 October 2026
 
 Both main and build/main-game-2026-10-08 are verified at `82de2aea7d77dd531ed4cdc4a02cb07da6ca0ea5`, tree `723cde09fa9f8807a0d495ca4e68d76a72b8773c`. GitHub API blobs/tree were hash-checked against the tested index; the exact remote commit is reconstructed locally and the checkout is clean. Existing free Render service deployed manually as `dep-db98ideq1p3s739jfpjg`, finished at 20:30:30 UTC. Automatic deployment stays off and stage remains build. No schema, environment, paid or independent-demo change occurred. A following documentation-only commit may advance source beyond this runtime.

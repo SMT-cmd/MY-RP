@@ -11,6 +11,8 @@
   }return null;
  }
  function path(world,x,y){const room=world.home??world.map;if(!Number.isInteger(x)||!Number.isInteger(y)||x<0||y<0||x>=room.width||y>=room.height)return null;return search(world,(tx,ty)=>tx===x&&ty===y);}
- function approach(world,object){if(object.door)return search(world,(x,y)=>Math.abs(x-object.door.x)+Math.abs(y-object.door.y)<=1);return search(world,(x,y)=>{const nx=Math.max(object.x,Math.min(x,object.x+object.w-1)),ny=Math.max(object.y,Math.min(y,object.y+object.h-1));return Math.abs(x-nx)+Math.abs(y-ny)===1&&(!world.home||(world.home.partitions??[]).every(p=>p.door||p.id!==(x!==nx?'v:'+Math.max(x,nx)+':'+y:'h:'+x+':'+Math.max(y,ny))));});}
+ function approach(world,object){if(object.door)return search(world,(x,y)=>Math.abs(x-object.door.x)+Math.abs(y-object.door.y)<=1);return search(world,(x,y)=>{const nx=Math.max(object.x,Math.min(x,object.x+object.w-1)),ny=Math.max(object.y,Math.min(y,object.y+object.h-1));
+  if(object.action==='Sit'){const yaw=-(object.rotation??0)*Math.PI/180,fx=Math.round(Math.sin(yaw)),fy=Math.round(Math.cos(yaw));if(x-nx!==fx||y-ny!==fy)return false;}
+  return Math.abs(x-nx)+Math.abs(y-ny)===1&&(!world.home||(world.home.partitions??[]).every(p=>p.door||p.id!==(x!==nx?'v:'+Math.max(x,nx)+':'+y:'h:'+x+':'+Math.max(y,ny))));});}
  window.Walking={path,approach};
 })();

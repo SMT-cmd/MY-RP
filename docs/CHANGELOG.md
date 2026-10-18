@@ -2,6 +2,8 @@
 
 ## Physical gameplay integrated locally, 18 October 2026
 
+Verified source is published on `build/physical-gameplay-2026-10-18` as `939abd4009be4ae11ab348ee6f46cffab87c40e6`. Remote ref matches the local merge; main remains `50edec602a7c64dcfcb3790ff22cd603b540f1d9`. This source publication triggers no deployment. A following documentation-only commit records publication evidence.
+
 Integrated main baseline `50edec602a7c64dcfcb3790ff22cd603b540f1d9`, the local camera checkpoint and recovered branch `df05ceeb2d03ba66e81fd10b6fcfeb95fbd401a7`, preserving both histories. Completed missing client connections, persistence migration, safeguards and QA. This checkpoint is not deployed; no hosted account, money, migration, provider setting or independent demo was changed.
 
 The browser now connects server-timed destination routes, follow/close/overview cameras, articulated garments, seat/stand and home wash/toilet/shower/clean/rest flows, saved original silent TV channels, physical service/work rooms, showroom purchase/collection/placement with one 25-XP award, owned road driving with reserved/consumed/refunded fuel, and a free NPC showroom shuttle. Keyboard has bounded one-step visual prediction; route acknowledgement loss retains command recovery and does not automatically enter/interact. Phone/Canvas fallback remains available. Driving uses timed road routes; full steering/physics and reference-quality art remain open.

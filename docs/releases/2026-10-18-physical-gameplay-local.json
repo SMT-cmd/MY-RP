@@ -140,5 +140,14 @@
       "bytes": 272185,
       "sha256": "3f18ee892769b4dc6071ef5daf9743698ce5cf9d653ba3241415b1d2cc80b7f3"
     }
+  },
+  "source_publication": {
+    "branch": "build/physical-gameplay-2026-10-18",
+    "implementation_commit": "939abd4009be4ae11ab348ee6f46cffab87c40e6",
+    "remote_ref_verified": true,
+    "main_unchanged_at": "50edec602a7c64dcfcb3790ff22cd603b540f1d9",
+    "verified_at": "2026-10-18T20:34:20.958004+00:00",
+    "deployment_triggered": false,
+    "note": "A following documentation-only commit may advance the review branch."
   }
 }
